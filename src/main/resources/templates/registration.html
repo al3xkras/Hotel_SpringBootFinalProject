@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login page</title>
+</head>
+<body>
+    <h1 th:text="#{registration.header}"></h1>
+
+    <div style="margin-left: 20px; margin-top: 30px">
+        <form action="#" th:action="@{/registration}"
+            method="post" th:object="${registrationRequest}">
+
+            <label for="name" th:text="#{form.name}"></label>
+            <input id="name" type="text" th:field="*{name}"><br/>
+
+            <label for="surname" th:text="#{form.surname}"></label>
+            <input id="surname" type="text" th:field="*{surname}"><br/>
+
+            <label for="username" th:text="#{form.username}"></label>
+            <input id="username" type="text" th:field="*{username}"><br/>
+
+            <label for="password" th:text="#{form.password}"></label>
+            <input id="password" type="password" th:field="*{password}"><br/>
+
+            <label for="password-confirm" th:text="#{form.password_confirm}"></label>
+            <input id="password-confirm" type="password" th:field="*{passwordConfirm}"><br/>
+
+            <label for="birthday-date" th:text="#{form.birthday_date}"></label>
+            <input id="birthday-date" type="date" th:field="*{birthdayDate}"><br/>
+
+
+            <div>
+                <label th:text="#{form.gender}"></label>
+                <input type="radio" th:field="*{gender}" value="Male" th:text="#{form.gender.male}">
+                <input type="radio" th:field="*{gender}" value="Female" th:text="#{form.gender.female}">
+            </div><br/>
+
+            <label for="phone-number" th:text="#{form.phone_number}"></label>
+            <input id="phone-number" type="text" th:field="*{phoneNumber}"><br/>
+
+            <input type="text" th:value="${#locale}" id="locale" name="locale" th:hidden="${true}"/>
+
+            <button type="submit" th:text="#{form.submit}"></button>
+        </form>
+    </div>
+</body>
+</html>
