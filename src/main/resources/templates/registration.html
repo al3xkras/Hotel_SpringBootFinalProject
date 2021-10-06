@@ -9,35 +9,60 @@
 
     <div style="margin-left: 20px; margin-top: 30px">
         <form action="#" th:action="@{/registration}"
-            method="post" th:object="${registrationRequest}">
+            method="post" th:object="${registrationRequest}"
+            class="form">
 
-            <label for="name" th:text="#{form.name}"></label>
-            <input id="name" type="text" th:field="*{name}"><br/>
+            <div class="form-group">
+                <label for="name" th:text="#{form.name}"></label>
+                <input id="name" type="text" th:field="*{name}"><br/>
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            </div>
 
-            <label for="surname" th:text="#{form.surname}"></label>
-            <input id="surname" type="text" th:field="*{surname}"><br/>
-
-            <label for="username" th:text="#{form.username}"></label>
-            <input id="username" type="text" th:field="*{username}"><br/>
-
-            <label for="password" th:text="#{form.password}"></label>
-            <input id="password" type="password" th:field="*{password}"><br/>
-
-            <label for="password-confirm" th:text="#{form.password_confirm}"></label>
-            <input id="password-confirm" type="password" th:field="*{passwordConfirm}"><br/>
-
-            <label for="birthday-date" th:text="#{form.birthday_date}"></label>
-            <input id="birthday-date" type="date" th:field="*{birthdayDate}"><br/>
+            <div class="form-group">
+                <label for="surname" th:text="#{form.surname}"></label>
+                <input id="surname" type="text" th:field="*{surname}">
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></div>
+            </div>
 
 
-            <div>
+            <div class="form-group">
+                <label for="username" th:text="#{form.username}"></label>
+                <input id="username" type="text" th:field="*{username}">
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="password" th:text="#{form.password}"></label>
+                <input id="password" type="password" th:field="*{password}">
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="password-confirm" th:text="#{form.password_confirm}"></label>
+                <input id="password-confirm" type="password" th:field="*{passwordConfirm}">
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}"></div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="birthday-date" th:text="#{form.birthday_date}"></label>
+                <input id="birthday-date" type="date" th:field="*{birthdayDate}">
+            </div>
+
+
+            <div class="form-group">
                 <label th:text="#{form.gender}"></label>
                 <input type="radio" th:field="*{gender}" value="Male" th:text="#{form.gender.male}">
                 <input type="radio" th:field="*{gender}" value="Female" th:text="#{form.gender.female}">
-            </div><br/>
+            </div>
 
-            <label for="phone-number" th:text="#{form.phone_number}"></label>
-            <input id="phone-number" type="text" th:field="*{phoneNumber}"><br/>
+            <div class="form-group">
+                <label for="phone-number" th:text="#{form.phone_number}"></label>
+                <input id="phone-number" type="text" th:field="*{phoneNumber}">
+            </div>
+
 
             <input type="text" th:value="${#locale}" id="locale" name="locale" th:hidden="${true}"/>
 
