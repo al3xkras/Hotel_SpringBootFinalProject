@@ -4,7 +4,6 @@ import lombok.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,8 +30,10 @@ public class RegistrationRequest {
     @NotEmpty
     private String birthdayDate;
 
+    @NotEmpty
     private String gender;
 
+    @NotEmpty
     private String phoneNumber;
 
     private String locale;

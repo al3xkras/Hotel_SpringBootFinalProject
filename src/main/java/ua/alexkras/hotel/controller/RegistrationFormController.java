@@ -19,8 +19,6 @@ import java.sql.*;
 @Controller
 public class RegistrationFormController {
 
-    //private final MySQLConnectionService mySQLConnection;
-
     @Autowired
     public RegistrationFormController(){
 
@@ -29,6 +27,8 @@ public class RegistrationFormController {
     @GetMapping("/registration")
     public String registrationPage(Model model){
         model.addAttribute("registrationRequest", new RegistrationRequest());
+        model.addAttribute("usernameExists",false);
+        model.addAttribute("passwordMismatch",false);
         return "registration";
     }
 
@@ -38,7 +38,13 @@ public class RegistrationFormController {
             return "registration";
         }
 
+        if (!request.getPassword().equals(request.getPasswordConfirm())){
+            model.addAttribute("passwordMismatch",true);
+            return "registration";
+        }
+
         User user;
+
         try {
             user = new User(request);
         } catch (Exception e){
@@ -52,10 +58,10 @@ public class RegistrationFormController {
 
             addUserIfNotExists.execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            model.addAttribute("usernameExists",true);
+            return "registration";
         }
 
-        System.out.println(user);
         return "index";
     }
 
