@@ -63,6 +63,7 @@ public class HotelApplication implements WebMvcConfigurer {
 			e.printStackTrace();
 			System.out.println("Can not add Admin accounts to hotel's database.");
 		}
+
 	}
 
 

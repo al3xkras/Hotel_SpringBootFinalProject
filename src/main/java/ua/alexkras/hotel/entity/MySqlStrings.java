@@ -1,8 +1,27 @@
 package ua.alexkras.hotel.entity;
 
+import java.text.SimpleDateFormat;
+
 public interface MySqlStrings {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     String databaseName="hotel_db";
     String tableUser = "user";
+
+    String colUserId = "ID";
+    String colUserName = "FIRST_NAME";
+    String colUserSurname = "LAST_NAME";
+    String colUserUsername = "USERNAME";
+    String colUserPassword = "PASSWORD";
+    String colUserPhoneNumber = "PHONE_NUMBER";
+    String colUserBirthday = "BIRTHDAY";
+    String colUserGender = "GENDER";
+    String colUserUserType = "USER_TYPE";
+
+    String[] tableUserColumns = new String[]{
+        colUserId,colUserName, colUserSurname, colUserUsername,
+                colUserPassword, colUserPhoneNumber, colUserBirthday,
+                colUserGender, colUserUserType};
 
     String connectionUrl = String.format("jdbc:mysql://localhost:3306/%s?serverTimezone=UTC",databaseName);
 
@@ -13,11 +32,24 @@ public interface MySqlStrings {
     String sqlCreateDatabaseIfNotExists = String.format("CREATE DATABASE IF NOT EXISTS %s;",
             databaseName);
 
-    String sqlCreateUserTableIfNotExists = String.format("CREATE TABLE IF NOT EXISTS %s.%s (ID INT AUTO_INCREMENT PRIMARY KEY, FIRST_NAME VARCHAR(50),LAST_NAME VARCHAR(50), USERNAME VARCHAR(50) unique, PASSWORD VARCHAR(50), PHONE_NUMBER VARCHAR(50), BIRTHDAY DATE, GENDER VARCHAR(10), USER_TYPE VARCHAR(10));",
-            databaseName, tableUser);
+    String sqlCreateUserTableIfNotExists = "CREATE TABLE IF NOT EXISTS "+
+                    databaseName+"."+
+                    tableUser+" ("+
+                    colUserId+" INT AUTO_INCREMENT PRIMARY KEY, "+
+                    colUserName+" VARCHAR(50),"+
+                    colUserSurname+" VARCHAR(50), "+
+                    colUserUsername+" VARCHAR(50) unique, "+
+                    colUserPassword+" VARCHAR(50), "+
+                    colUserPhoneNumber+" VARCHAR(50), "+
+                    colUserBirthday+" DATE, "+
+                    colUserGender+" VARCHAR(10), "+
+                    colUserUserType+" VARCHAR(10)"+
+                    ");";
 
     String sqlInsertIntoUserDB = "INSERT INTO " + databaseName + "." + tableUser +
-            " (ID, FIRST_NAME, LAST_NAME, USERNAME, PASSWORD, PHONE_NUMBER, BIRTHDAY, GENDER, USER_TYPE) VALUES ( NULL, %s );";
+            " ("+String.join(", ",tableUserColumns)+
+            ") VALUES ( NULL, %s );";
 
+    String sqlSelectColumnsFromUserDB = "SELECT %s FROM " + databaseName + "." + tableUser;
 
 }

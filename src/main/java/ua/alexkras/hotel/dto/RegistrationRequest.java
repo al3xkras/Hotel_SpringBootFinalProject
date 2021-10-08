@@ -35,6 +35,4 @@ public class RegistrationRequest {
 
     @NotEmpty
     private String phoneNumber;
-
-    private String locale;
 }

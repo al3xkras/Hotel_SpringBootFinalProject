@@ -2,13 +2,10 @@ package ua.alexkras.hotel.entity;
 
 import lombok.*;
 import ua.alexkras.hotel.dto.RegistrationRequest;
-
-import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Arrays;
 
 @Getter
 @Setter
@@ -29,25 +26,21 @@ public class User {
 
     private String phoneNumber;
 
-    private String locale;
-
     private UserType userType;
 
     public User(RegistrationRequest dto, UserType userType){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
         this.name=dto.getName();
         this.surname=dto.getSurname();
         this.username=dto.getUsername();
         this.password=dto.getPassword();
         try {
-            this.birthday = dateFormat.parse(dto.getBirthdayDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            this.birthday = MySqlStrings.dateFormat.parse(dto.getBirthdayDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         } catch (ParseException ex){
             this.birthday = null;
         }
         this.gender=dto.getGender();
         this.phoneNumber=dto.getPhoneNumber();
-
-        this.locale=dto.getLocale();
 
         this.userType=userType;
     }

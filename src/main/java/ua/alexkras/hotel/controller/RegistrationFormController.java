@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.dto.RegistrationRequest;
-import ua.alexkras.hotel.entity.MySqlStrings;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.entity.UserType;
 
