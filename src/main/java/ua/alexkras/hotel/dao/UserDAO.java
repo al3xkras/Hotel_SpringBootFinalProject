@@ -1,9 +1,14 @@
 package ua.alexkras.hotel.dao;
 
+import lombok.SneakyThrows;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import ua.alexkras.hotel.entity.MySqlStrings;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.entity.UserType;
-
 import java.sql.*;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -12,7 +17,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 
-public class UserDAO {
+public class UserDAO implements UserDetailsService {
 
     public static boolean addUser(User user) throws SQLException {
         Connection conn = DriverManager.getConnection(MySqlStrings.connectionUrl, MySqlStrings.user, MySqlStrings.password);
@@ -27,6 +32,7 @@ public class UserDAO {
 
         return executeResult;
     }
+
 
     public static Optional<User> getUserByUsername(String username) throws SQLException{
 
@@ -83,5 +89,31 @@ public class UserDAO {
     }
 
 
+    @Override
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+        Optional<User> optionalUser;
+
+        try {
+            optionalUser = getUserByUsername(name);
+        } catch (SQLException e){
+            throw new UsernameNotFoundException(name);
+        }
+
+        if (!optionalUser.isPresent()) throw new UsernameNotFoundException(name);
+
+        User user = optionalUser.get();
+
+        return org.springframework.security.core.userdetails.User
+                .builder()
+                .username(user.getUsername())
+                .password(passwordEncoder().encode(user.getPassword()))
+                .roles(user.getUserType().name())
+                .build();
+
+    }
+
+    protected PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder(12);
+    }
 
 }

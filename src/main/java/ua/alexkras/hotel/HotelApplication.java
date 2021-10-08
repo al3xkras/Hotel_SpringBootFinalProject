@@ -61,9 +61,8 @@ public class HotelApplication implements WebMvcConfigurer {
 
 		} catch (SQLException e){
 			e.printStackTrace();
-			System.out.println("Can not add Admin accounts to hotel's database.");
+			System.out.println("Cannot add Admin accounts to hotel's database.");
 		}
-
 	}
 
 
