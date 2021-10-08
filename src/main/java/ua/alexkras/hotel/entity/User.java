@@ -2,14 +2,16 @@ package ua.alexkras.hotel.entity;
 
 import lombok.*;
 import ua.alexkras.hotel.dto.RegistrationRequest;
+
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Arrays;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public class User {
@@ -29,7 +31,9 @@ public class User {
 
     private String locale;
 
-    public User(RegistrationRequest dto){
+    private UserType userType;
+
+    public User(RegistrationRequest dto, UserType userType){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         this.name=dto.getName();
         this.surname=dto.getSurname();
@@ -44,11 +48,26 @@ public class User {
         this.phoneNumber=dto.getPhoneNumber();
 
         this.locale=dto.getLocale();
+
+        this.userType=userType;
+    }
+
+    public User(String name, String surname, String username,
+                String password, String phoneNumber, LocalDate birthday, String gender, UserType userType) {
+        this.name=name;
+        this.surname=surname;
+        this.username=username;
+        this.password=password;
+        this.phoneNumber=phoneNumber;
+        this.birthday=birthday;
+        this.gender=gender;
+        this.userType=userType;
     }
 
     public String toSqlString(){
         //FIRST_NAME, LAST_NAME, USERNAME, PASSWORD, PHONE_NUMBER, BIRTHDAY, GENDER
-        return String.format("\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"",
-                name, surname, username, password, phoneNumber, birthday, gender);
+
+        return String.format("\"%s\", \"%s\", \"%s\", \"%s\", \"%s\",  \"%s\", \"%s\", \"%s\"",
+                name, surname, username, password, phoneNumber, birthday, gender, userType.name());
     }
 }

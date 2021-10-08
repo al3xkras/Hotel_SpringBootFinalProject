@@ -1,5 +1,6 @@
 package ua.alexkras.hotel;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -9,8 +10,13 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.entity.MySqlStrings;
+import ua.alexkras.hotel.entity.User;
+import ua.alexkras.hotel.entity.UserType;
+
 import java.sql.*;
+import java.time.LocalDate;
 
 
 @SpringBootApplication
@@ -20,7 +26,6 @@ public class HotelApplication implements WebMvcConfigurer {
 			"classpath:/META-INF/resources/", "classpath:/resources/",
 			"classpath:/static/", "classpath:/public/"
 	};
-
 
 	public static void main(String[] args) {
 		SpringApplication.run(HotelApplication.class, args);
@@ -36,7 +41,30 @@ public class HotelApplication implements WebMvcConfigurer {
 			throw new RuntimeException("Unable to establish MqSQL connection and create database: "+MySqlStrings.databaseName);
 		}
 
+		try {
+			UserDAO.addUser(
+					new User("Admin", "0",
+							"Admin1", "password1",
+							"+404-23-4567890",
+							LocalDate.parse("2002-03-07")
+							, "Male", UserType.ADMIN)
+			);
+
+			UserDAO.addUser(
+					new User("MyName", "MySurname",
+							"Admin2", "password2",
+							"+404-12-3456789",
+							LocalDate.parse("2002-03-07")
+							, "Male", UserType.ADMIN)
+			);
+		}catch (SQLIntegrityConstraintViolationException ignored){
+
+		} catch (SQLException e){
+			e.printStackTrace();
+			System.out.println("Can not add Admin accounts to hotel's database.");
+		}
 	}
+
 
 	@Bean
 	public LocaleResolver localeResolver() {

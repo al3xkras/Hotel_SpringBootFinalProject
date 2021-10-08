@@ -8,9 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.dto.RegistrationRequest;
 import ua.alexkras.hotel.entity.MySqlStrings;
 import ua.alexkras.hotel.entity.User;
+import ua.alexkras.hotel.entity.UserType;
 
 import javax.validation.Valid;
 import java.sql.*;
@@ -18,11 +20,6 @@ import java.sql.*;
 @Slf4j
 @Controller
 public class RegistrationFormController {
-
-    @Autowired
-    public RegistrationFormController(){
-
-    }
 
     @GetMapping("/registration")
     public String registrationPage(Model model){
@@ -46,17 +43,13 @@ public class RegistrationFormController {
         User user;
 
         try {
-            user = new User(request);
+            user = new User(request, UserType.USER);
         } catch (Exception e){
             return "registration";
         }
 
-        try (Connection conn = DriverManager.getConnection(MySqlStrings.connectionUrl, MySqlStrings.user, MySqlStrings.password);
-             PreparedStatement addUserIfNotExists = conn.prepareStatement(
-                     String.format(MySqlStrings.sqlInsertIntoUserDB, user.toSqlString()))
-             ){
-
-            addUserIfNotExists.execute();
+        try{
+            UserDAO.addUser(user);
         } catch (SQLException e) {
             model.addAttribute("usernameExists",true);
             return "registration";

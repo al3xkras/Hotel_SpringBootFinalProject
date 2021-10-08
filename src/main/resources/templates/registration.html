@@ -22,31 +22,39 @@
             margin-bottom: 5px;
             margin-left: 10px;
         }
+
+        div .centered{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
-    <h1 th:text="#{registration.header}"></h1>
 
-    <div style="margin-left: 20px; margin-top: 30px">
+    <div style="margin: 10% 20%; width: 60%; height: 80%">
+        <h1 th:text="#{registration.header}"></h1>
+
         <form action="#" th:action="@{/registration}"
             method="post" th:object="${registrationRequest}"
             class="form">
 
             <div class="form-group">
                 <label for="name" th:text="#{form.name}"></label>
-                <input id="name" type="text" th:field="*{name}"><br/>
+                <input id="name" type="text" th:pattern="#{regexp.name}" th:field="*{name}">
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+
             </div>
 
             <div class="form-group">
                 <label for="surname" th:text="#{form.surname}"></label>
-                <input id="surname" type="text" th:field="*{surname}">
+                <input id="surname" type="text" th:pattern="#{regexp.surname}" th:field="*{surname}">
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></div>
             </div>
 
             <div class="form-group">
                 <label for="username" th:text="#{form.username}"></label>
-                <input id="username" type="text" th:field="*{username}">
+                <input id="username" type="text" th:pattern="#{regexp.username}"  th:field="*{username}">
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
                 <div class="alert alert-warning" th:if="${usernameExists}" th:text="#{form.alert.username_exists}"></div>
             </div>
@@ -80,7 +88,7 @@
 
             <div class="form-group">
                 <label for="phone-number" th:text="#{form.phone_number}"></label>
-                <input id="phone-number" type="text" th:field="*{phoneNumber}">
+                <input id="phone-number" type="text" th:pattern="#{regexp.phone_number}" th:field="*{phoneNumber}">
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
             </div>
 
@@ -89,6 +97,5 @@
             <button type="submit" th:text="#{form.submit}"></button>
         </form>
     </div>
-
 </body>
 </html>
