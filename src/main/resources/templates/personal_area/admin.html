@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Hotel's Main Page</title>
+    <title>Personal Area</title>
     <style>
         label {
             display: inline-block;
@@ -113,24 +113,36 @@
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a class="active" href="/" th:text="#{index.navbar.home}"></a>
+<div class="navbar">
+    <a class="active" href="/main" th:text="#{index.navbar.home}"></a>
 
-        <div class="dropdown" style="float: left">
-            <button class="dropdown-btn" th:text="#{index.navbar.language}">
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-content">
-                <a href="/?lang=ua" th:text="#{index.navbar.language.ua}"></a>
-                <a href="/?lang=en" th:text="#{index.navbar.language.en}"></a>
-            </div>
+    <div class="dropdown" style="float: left">
+        <button class="dropdown-btn" th:text="#{index.navbar.language}">
+            <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+            <a href="?lang=ua" th:text="#{index.navbar.language.ua}"></a>
+            <a href="?lang=en" th:text="#{index.navbar.language.en}"></a>
         </div>
-
-        <a href="/registration" style="float: right" th:text="#{index.navbar.registration}"></a>
-        <a href="/auth/login" style="float: right" th:text="#{index.navbar.login}"></a>
-
     </div>
 
+    <div class="dropdown" style="float: right">
+        <button class="dropdown-btn" th:text="#{navbar.user}">
+            <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content" style="left: 85%; width: 14.5%">
+            <a href="/reservations" th:text="#{navbar.my_reservations}"></a>
+            <a href="/payments" th:text="#{navbar.payments}"></a>
+            <a href="/personal_data" th:text="#{navbar.personal_data}"></a>
+        </div>
+    </div>
+
+    <form action="/auth/logout" method="post" style="float: right">
+        <button class="dropdown-btn" type="submit" th:text="#{navbar.logout}"></button>
+    </form>
+</div>
+
+<h1>Admin's personal area</h1>
 
 </body>
 </html>
