@@ -2,6 +2,8 @@ package ua.alexkras.hotel.entity;
 
 import lombok.*;
 import ua.alexkras.hotel.dto.RegistrationRequest;
+import ua.alexkras.hotel.model.MySqlStrings;
+import ua.alexkras.hotel.model.UserType;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;

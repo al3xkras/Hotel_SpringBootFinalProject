@@ -1,4 +1,4 @@
-package ua.alexkras.hotel.entity;
+package ua.alexkras.hotel.model;
 
 public enum UserType {
     USER,

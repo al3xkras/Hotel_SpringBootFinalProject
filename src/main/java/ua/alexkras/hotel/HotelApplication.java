@@ -1,6 +1,5 @@
 package ua.alexkras.hotel;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -11,9 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import ua.alexkras.hotel.dao.UserDAO;
-import ua.alexkras.hotel.entity.MySqlStrings;
+import ua.alexkras.hotel.model.MySqlStrings;
 import ua.alexkras.hotel.entity.User;
-import ua.alexkras.hotel.entity.UserType;
+import ua.alexkras.hotel.model.UserType;
 
 import java.sql.*;
 import java.time.LocalDate;

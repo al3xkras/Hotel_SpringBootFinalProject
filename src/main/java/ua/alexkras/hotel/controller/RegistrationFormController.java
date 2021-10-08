@@ -2,7 +2,6 @@ package ua.alexkras.hotel.controller;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.dto.RegistrationRequest;
 import ua.alexkras.hotel.entity.User;
-import ua.alexkras.hotel.entity.UserType;
+import ua.alexkras.hotel.model.UserType;
 
 import javax.validation.Valid;
 import java.sql.*;

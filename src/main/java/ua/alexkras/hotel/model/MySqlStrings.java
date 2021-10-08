@@ -1,4 +1,4 @@
-package ua.alexkras.hotel.entity;
+package ua.alexkras.hotel.model;
 
 import java.text.SimpleDateFormat;
 
@@ -35,12 +35,12 @@ public interface MySqlStrings {
     String sqlCreateUserTableIfNotExists = "CREATE TABLE IF NOT EXISTS "+
                     databaseName+"."+
                     tableUser+" ("+
-                    colUserId+" INT AUTO_INCREMENT PRIMARY KEY, "+
-                    colUserName+" VARCHAR(50),"+
-                    colUserSurname+" VARCHAR(50), "+
-                    colUserUsername+" VARCHAR(50) unique, "+
-                    colUserPassword+" VARCHAR(50), "+
-                    colUserPhoneNumber+" VARCHAR(50), "+
+                    colUserId+" INT AUTO_INCREMENT PRIMARY KEY UNIQUE, "+
+                    colUserName+" VARCHAR(25),"+
+                    colUserSurname+" VARCHAR(25), "+
+                    colUserUsername+" VARCHAR(30) UNIQUE, "+
+                    colUserPassword+" VARCHAR(100), "+
+                    colUserPhoneNumber+" VARCHAR(20), "+
                     colUserBirthday+" DATE, "+
                     colUserGender+" VARCHAR(10), "+
                     colUserUserType+" VARCHAR(10)"+

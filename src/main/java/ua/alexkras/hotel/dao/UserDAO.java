@@ -1,14 +1,14 @@
 package ua.alexkras.hotel.dao;
 
-import lombok.SneakyThrows;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ua.alexkras.hotel.entity.MySqlStrings;
+import ua.alexkras.hotel.model.MySqlStrings;
 import ua.alexkras.hotel.entity.User;
-import ua.alexkras.hotel.entity.UserType;
+import ua.alexkras.hotel.model.UserType;
 import java.sql.*;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -21,6 +21,8 @@ public class UserDAO implements UserDetailsService {
 
     public static boolean addUser(User user) throws SQLException {
         Connection conn = DriverManager.getConnection(MySqlStrings.connectionUrl, MySqlStrings.user, MySqlStrings.password);
+
+        user.setPassword(passwordEncoder().encode(user.getPassword()));
 
         PreparedStatement addUserIfNotExists = conn.prepareStatement(
                 String.format(MySqlStrings.sqlInsertIntoUserDB, user.toSqlString()));
@@ -106,13 +108,14 @@ public class UserDAO implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .builder()
                 .username(user.getUsername())
-                .password(passwordEncoder().encode(user.getPassword()))
-                .roles(user.getUserType().name())
-                .build();
+                .password(user.getPassword())
+                .authorities(
+                        new SimpleGrantedAuthority(user.getUserType().name())
+                ).build();
 
     }
 
-    protected PasswordEncoder passwordEncoder(){
+    private static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(12);
     }
 
