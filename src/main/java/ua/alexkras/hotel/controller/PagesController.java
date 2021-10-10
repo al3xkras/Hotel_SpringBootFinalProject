@@ -1,10 +1,11 @@
 package ua.alexkras.hotel.controller;
 
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.alexkras.hotel.model.UserType;
 
@@ -12,14 +13,14 @@ import ua.alexkras.hotel.model.UserType;
 public class PagesController {
 
     @RequestMapping("/")
-    @PreAuthorize("permitAll()")
-    public String mainPage(){
-        return "index";
-    }
+    public String mainPage(Model model){
+        UserDetails user;
 
-    @GetMapping("/personal_area")
-    public String personalAreaPage(){
-        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        try {
+            user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Exception e){
+            return "index";
+        }
 
         if (user.getAuthorities().contains(new SimpleGrantedAuthority(UserType.USER.name()))){
             return "personal_area/user";
@@ -27,7 +28,7 @@ public class PagesController {
             return "personal_area/admin";
         }
 
-        return "/index";
+        return "index";
     }
 
 }

@@ -1,8 +1,11 @@
 package ua.alexkras.hotel.dto;
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -27,8 +30,8 @@ public class RegistrationRequest {
     @Size(min=8, max = 25)
     private String passwordConfirm;
 
-    @NotEmpty
-    private String birthdayDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthdayDate;
 
     @NotEmpty
     private String gender;

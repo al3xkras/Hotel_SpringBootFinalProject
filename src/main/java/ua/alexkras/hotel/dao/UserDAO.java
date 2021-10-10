@@ -19,6 +19,8 @@ import java.util.Optional;
 
 public class UserDAO implements UserDetailsService {
 
+    private static Integer lastUserId;
+
     public static boolean addUser(User user) throws SQLException {
         Connection conn = DriverManager.getConnection(MySqlStrings.connectionUrl, MySqlStrings.user, MySqlStrings.password);
 
@@ -85,6 +87,8 @@ public class UserDAO implements UserDetailsService {
 
         user.setUserType(userType);
 
+        lastUserId = users.getInt(MySqlStrings.colUserId);
+
         conn.close();
 
         return Optional.of(user);
@@ -119,4 +123,7 @@ public class UserDAO implements UserDetailsService {
         return new BCryptPasswordEncoder(12);
     }
 
+    public static Integer getLastUserId() {
+        return lastUserId;
+    }
 }

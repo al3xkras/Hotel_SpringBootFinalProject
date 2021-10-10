@@ -3,22 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Login page</title>
+    <style>
+        div.alert{
+            background: red;
+            color: black;
+            width: fit-content;
+            height: fit-content;
+        }
+    </style>
 </head>
-<body>
+<body >
     <form class="form-signin" method="post" action="/auth/login">
-        <h2 class="form-signin-heading">Login page</h2>
+        <h2 class="form-signin-heading" th:text="#{login.header}"></h2>
         <p>
-            <label for="username">Username</label>
+            <label for="username" th:text="#{form.username}"></label>
             <input type="text" id="username" name="username"
-                class="form-control" placeholder="Username" required>
+                class="form-control" th:pattern="#{regexp.username}" required>
+
+            <div class="alert alert-warning" style="margin-left: 15px"
+                 th:if="${(param.error != null)}" th:text="#{login.alert.invalid_data}"></div>
         </p>
 
         <p>
-            <label for="password">Username</label>
+            <label for="password" th:text="#{form.password}"></label>
             <input type="password" id="password" name="password"
-                   class="form-control" placeholder="Password" required>
+                   class="form-control" required>
         </p>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" th:text="#{form.sign_in}"></button>
     </form>
 </body>
 </html>

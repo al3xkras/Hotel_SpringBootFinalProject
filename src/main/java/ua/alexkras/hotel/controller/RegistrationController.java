@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.dto.RegistrationRequest;
@@ -17,7 +18,7 @@ import java.sql.*;
 
 @Slf4j
 @Controller
-public class RegistrationFormController {
+public class RegistrationController {
 
     @GetMapping("/registration")
     public String registrationPage(Model model){
@@ -28,7 +29,7 @@ public class RegistrationFormController {
     }
 
     @PostMapping("/registration")
-    public String sendRegistrationRequest(@Valid RegistrationRequest request, BindingResult result, Model model){
+    public String sendRegistrationRequest(@Valid @ModelAttribute("registrationRequest") RegistrationRequest request, BindingResult result, Model model){
         if (result.hasErrors()){
             return "registration";
         }

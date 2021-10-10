@@ -35,11 +35,9 @@ public class User {
         this.surname=dto.getSurname();
         this.username=dto.getUsername();
         this.password=dto.getPassword();
-        try {
-            this.birthday = MySqlStrings.dateFormat.parse(dto.getBirthdayDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        } catch (ParseException ex){
-            this.birthday = null;
-        }
+
+        this.birthday=dto.getBirthdayDate();
+
         this.gender=dto.getGender();
         this.phoneNumber=dto.getPhoneNumber();
 

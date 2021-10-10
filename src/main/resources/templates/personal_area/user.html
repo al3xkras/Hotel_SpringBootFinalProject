@@ -110,39 +110,90 @@
         .dropdown:hover .dropdown-content {
             display: block;
         }
+
+        dl.reservations{
+            margin-top: 0;
+        }
+
+        dl.reservations  a.dark{
+            padding-top: 5px;
+            padding-bottom: 5px;
+            background: #d5d5d5;
+
+            color: black;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        dl.reservations  a.light{
+            padding-top: 5px;
+            padding-bottom: 5px;
+            background: #e7e7e7;
+
+            color: black;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        dl.reservations  a:hover {
+            color: #526bff;
+        }
+
+        h2.list-heading{
+            text-align: center;
+            color: #127000;
+            background: #d8fcd4;
+            margin-bottom: 0;
+        }
+
     </style>
 </head>
-<body>
-<div class="navbar">
-    <a class="active" href="/main" th:text="#{index.navbar.home}"></a>
+<body style="background: #f6f6f6;">
+    <div class="navbar">
+        <a class="active" href="/" th:text="#{index.navbar.home}"></a>
 
-    <div class="dropdown" style="float: left">
-        <button class="dropdown-btn" th:text="#{index.navbar.language}">
-            <i class="fa fa-caret-down"></i>
-        </button>
-        <div class="dropdown-content">
-            <a href="?lang=ua" th:text="#{index.navbar.language.ua}"></a>
-            <a href="?lang=en" th:text="#{index.navbar.language.en}"></a>
+        <div class="dropdown" style="float: left">
+            <button class="dropdown-btn" th:text="#{index.navbar.language}">
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="?lang=ua" th:text="#{index.navbar.language.ua}"></a>
+                <a href="?lang=en" th:text="#{index.navbar.language.en}"></a>
+            </div>
         </div>
+
+        <div class="dropdown" style="float: right">
+            <button class="dropdown-btn" th:text="#{navbar.user}">
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content" style="left: 80%; width: 19.5%">
+                <a href="/create_reservation" th:text="#{navbar.new_reservation}"></a>
+                <a href="/payments" th:text="#{navbar.payments}"></a>
+                <a href="/personal_data" th:text="#{navbar.personal_data}"></a>
+            </div>
+        </div>
+
+        <form class="dropdown" action="/auth/logout" method="post" style="float: right">
+            <button class="dropdown-btn" type="submit" th:text="#{navbar.logout}"></button>
+        </form>
+
     </div>
 
-    <div class="dropdown" style="float: right">
-        <button class="dropdown-btn" th:text="#{navbar.user}">
-            <i class="fa fa-caret-down"></i>
-        </button>
-        <div class="dropdown-content" style="left: 85%; width: 14.5%">
-            <a href="/reservations" th:text="#{navbar.my_reservations}"></a>
-            <a href="/payments" th:text="#{navbar.payments}"></a>
-            <a href="/personal_data" th:text="#{navbar.personal_data}"></a>
-        </div>
+    <div style="flex: available; justify-content: center; margin: 5% 5% 5% 5%;">
+
+        <h2 class="list-heading" th:text="#{navbar.my_reservations}"></h2>
+        <dl class="reservations">
+
+            <a class="light" href="/reservations?id">Reservation 1</a>
+
+            <a class="dark" href="/reservations?id">Reservation 2</a>
+
+            <a class="light" href="/reservations?id">Reservation 3</a>
+
+        </dl>
     </div>
-
-    <form action="/auth/logout" method="post" style="float: right">
-        <button class="dropdown-btn" type="submit" th:text="#{navbar.logout}"></button>
-    </form>
-</div>
-
-<h1>User's personal area</h1>
 
 </body>
 </html>
