@@ -21,7 +21,7 @@
             <select id="apartment-class" th:field="*{apartmentClass}">
                 <option th:each="class : ${T(ua.alexkras.hotel.model.ApartmentClass).values()}"
                         th:value="${class}"
-                        th:text="${class}">
+                        th:text="${class.getApartmentName()}">
                 </option>
             </select>
         </div>
