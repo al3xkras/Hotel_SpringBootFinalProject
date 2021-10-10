@@ -27,8 +27,6 @@ public class HotelApplication implements WebMvcConfigurer {
 	};
 
 	public static void main(String[] args) {
-		SpringApplication.run(HotelApplication.class, args);
-
 		try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", MySqlStrings.user, MySqlStrings.password);
 			 PreparedStatement createDB = conn.prepareStatement(MySqlStrings.sqlCreateDatabaseIfNotExists);
 			 PreparedStatement createUserTable = conn.prepareStatement(MySqlStrings.sqlCreateUserTableIfNotExists)
@@ -62,6 +60,8 @@ public class HotelApplication implements WebMvcConfigurer {
 			e.printStackTrace();
 			System.out.println("Cannot add Admin accounts to hotel's database.");
 		}
+
+		SpringApplication.run(HotelApplication.class, args);
 	}
 
 

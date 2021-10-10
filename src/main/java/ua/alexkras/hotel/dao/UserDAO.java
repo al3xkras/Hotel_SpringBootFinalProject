@@ -19,8 +19,6 @@ import java.util.Optional;
 
 public class UserDAO implements UserDetailsService {
 
-    private static Integer lastUserId;
-
     public static boolean addUser(User user) throws SQLException {
         Connection conn = DriverManager.getConnection(MySqlStrings.connectionUrl, MySqlStrings.user, MySqlStrings.password);
 
@@ -55,7 +53,7 @@ public class UserDAO implements UserDetailsService {
         users.next();
 
         User user = new User();
-
+        user.setId(users.getInt(MySqlStrings.colUserId));
         user.setName(users.getString(MySqlStrings.colUserName));
         user.setSurname(users.getString(MySqlStrings.colUserSurname));
         user.setUsername(users.getString(MySqlStrings.colUserUsername));
@@ -87,11 +85,29 @@ public class UserDAO implements UserDetailsService {
 
         user.setUserType(userType);
 
-        lastUserId = users.getInt(MySqlStrings.colUserId);
-
         conn.close();
 
         return Optional.of(user);
+    }
+
+
+    public static Integer getUserIdByUsername(String username) throws SQLException {
+        Connection conn = DriverManager.getConnection(MySqlStrings.connectionUrl, MySqlStrings.user, MySqlStrings.password);
+
+        PreparedStatement getUsersByUsername = conn.prepareStatement(
+                String.format(MySqlStrings.sqlSelectColumnsFromUserDB,
+                        MySqlStrings.colUserId)
+                        +" WHERE " + MySqlStrings.colUserUsername + " = \"" + username + "\"" );
+
+        ResultSet users = getUsersByUsername.executeQuery();
+
+        users.next();
+
+        Integer id = users.getInt(MySqlStrings.colUserId);
+
+        conn.close();
+
+        return id;
     }
 
 
@@ -115,15 +131,11 @@ public class UserDAO implements UserDetailsService {
                 .password(user.getPassword())
                 .authorities(
                         new SimpleGrantedAuthority(user.getUserType().name())
-                ).build();
-
+                )
+                .build();
     }
 
     private static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(12);
-    }
-
-    public static Integer getLastUserId() {
-        return lastUserId;
     }
 }
