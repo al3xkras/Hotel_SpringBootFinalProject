@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.service.ReservationService;
-
+import javax.validation.Valid;
 import java.sql.SQLException;
 
 @Controller
@@ -34,18 +34,20 @@ public class ReservationController {
 
     @PostMapping("/create_reservation")
     public String submitReservationForm(
-            @ModelAttribute("reservationRequest") Reservation reservation){
+            @ModelAttribute("reservationRequest") @Valid Reservation reservation,
+            Model model){
 
         User currentUser = (User)SecurityContextHolder. getContext(). getAuthentication(). getPrincipal();
 
-        System.out.println(currentUser.getUsername());
-
         try {
-            reservation.setUserId(
-                    UserDAO.getUserIdByUsername(currentUser.getUsername())
-            );
+            reservation.setUserId(UserDAO.getUserIdByUsername(currentUser.getUsername()));
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+        if (reservation.getFromDate().compareTo(reservation.getToDate())>=0){
+            model.addAttribute("fromDateIsGreaterThanToDate",true);
+            return "create_reservation";
         }
 
         System.out.println(reservation);

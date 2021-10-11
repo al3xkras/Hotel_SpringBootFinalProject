@@ -9,6 +9,13 @@
             margin-bottom: 10px;
             margin-left: 15px;
         }
+
+        div.alert{
+            background: red;
+            color: black;
+            width: fit-content;
+            height: fit-content;
+        }
     </style>
 </head>
 <body>
@@ -39,6 +46,8 @@
         <div class="form-group">
             <label for="to_date" th:text="#{reservation.form.to_date}"></label>
             <input type="datetime-local" id="to_date" th:field="*{toDate}" required>
+            <div class="alert alert-warning" th:if="${fromDateIsGreaterThanToDate}"
+                 th:text="#{reservation.alert.date}"></div>
         </div>
 
         <button type="submit" th:text="#{form.submit}"></button>
