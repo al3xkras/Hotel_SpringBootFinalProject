@@ -37,41 +37,41 @@
 
             <div class="form-group">
                 <label for="name" th:text="#{form.name}"></label>
-                <input id="name" type="text" th:pattern="#{regexp.name}" th:field="*{name}">
+                <input id="name" type="text" th:pattern="#{regexp.name}" th:field="*{name}" required>
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
 
             </div>
 
             <div class="form-group">
                 <label for="surname" th:text="#{form.surname}"></label>
-                <input id="surname" type="text" th:pattern="#{regexp.surname}" th:field="*{surname}">
+                <input id="surname" type="text" th:pattern="#{regexp.surname}" th:field="*{surname}" required>
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></div>
             </div>
 
             <div class="form-group">
                 <label for="username" th:text="#{form.username}"></label>
-                <input id="username" type="text" th:pattern="#{regexp.username}"  th:field="*{username}">
+                <input id="username" type="text" th:pattern="#{regexp.username}"  th:field="*{username}" required>
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
                 <div class="alert alert-warning" th:if="${usernameExists}" th:text="#{form.alert.username_exists}"></div>
             </div>
 
             <div class="form-group">
                 <label for="password" th:text="#{form.password}"></label>
-                <input id="password" type="password" th:field="*{password}">
+                <input id="password" type="password" th:field="*{password}" required>
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                 <div class="alert alert-warning" th:if="${passwordMismatch}" th:text="#{form.alert.password_mismatch}"></div>
             </div>
 
             <div class="form-group">
                 <label for="password-confirm" th:text="#{form.password_confirm}"></label>
-                <input id="password-confirm" type="password" th:field="*{passwordConfirm}">
+                <input id="password-confirm" type="password" th:field="*{passwordConfirm}" required>
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}"></div>
                 <div class="alert alert-warning" th:if="${passwordMismatch}" th:text="#{form.alert.password_mismatch}"></div>
             </div>
 
             <div class="form-group">
                 <label for="birthday_date" th:text="#{form.birthday_date}"></label>
-                <input id="birthday_date" type="date" th:field="*{birthdayDate}">
+                <input id="birthday_date" type="date" th:field="*{birthdayDate}" required>
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('birthdayDate')}" th:errors="*{birthdayDate}"></div>
             </div>
 
@@ -84,7 +84,7 @@
 
             <div class="form-group">
                 <label for="phone-number" th:text="#{form.phone_number}"></label>
-                <input id="phone-number" type="text" th:pattern="#{regexp.phone_number}" th:field="*{phoneNumber}">
+                <input id="phone-number" type="text" th:pattern="#{regexp.phone_number}" th:field="*{phoneNumber}" required>
                 <div class="alert alert-warning" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
             </div>
 

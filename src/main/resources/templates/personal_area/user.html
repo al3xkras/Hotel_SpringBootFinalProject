@@ -111,6 +111,29 @@
             display: block;
         }
 
+        .align-middle-dark{
+            text-align: center;
+            padding: 5px;
+            margin: 0;
+            background: #d9d9d9;
+        }
+
+        .align-middle-light{
+            text-align: center;
+            padding: 5px;
+            margin: 0;
+            background: #c0c0c0;
+        }
+
+        .align-middle-light:hover{
+            color: #4040ff;
+        }
+
+        .align-middle-dark:hover{
+            color: #1010ff;
+        }
+
+
     </style>
 </head>
 <body style="background: #f6f6f6;">
@@ -146,20 +169,22 @@
 
     <div style="flex: available; justify-content: center; margin: 5% 5% 5% 5%;">
 
-        <h2 class="list-heading" th:text="#{navbar.my_reservations}"></h2>
-
+        <h2 th:text="#{navbar.my_reservations}"></h2>
         <table class="reservations">
             <tr>
-                <th>Id</th>
-                <th>Places</th>
-                <th>From date</th>
-                <th>To date</th>
+                <th class="align-middle-dark">Id</th>
+                <th class="align-middle-light">Places</th>
+                <th class="align-middle-dark">From date</th>
+                <th class="align-middle-light">To date</th>
             </tr>
-            <tr th:each="reservation : ${allReservations}">
-                <td class="align-middle" th:text="${reservation.id}"></td>
-                <td class="align-middle" th:text="${reservation.places}"></td>
-                <td class="align-middle" th:text="${reservation.fromDate}"></td>
-                <td class="align-middle" th:text="${reservation.toDate}"></td>
+
+            <tr class="align-middle-light"
+                th:each="reservation : ${allReservations}"
+                th:onclick="'window.location=\'/reservation/'+${reservation.id}+'\';'">
+                <td class="align-middle-dark"  th:text="${reservation.id}"></td>
+                <td class="align-middle-light" th:text="${reservation.places}"></td>
+                <td class="align-middle-dark" th:text="${reservation.fromDate}"></td>
+                <td class="align-middle-light" th:text="${reservation.toDate}"></td>
             </tr>
         </table>
     </div>
