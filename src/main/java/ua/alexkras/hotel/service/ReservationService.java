@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.alexkras.hotel.controller.AuthController;
 import ua.alexkras.hotel.entity.Reservation;
+import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.ReservationRepository;
 
 import java.util.List;
@@ -30,4 +31,13 @@ public class ReservationService {
         }
 
     }
+
+    public List<Reservation> getReservationsByUserId(int userId){
+        return reservationRepository.findByUserId(userId);
+    }
+
+    public List<Reservation> getAllReservations(){
+        return reservationRepository.findAll();
+    }
+
 }

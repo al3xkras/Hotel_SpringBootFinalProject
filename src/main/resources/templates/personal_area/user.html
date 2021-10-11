@@ -111,43 +111,6 @@
             display: block;
         }
 
-        dl.reservations{
-            margin-top: 0;
-        }
-
-        dl.reservations  a.dark{
-            padding-top: 5px;
-            padding-bottom: 5px;
-            background: #d5d5d5;
-
-            color: black;
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        dl.reservations  a.light{
-            padding-top: 5px;
-            padding-bottom: 5px;
-            background: #e7e7e7;
-
-            color: black;
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        dl.reservations  a:hover {
-            color: #526bff;
-        }
-
-        h2.list-heading{
-            text-align: center;
-            color: #127000;
-            background: #d8fcd4;
-            margin-bottom: 0;
-        }
-
     </style>
 </head>
 <body style="background: #f6f6f6;">
@@ -184,15 +147,21 @@
     <div style="flex: available; justify-content: center; margin: 5% 5% 5% 5%;">
 
         <h2 class="list-heading" th:text="#{navbar.my_reservations}"></h2>
-        <dl class="reservations">
 
-            <a class="light" href="/reservations?id">Reservation 1</a>
-
-            <a class="dark" href="/reservations?id">Reservation 2</a>
-
-            <a class="light" href="/reservations?id">Reservation 3</a>
-
-        </dl>
+        <table class="reservations">
+            <tr>
+                <th>Id</th>
+                <th>Places</th>
+                <th>From date</th>
+                <th>To date</th>
+            </tr>
+            <tr th:each="reservation : ${allReservations}">
+                <td class="align-middle" th:text="${reservation.id}"></td>
+                <td class="align-middle" th:text="${reservation.places}"></td>
+                <td class="align-middle" th:text="${reservation.fromDate}"></td>
+                <td class="align-middle" th:text="${reservation.toDate}"></td>
+            </tr>
+        </table>
     </div>
 
 </body>

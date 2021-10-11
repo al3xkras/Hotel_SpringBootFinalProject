@@ -49,6 +49,7 @@ public class RegistrationController {
         try{
             UserDAO.addUser(user);
         } catch (SQLException e) {
+            e.printStackTrace();
             model.addAttribute("usernameExists",true);
             return "registration";
         }
