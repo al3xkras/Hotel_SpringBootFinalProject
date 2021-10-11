@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 public interface MySqlStrings {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    String root = "jdbc:mysql://localhost:3306/";
     String databaseName="hotel_db";
     String tableUser = "user";
 
@@ -23,7 +24,7 @@ public interface MySqlStrings {
                 colUserPassword, colUserPhoneNumber, colUserBirthday,
                 colUserGender, colUserUserType};
 
-    String connectionUrl = String.format("jdbc:mysql://localhost:3306/%s?serverTimezone=UTC",databaseName);
+    String connectionUrl = root+databaseName+"?serverTimezone=UTC";
 
     String user = "root";
     String password = "root";

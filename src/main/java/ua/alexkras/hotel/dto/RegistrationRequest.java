@@ -2,7 +2,6 @@ package ua.alexkras.hotel.dto;
 
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;

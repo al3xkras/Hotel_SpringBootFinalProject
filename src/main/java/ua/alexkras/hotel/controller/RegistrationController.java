@@ -12,7 +12,6 @@ import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.dto.RegistrationRequest;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.UserType;
-
 import javax.validation.Valid;
 import java.sql.*;
 

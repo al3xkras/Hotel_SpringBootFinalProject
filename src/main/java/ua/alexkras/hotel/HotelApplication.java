@@ -13,7 +13,6 @@ import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.model.MySqlStrings;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.UserType;
-
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -27,7 +26,9 @@ public class HotelApplication implements WebMvcConfigurer {
 	};
 
 	public static void main(String[] args) {
-		try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", MySqlStrings.user, MySqlStrings.password);
+
+		//Create database if not exists before starting Spring Boot application
+		try (Connection conn = DriverManager.getConnection(MySqlStrings.root, MySqlStrings.user, MySqlStrings.password);
 			 PreparedStatement createDB = conn.prepareStatement(MySqlStrings.sqlCreateDatabaseIfNotExists);
 			 PreparedStatement createUserTable = conn.prepareStatement(MySqlStrings.sqlCreateUserTableIfNotExists)
 			) {

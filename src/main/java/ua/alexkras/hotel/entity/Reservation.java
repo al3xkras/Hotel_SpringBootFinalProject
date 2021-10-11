@@ -2,10 +2,8 @@ package ua.alexkras.hotel.entity;
 
 
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 import ua.alexkras.hotel.model.ApartmentClass;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
