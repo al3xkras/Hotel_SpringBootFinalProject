@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Login page</title>
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+
     <style>
         .alert{
             background: red;
@@ -12,6 +14,8 @@
             font-size: 70%;
             width: fit-content;
             height: fit-content;
+
+            padding: 1px;
 
             margin-left: 15px;
             margin-top: 3px;
@@ -28,8 +32,8 @@
 </head>
 <body>
 
-    <div style="margin-top: 20px; margin-left: 10px">
-        <h1 th:text="#{registration.header}"></h1>
+    <div style="width: 70%; height: 70%; margin: 15%">
+        <h1 class="form-signin-heading" th:text="#{registration.header}"></h1>
 
         <form action="#" th:action="@{/registration}"
             method="post" th:object="${registrationRequest}"
