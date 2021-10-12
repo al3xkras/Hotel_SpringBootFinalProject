@@ -4,6 +4,8 @@ package ua.alexkras.hotel.entity;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import ua.alexkras.hotel.model.ApartmentClass;
+import ua.alexkras.hotel.model.ReservationStatus;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -51,5 +53,9 @@ public class Reservation {
 
     @Column(name = "IS_PAID", nullable = false)
     private boolean isPaid = false;
+
+    @Column(name="STATUS",nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus reservationStatus;
 
 }

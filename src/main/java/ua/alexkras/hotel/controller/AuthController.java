@@ -43,6 +43,7 @@ public class AuthController {
 
         try {
             optionalUser =  UserDAO.getUserByUsername(springSecurityUser.getUsername());
+            UserDAO.setCurrentUser(optionalUser.orElse(null));
         } catch (SQLException e) {
             e.printStackTrace();
         }

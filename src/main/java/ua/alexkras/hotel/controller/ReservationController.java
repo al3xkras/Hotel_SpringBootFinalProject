@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.entity.User;
+import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.service.ReservationService;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -55,6 +56,7 @@ public class ReservationController {
 
         reservation.setUserId(currentUser.getId());
         reservation.setSubmitDate(LocalDateTime.now());
+        reservation.setReservationStatus(ReservationStatus.PENDING);
 
         System.out.println(reservation);
 
