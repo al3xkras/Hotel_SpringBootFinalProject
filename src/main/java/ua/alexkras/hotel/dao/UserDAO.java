@@ -19,7 +19,9 @@ import java.util.Optional;
 
 public class UserDAO implements UserDetailsService {
 
-    public static boolean addUser(User user) throws SQLException {
+    private static User currentUser;
+
+    public static void addUser(User user) throws SQLException {
         Connection conn = DriverManager.getConnection(MySqlStrings.connectionUrl, MySqlStrings.user, MySqlStrings.password);
 
         user.setPassword(passwordEncoder().encode(user.getPassword()));
@@ -28,11 +30,10 @@ public class UserDAO implements UserDetailsService {
                 String.format(MySqlStrings.sqlInsertIntoUserDB, user.toSqlString()));
 
         System.out.printf(MySqlStrings.sqlInsertIntoUserDB +"\n", user.toSqlString());
-        boolean executeResult = addUserIfNotExists.execute();
+
+        addUserIfNotExists.execute();
 
         conn.close();
-
-        return executeResult;
     }
 
 
@@ -118,12 +119,15 @@ public class UserDAO implements UserDetailsService {
         try {
             optionalUser = getUserByUsername(name);
         } catch (SQLException e){
+            e.printStackTrace();
             throw new UsernameNotFoundException(name);
         }
 
         if (!optionalUser.isPresent()) throw new UsernameNotFoundException(name);
 
         User user = optionalUser.get();
+
+        currentUser = user;
 
         return org.springframework.security.core.userdetails.User
                 .builder()
@@ -137,5 +141,13 @@ public class UserDAO implements UserDetailsService {
 
     private static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(12);
+    }
+
+    public static void setCurrentUser(User user) {
+        currentUser = user;
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
     }
 }

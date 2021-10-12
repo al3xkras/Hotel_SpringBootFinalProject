@@ -180,7 +180,7 @@
 
             <tr class="align-middle-light"
                 th:each="reservation : ${allReservations}"
-                th:onclick="'window.location=\'/reservation/'+${reservation.id}+'\';'">
+                th:onclick="'window.location=\'/reservation?id='+${reservation.id}+'\';'">
                 <td class="align-middle-dark"  th:text="${reservation.id}"></td>
                 <td class="align-middle-light" th:text="${reservation.places}"></td>
                 <td class="align-middle-dark" th:text="${reservation.fromDate}"></td>

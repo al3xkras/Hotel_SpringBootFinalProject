@@ -111,22 +111,26 @@
             display: block;
         }
 
-        td.align-middle-dark{
-            margin-left: 5px;
-            margin-right: 5px;
+        .align-middle-dark{
             text-align: center;
-            padding-top: 5px;
-            padding-bottom: 5px;
-            background: #f6f6f6;
+            padding: 5px;
+            margin: 0;
+            background: #d9d9d9;
         }
 
-        td.align-middle-light{
-            margin-left: 5px;
-            margin-right: 5px;
+        .align-middle-light{
             text-align: center;
-            padding-top: 5px;
-            padding-bottom: 5px;
-            background: #f9f9f9;
+            padding: 5px;
+            margin: 0;
+            background: #c0c0c0;
+        }
+
+        .align-middle-light:hover{
+            color: #4040ff;
+        }
+
+        .align-middle-dark:hover{
+            color: #1010ff;
         }
     </style>
 </head>
@@ -173,7 +177,7 @@
 
             <tr class="align-middle-light"
                 th:each="reservation : ${allReservations}"
-                th:onclick="'window.location=\'/reservation/'+${reservation.id}+'\';'">
+                th:onclick="'window.location=\'/reservation?id='+${reservation.id}+'\';'">
                 <td class="align-middle-dark"  th:text="${reservation.id}"></td>
                 <td class="align-middle-light" th:text="${reservation.places}"></td>
                 <td class="align-middle-dark" th:text="${reservation.fromDate}"></td>

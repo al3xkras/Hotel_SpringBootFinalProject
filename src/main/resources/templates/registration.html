@@ -33,7 +33,7 @@
 
         <form action="#" th:action="@{/registration}"
             method="post" th:object="${registrationRequest}"
-            class="form">
+            class="form" autocomplete="off">
 
             <div class="form-group">
                 <label for="name" th:text="#{form.name}"></label>

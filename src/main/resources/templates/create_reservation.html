@@ -21,7 +21,7 @@
 <body>
     <h1 th:text="#{reservation.form.header}"></h1>
 
-    <form class="form" action="#" th:action="@{/create_reservation}" th:object="${reservationRequest}" method="post">
+    <form class="form" action="#" th:action="@{/create_reservation}" th:object="${reservationRequest}" method="post" autocomplete="off">
 
         <div class="form-group">
             <label for="apartment-class" th:text="#{reservation.form.apartment_class}">Apartment class</label>
@@ -73,12 +73,12 @@
             hh = '0'+ hh;
         }
 
-        if (mm < 10){
-            mm = '0'+mm;
+        if (minutes < 10){
+            minutes = '0'+minutes;
         }
 
         today = yyyy + '-' + mm + '-' + dd + 'T' + hh + ':' + minutes;
-        const max_date = (yyyy + 5) + '-' + mm + '-' + dd + 'T' + hh + ':' + minutes;
+        const max_date = (yyyy + 5) + '-' + mm + '-' + dd + 'T00:00' + hh + ':' + minutes;
 
         document.getElementById("from_date").min = today;
         document.getElementById("from_date").max = max_date;

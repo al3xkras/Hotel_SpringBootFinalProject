@@ -1,9 +1,7 @@
 package ua.alexkras.hotel.controller;
 
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,32 +14,31 @@ import java.util.Optional;
 
 @Controller
 public class PagesController {
-    private ReservationService reservationService;
+    private final ReservationService reservationService;
 
+    @Autowired
     public PagesController(ReservationService reservationService){
         this.reservationService=reservationService;
     }
 
+
     @RequestMapping("/")
     public String mainPage(Model model){
-        UserDetails user;
-        int currentUserId;
 
-        try {
-            user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            currentUserId = UserDAO.getUserIdByUsername(user.getUsername());
-        } catch (Exception e){
+        Optional<User> optionalUser = Optional.ofNullable(UserDAO.getCurrentUser());
+
+        if (!optionalUser.isPresent()){
             return "index";
         }
 
+        User user = optionalUser.get();
 
-
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority(UserType.USER.name()))){
+        if (user.getUserType().equals(UserType.USER)){
             model.addAttribute("allReservations",
-                    reservationService.getReservationsByUserId(currentUserId));
+                    reservationService.getReservationsByUserId(user.getId()));
 
             return "personal_area/user";
-        } else if (user.getAuthorities().contains(new SimpleGrantedAuthority(UserType.ADMIN.name()))){
+        } else if (user.getUserType().equals(UserType.ADMIN)){
             model.addAttribute("allReservations",
                     reservationService.getAllReservations());
 

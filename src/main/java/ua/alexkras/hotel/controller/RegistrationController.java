@@ -28,7 +28,10 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String sendRegistrationRequest(@Valid @ModelAttribute("registrationRequest") RegistrationRequest request, BindingResult result, Model model){
+    public String sendRegistrationRequest(
+            @Valid @ModelAttribute("registrationRequest") RegistrationRequest request,
+            BindingResult result,
+            Model model){
         if (result.hasErrors()){
             return "registration";
         }
