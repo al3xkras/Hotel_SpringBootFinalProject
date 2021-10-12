@@ -26,7 +26,6 @@ public class ReservationService {
         } catch (Exception ex){
             ex.printStackTrace();
         }
-
     }
 
     public List<Reservation> getReservationsByUserId(int userId){

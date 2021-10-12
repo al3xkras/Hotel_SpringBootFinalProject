@@ -66,6 +66,7 @@ public class HotelApplication implements WebMvcConfigurer {
 	}
 
 
+
 	@Bean
 	public LocaleResolver localeResolver() {
 		return new CookieLocaleResolver();

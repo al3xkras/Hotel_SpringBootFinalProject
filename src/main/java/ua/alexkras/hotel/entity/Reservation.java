@@ -36,7 +36,20 @@ public class Reservation {
     @Column(name = "TO_DATE", nullable = false)
     private LocalDateTime toDate;
 
-
     @Column(name = "PLACES",nullable = false)
     private Integer places;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @Column(name = "SUBMIT_DATE", nullable = false)
+    private LocalDateTime submitDate;
+
+    @Column(name = "APARTMENT_ID")
+    private Integer apartmentId;
+
+    @Column(name = "APARTMENT_PRICE")
+    private Integer apartmentPrice;
+
+    @Column(name = "IS_PAID", nullable = false)
+    private boolean isPaid = false;
+
 }

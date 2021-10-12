@@ -9,43 +9,68 @@ import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.UserType;
 import ua.alexkras.hotel.service.ReservationService;
-
 import java.util.Optional;
 
 @Controller
 public class PagesController {
     private final ReservationService reservationService;
+    private final AuthController authController;
 
     @Autowired
-    public PagesController(ReservationService reservationService){
+    public PagesController(ReservationService reservationService,
+                           AuthController authController){
         this.reservationService=reservationService;
+        this.authController=authController;
     }
 
 
     @RequestMapping("/")
-    public String mainPage(Model model){
+    public String mainPage(){
 
-        Optional<User> optionalUser = Optional.ofNullable(UserDAO.getCurrentUser());
+        Optional<User> optionalUser = authController.getCurrentUser();
 
         if (!optionalUser.isPresent()){
             return "index";
         }
 
-        User user = optionalUser.get();
+        if (optionalUser.get()
+                .getUserType()
+                .equals(UserType.USER)){
 
-        if (user.getUserType().equals(UserType.USER)){
-            model.addAttribute("allReservations",
-                    reservationService.getReservationsByUserId(user.getId()));
+            return "redirect:/user";
+        } else if (optionalUser.get()
+                .getUserType()
+                .equals(UserType.ADMIN)){
 
-            return "personal_area/user";
-        } else if (user.getUserType().equals(UserType.ADMIN)){
-            model.addAttribute("allReservations",
-                    reservationService.getAllReservations());
-
-            return "personal_area/admin";
+            return "redirect:/admin";
         }
 
         return "index";
+    }
+
+    @GetMapping("/user")
+    public String userMainPage(Model model){
+        Optional<User> optionalUser = authController.getCurrentUser();
+
+        if (!optionalUser.isPresent()){
+            return "index";
+        }
+
+        model.addAttribute("allReservations",
+                reservationService.getReservationsByUserId(
+                        optionalUser.get().getId()));
+
+        return "personal_area/user";
+    }
+
+
+    @GetMapping("/admin")
+    public String adminMainPage(Model model){
+
+        model.addAttribute("allReservations",
+                reservationService.getAllReservations());
+
+        return "personal_area/admin";
     }
 
 }

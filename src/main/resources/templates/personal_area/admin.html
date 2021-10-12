@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Personal Area</title>
+    <title>Admin</title>
     <style>
         label {
             display: inline-block;
@@ -177,11 +177,11 @@
 
             <tr class="align-middle-light"
                 th:each="reservation : ${allReservations}"
-                th:onclick="'window.location=\'/reservation?id='+${reservation.id}+'\';'">
+                th:onclick="'window.location=window.location+\'/reservation?id='+${reservation.id}+'\';'">
                 <td class="align-middle-dark"  th:text="${reservation.id}"></td>
                 <td class="align-middle-light" th:text="${reservation.places}"></td>
-                <td class="align-middle-dark" th:text="${reservation.fromDate}"></td>
-                <td class="align-middle-light" th:text="${reservation.toDate}"></td>
+                <td class="align-middle-dark" th:text='${reservation.fromDate.toString().replace("T"," time: ")}'></td>
+                <td class="align-middle-light" th:text='${reservation.toDate.toString().replace("T"," time: ")}'></td>
             </tr>
         </table>
     </div>
