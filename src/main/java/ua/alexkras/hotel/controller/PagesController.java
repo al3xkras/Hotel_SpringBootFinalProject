@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.UserType;
+import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
 import java.util.Optional;
 
@@ -17,7 +18,8 @@ public class PagesController {
 
     @Autowired
     public PagesController(ReservationService reservationService,
-                           AuthController authController){
+                           AuthController authController,
+                           ApartmentService apartmentService){
         this.reservationService=reservationService;
         this.authController=authController;
     }

@@ -21,7 +21,7 @@ public class Apartment {
     private Integer id;
 
     @Column(name = "NAME", nullable = false)
-    private String apartmentName;
+    private String name;
 
     @Column(name = "PLACES", nullable = false)
     private Integer places;
@@ -30,8 +30,11 @@ public class Apartment {
     @Enumerated(EnumType.STRING)
     private ApartmentClass apartmentClass;
 
-    @Column(name = "APARTMENT_STATUS")
+    @Column(name = "APARTMENT_STATUS", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ApartmentStatus apartmentStatus;
+    private ApartmentStatus status;
+
+    @Column(name = "PRICE", nullable = false)
+    private Integer price;
 
 }

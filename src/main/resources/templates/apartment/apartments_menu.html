@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Apartments</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+
+    <style>
+        th | tr.align-middle{
+            text-align: center;
+            padding: 5px;
+            margin: 0;
+            background: #d9d9d9;
+        }
+
+        th:hover | tr.align-middle:hover{
+            color: #4040ff;
+        }
+
+
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center">Apartments</h1>
+
+    <label for="sort_by">Sort by: </label>
+    <select id="sort_by">
+        <option value="price">Price</option>
+        <option value="places">Places</option>
+        <option value="class">Apartment class</option>
+        <option value="status">Status</option>
+    </select>
+
+    <div class="d-flex justify-content-center">
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Places</th>
+                <th>Apartment class</th>
+                <th>Apartment Status</th>
+                <th>Price</th>
+            </tr>
+
+            <tr class="align-middle"
+                th:each="apartment : ${allApartments}"
+                th:onclick="'window.location=\'/apartment?id='+${apartment.id}+'\';'">
+                <td class="align-middle"  th:text="${apartment.id}"></td>
+                <td class="align-middle" th:text="${apartment.name}"></td>
+                <td class="align-middle" th:text="${apartment.places}"></td>
+                <td class="align-middle" th:text="${apartment.apartmentClass}"></td>
+                <td class="align-middle" th:text="${apartment.status}"></td>
+                <td class="align-middle" th:text="${apartment.price}"></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
