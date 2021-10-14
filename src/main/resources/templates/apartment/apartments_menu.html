@@ -6,18 +6,23 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
 
     <style>
-        th | tr.align-middle{
+        .align-middle{
             text-align: center;
             padding: 5px;
             margin: 0;
             background: #d9d9d9;
         }
 
-        th:hover | tr.align-middle:hover{
+        .align-middle:hover{
             color: #4040ff;
         }
 
-
+        th{
+            text-align: center;
+            padding: 5px;
+            margin: 0;
+            background: #d9d9d9;
+        }
     </style>
 </head>
 <body>
@@ -44,7 +49,7 @@
 
             <tr class="align-middle"
                 th:each="apartment : ${allApartments}"
-                th:onclick="'window.location=\'/apartment?id='+${apartment.id}+'\';'">
+                th:onclick="'window.location=\'/apartment/'+${apartment.id}+'\';'">
                 <td class="align-middle"  th:text="${apartment.id}"></td>
                 <td class="align-middle" th:text="${apartment.name}"></td>
                 <td class="align-middle" th:text="${apartment.places}"></td>

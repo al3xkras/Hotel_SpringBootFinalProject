@@ -1,18 +1,18 @@
 package ua.alexkras.hotel.model;
 
 public enum ApartmentClass {
-    ClassA("Class A"),
-    ClassB("Class B"),
-    ClassC("Class C"),
-    ClassD("Class D");
+    ClassA("apartment.class_a"),
+    ClassB("apartment.class_b"),
+    ClassC("apartment.class_c"),
+    ClassD("apartment.class_d");
 
-    String apartmentName;
+    String resName;
 
-    ApartmentClass(String apartmentName){
-        this.apartmentName=apartmentName;
+    ApartmentClass(String resName){
+        this.resName=resName;
     }
 
-    public String getApartmentName() {
-        return apartmentName;
+    public String getResName() {
+        return resName;
     }
 }

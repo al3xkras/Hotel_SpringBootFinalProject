@@ -6,7 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.ReservationStatus;
@@ -51,7 +50,7 @@ public class ReservationController {
 
         if (reservation.getFromDate().compareTo(reservation.getToDate())>=0){
             model.addAttribute("fromDateIsGreaterThanToDate",true);
-            return "create_reservation";
+            return "/reservation/create_reservation";
         }
 
         reservation.setUserId(currentUser.getId());

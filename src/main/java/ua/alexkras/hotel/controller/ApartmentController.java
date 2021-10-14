@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import ua.alexkras.hotel.entity.Apartment;
@@ -49,12 +50,18 @@ public class ApartmentController {
     }
 
     @GetMapping("/add_apartment")
-    public String apartmentAddPage(){
+    public String apartmentAddPage(Model model){
+        model.addAttribute("apartment",new Apartment());
+
         return "/apartment/add_apartment";
     }
 
     @PostMapping("/add_apartment")
-    public String onApartmentAdd(){
-        return null;
+    public String onApartmentAdd(
+            @ModelAttribute("apartment") Apartment apartment){
+
+        apartmentService.addApartment(apartment);
+
+        return "redirect:/";
     }
 }

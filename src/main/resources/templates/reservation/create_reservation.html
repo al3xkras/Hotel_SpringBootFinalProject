@@ -35,8 +35,8 @@
                 <label for="apartment-class" th:text="#{reservation.form.apartment_class}">Apartment class</label>
                 <select id="apartment-class" th:field="*{apartmentClass}" required>
                     <option th:each="class : ${T(ua.alexkras.hotel.model.ApartmentClass).values()}"
-                            th:value="${class}"
-                            th:text="${class.getApartmentName()}">
+                            th:value="${class.name()}"
+                            th:text="#{${class.getResName()}}">
                     </option>
                 </select>
             </div>

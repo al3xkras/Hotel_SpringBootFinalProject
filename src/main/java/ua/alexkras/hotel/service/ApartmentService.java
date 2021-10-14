@@ -28,4 +28,14 @@ public class ApartmentService {
         return apartmentRepository.findApartmentById(id);
     }
 
+    public boolean addApartment(Apartment apartment){
+        try {
+            apartmentRepository.save(apartment);
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
 }
