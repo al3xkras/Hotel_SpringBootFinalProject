@@ -38,4 +38,14 @@ public class ApartmentService {
         return true;
     }
 
+    public boolean updateApartmentStatus(Apartment apartment){
+        try {
+            apartmentRepository.updateApartmentStatusById(apartment.getId(),apartment.getStatus());
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
 }

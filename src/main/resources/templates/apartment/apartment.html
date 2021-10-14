@@ -6,6 +6,31 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
 
     <link rel="stylesheet" th:href="@{/css/style_navbar.css}" />
+
+    <style>
+        div.alert{
+            background: red;
+            stroke: black;
+            color: black;
+            font-size: 70%;
+            width: fit-content;
+            height: fit-content;
+
+            padding: 1px;
+
+            margin-left: 15px;
+            margin-top: 3px;
+            margin-bottom: 3px;
+        }
+
+        dialog form{
+            margin-top: 30px;
+        }
+
+        dialog div.form-body{
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
     <div class="custom-navbar">
@@ -45,8 +70,10 @@
                 <label th:text="'Status: '+${apartment.status}"></label><br/>
                 <label th:text="'Places: '+${apartment.places}"></label><br/>
                 <label th:text="'Price for 1 day: '+${apartment.price}"></label><br/>
+                <label th:if="${!apartment.status.name().equalsIgnoreCase('available')}"
+                    style="font-size: 110%; color: red">Apartment is reserved</label><br/>
 
-                <div class="d-flex flex-row-reverse">
+                <div class="d-flex flex-row-reverse" th:if="${apartment.status.name().equalsIgnoreCase('available')}">
                     <button type="button"
                             class="btn btn-primary"
                             style="margin-right: 24px; margin-top: 8px"
@@ -63,11 +90,26 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
             </div>
-            <div style="margin-top: 30px;">
+
+            <div class="form-body">
                 <p>Create reservation for this apartment?</p>
             </div>
 
-            <form style="margin-top: 30px;">
+            <form action="#" th:action="@{'/apartment/'+${apartment.id}}"
+                  th:object="${reservation}" method="post">
+
+                <div class="form-group">
+                    <label for="from_date" th:text="#{reservation.form.from_date}"></label>
+                    <input type="datetime-local" id="from_date" th:field="*{fromDate}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="to_date" th:text="#{reservation.form.to_date}"></label>
+                    <input type="datetime-local" id="to_date" th:field="*{toDate}" required>
+                    <div class="alert alert-warning" th:if="${fromDateIsGreaterThanToDate}"
+                         th:text="#{reservation.alert.date}"></div>
+                </div>
+
                 <button id="cancel" type="button" class="btn btn-primary">Cancel</button>
                 <button type="submit" class="btn btn-secondary" style="float: right">Confirm</button>
             </form>
@@ -75,7 +117,12 @@
 
     </div>
 
-    <script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const fromDateIsGreaterThanToDate = /*[[${fromDateIsGreaterThanToDate}]]*/ false;
+        /*]]>*/
+        if (fromDateIsGreaterThanToDate) confirmationDialog.showModal();
+
         const updateButton = document.getElementById('create_reservation');
         const cancelButton = document.getElementById('cancel');
         const confirmationDialog = document.getElementById('confirmation_dialog');
@@ -85,10 +132,44 @@
             confirmationDialog.showModal();
         });
 
-            // Form cancel button closes the dialog box
+        // Form cancel button closes the dialog box
         cancelButton.addEventListener('click', function() {
             confirmationDialog.close();
         });
+
+
+        let today = new Date();
+        let dd = today.getDate();
+        let mm = today.getMonth() + 1; //January is 0!
+        const yyyy = today.getFullYear();
+        let hh = today.getHours();
+        let minutes = today.getMinutes();
+
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+
+        if (hh < 10){
+            hh = '0'+ hh;
+        }
+
+        if (minutes < 10){
+            minutes = '0'+minutes;
+        }
+
+        today = yyyy + '-' + mm + '-' + dd + 'T' + hh + ':' + minutes;
+        const max_date = (yyyy + 5) + '-' + mm + '-' + dd + 'T00:00' + hh + ':' + minutes;
+
+        document.getElementById("from_date").min = today;
+        document.getElementById("from_date").max = max_date;
+        document.getElementById("to_date").min = today;
+        document.getElementById("to_date").max = max_date;
     </script>
+
+
 </body>
 </html>

@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.ReservationStatus;
@@ -32,7 +33,7 @@ public class ReservationController {
     public String createReservationPage(Model model){
         model.addAttribute("reservationRequest",new Reservation());
 
-        return "create_reservation";
+        return "/reservation/create_reservation";
     }
 
     @PostMapping("/create_reservation")

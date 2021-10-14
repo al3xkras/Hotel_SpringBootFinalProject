@@ -74,4 +74,9 @@ public class PagesController {
         return "personal_area/admin";
     }
 
+    @GetMapping("/error")
+    public String errorPage(){
+        return "/error_page";
+    }
+
 }
