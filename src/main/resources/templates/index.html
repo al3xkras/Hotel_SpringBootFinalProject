@@ -28,13 +28,13 @@
         }
 
         /* Add a black background color to the top navigation */
-        .navbar {
+        .custom-navbar {
             background-color: #333;
             overflow: hidden;
         }
 
         /* Style the links inside the navigation bar */
-        .navbar a{
+        .custom-navbar a{
             float: left;
             color: #f2f2f2;
             text-align: center;
@@ -44,25 +44,25 @@
         }
 
         /* Change the color of links on hover */
-        .navbar a:hover {
+        .custom-navbar a:hover {
             background-color: #ddd;
             color: black;
         }
 
         /* Add a color to the active/current link */
-        .navbar a.active {
-            background-color: #04AA6D;
+        .custom-navbar a.active {
+            background-color: #005e2a;
             color: white;
         }
 
         /* The dropdown container */
-        .dropdown {
+        .custom-navbar-dropdown {
             float: left;
             overflow: hidden;
         }
 
         /* Dropdown button */
-        .dropdown .dropdown-btn {
+        .custom-navbar-dropdown .dropdown-btn {
             font-size: 16px;
             border: none;
             outline: none;
@@ -75,12 +75,12 @@
         }
 
         /* Add a red background color to navbar links on hover */
-        .navbar a:hover, .dropdown:hover .dropdown-btn {
-            background-color: #04AA6D;
+        .custom-navbar a:hover, .custom-navbar-dropdown:hover .dropdown-btn {
+            background-color: #007335;
         }
 
         /* Dropdown content (hidden by default) */
-        .dropdown-content {
+        .custom-dropdown-content {
             display: none;
             position: absolute;
 
@@ -92,7 +92,7 @@
         }
 
         /* Links inside the dropdown */
-        .dropdown-content a {
+        .custom-dropdown-content a {
             float: none;
             color: black;
             padding: 12px 16px;
@@ -102,32 +102,32 @@
         }
 
         /* Add a grey background color to dropdown links on hover */
-        .dropdown-content a:hover {
-            background-color: #ddd;
+        .custom-dropdown-content a:hover {
+            background-color: rgb(0, 66, 45);
         }
 
         /* Show the dropdown menu on hover */
-        .dropdown:hover .dropdown-content {
+        .custom-navbar-dropdown:hover .custom-dropdown-content {
             display: block;
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a class="active" href="/" th:text="#{index.navbar.home}"></a>
+    <div class="custom-navbar">
+        <a class="active" href="/" th:text="#{navbar.hotel}"></a>
 
-        <div class="dropdown" style="float: left">
-            <button class="dropdown-btn" th:text="#{index.navbar.language}">
+        <div class="custom-navbar-dropdown" style="float: left">
+            <button class="dropdown-btn" th:text="#{navbar.language}">
                 <i class="fa fa-caret-down"></i>
             </button>
-            <div class="dropdown-content">
-                <a href="/?lang=ua" th:text="#{index.navbar.language.ua}"></a>
-                <a href="/?lang=en" th:text="#{index.navbar.language.en}"></a>
+            <div class="custom-dropdown-content">
+                <a href="/?lang=ua" th:text="#{navbar.language.ua}"></a>
+                <a href="/?lang=en" th:text="#{navbar.language.en}"></a>
             </div>
         </div>
 
-        <a href="/registration" style="float: right" th:text="#{index.navbar.registration}"></a>
-        <a href="/auth/login" style="float: right" th:text="#{index.navbar.login}"></a>
+        <a href="/registration" style="float: right" th:text="#{navbar.registration}"></a>
+        <a href="/auth/login" style="float: right" th:text="#{navbar.login}"></a>
 
     </div>
 

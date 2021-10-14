@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Apartments</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/style_navbar.css}" />
 
     <style>
         .align-middle{
@@ -23,17 +24,50 @@
             margin: 0;
             background: #d9d9d9;
         }
+
+        table{
+            width: 100%;
+            height: available;
+            margin-right: 2%;
+            margin-left:  2%;
+        }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center">Apartments</h1>
 
-    <label for="sort_by">Sort by: </label>
+    <div class="custom-navbar">
+        <a class="active" href="/" th:text="#{navbar.home}"></a>
+
+        <div class="custom-navbar-dropdown" style="float: left">
+            <button class="dropdown-btn" th:text="#{navbar.language}">
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="custom-dropdown-content">
+                <a href="?lang=ua" th:text="#{navbar.language.ua}"></a>
+                <a href="?lang=en" th:text="#{navbar.language.en}"></a>
+            </div>
+        </div>
+
+        <div class="custom-navbar-dropdown" style="float: right">
+            <button class="dropdown-btn" th:text="#{navbar.user}">
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="custom-dropdown-content" style="left: 80%; width: 19.5%">
+                <a href="/create_reservation" th:text="#{navbar.new_reservation}"></a>
+                <a href="/personal_data" th:text="#{navbar.personal_data}"></a>
+            </div>
+        </div>
+    </div>
+
+    <h1 style="text-align: center" th:text="#{apartments.header}"></h1>
+
+    <label for="sort_by" th:text="#{apartments.sort_by}"
+        style="margin-left: 16px"></label>
     <select id="sort_by">
-        <option value="price">Price</option>
-        <option value="places">Places</option>
-        <option value="class">Apartment class</option>
-        <option value="status">Status</option>
+        <option value="price" th:text="#{apartments.sort_by.price}"></option>
+        <option value="places" th:text="#{apartments.sort_by.places}"></option>
+        <option value="class" th:text="#{apartments.sort_by.class}"></option>
+        <option value="status" th:text="#{apartments.sort_by.status}"></option>
     </select>
 
     <div class="d-flex justify-content-center">
