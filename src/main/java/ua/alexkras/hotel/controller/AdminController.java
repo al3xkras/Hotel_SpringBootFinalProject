@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
+import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
@@ -104,6 +105,8 @@ public class AdminController {
 
         reservationService.updateReservationWithApartmentById(apartment,reservationId);
 
+        apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED);
+
         currentReservation=null;
 
         return "redirect:/";
@@ -111,17 +114,25 @@ public class AdminController {
 
     @PostMapping("/reservation/{id}/cancel")
     public String dropReservation(@PathVariable("id") Integer reservationId){
-
-        if (reservationId==null || !reservationService
-                .updateReservationStatusById(
-                reservationId, ReservationStatus.CANCELLED)
-            ){
-
+        if (reservationId==null){
             return "redirect:/error";
         }
 
-        return "redirect:/";
+        Optional<Reservation> optionalReservation = reservationService.getReservationById(reservationId);
 
+        if (!optionalReservation.isPresent() ||
+                !reservationService.updateReservationStatusById(
+                        reservationId, ReservationStatus.CANCELLED)){
+            return "redirect:/error";
+        }
+
+        if (optionalReservation.get().getApartmentId()!=null) {
+            apartmentService.updateApartmentStatusById(
+                    optionalReservation.get().getApartmentId(),
+                    ApartmentStatus.AVAILABLE);
+        }
+
+        return "redirect:/";
     }
 
     private boolean updateCurrentReservation(int reservationId){

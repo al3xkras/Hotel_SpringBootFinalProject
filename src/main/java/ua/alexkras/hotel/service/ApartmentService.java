@@ -41,9 +41,9 @@ public class ApartmentService {
         return true;
     }
 
-    public boolean updateApartmentStatus(Apartment apartment){
+    public boolean updateApartmentStatusById(int id,ApartmentStatus apartmentStatus){
         try {
-            apartmentRepository.updateApartmentStatusById(apartment.getId(),apartment.getStatus());
+            apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
         } catch (Exception e){
             e.printStackTrace();
             return false;

@@ -119,9 +119,8 @@ public class ApartmentController {
         reservation.setApartmentPrice(apartment.getPrice());
         reservation.setReservationStatus(ReservationStatus.PENDING);
 
-        apartment.setStatus(ApartmentStatus.RESERVED);
 
-        apartmentService.updateApartmentStatus(apartment);
+        apartmentService.updateApartmentStatusById(apartment.getId(),ApartmentStatus.RESERVED);
 
         reservationService.addReservation(reservation);
 
