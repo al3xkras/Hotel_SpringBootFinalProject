@@ -19,10 +19,10 @@ public class Reservation {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false, length = 32)
-    private Integer id;
+    private int id;
 
     @Column(name = "USER_ID", nullable = false)
-    private Integer userId;
+    private int userId;
 
 
     @Column(name = "APARTMENT_CLASS", nullable = false)
@@ -58,5 +58,7 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
 
-
+    public boolean isCompleted(){
+        return apartmentId!=null & apartmentPrice!=null;
+    }
 }

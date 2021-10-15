@@ -26,7 +26,6 @@ public class AdminController {
     private final ReservationService reservationService;
     private final ApartmentService apartmentService;
 
-    private List<Apartment> matchingApartments;
     private Reservation currentReservation;
 
     @Autowired
@@ -51,14 +50,19 @@ public class AdminController {
             return "redirect:/";
         }
 
-        if (!updateCurrentReservation(id) || !updateMatchingApartments(currentReservation)){
+        if (!updateCurrentReservation(id)){
             return "redirect:/error";
         }
 
         model.addAttribute("reservation",currentReservation);
 
-        model.addAttribute("matchingApartments",
-                matchingApartments);
+        boolean isCompleted = currentReservation.isCompleted();
+        model.addAttribute("isCompleted", isCompleted);
+
+        if (!isCompleted) {
+            model.addAttribute("matchingApartments",
+                    apartmentService.findApartmentsMatchingReservation(currentReservation));
+        }
 
         return "/reservation/reservation";
     }
@@ -68,21 +72,34 @@ public class AdminController {
                                          @PathVariable("apartmentId") Integer apartmentId,
                                          Model model){
 
-        if (!updateCurrentReservation(reservationId) || !updateMatchingApartments(currentReservation)){
+        if (!updateCurrentReservation(reservationId)){
             return "redirect:/error";
         }
 
         currentReservation.setApartmentId(apartmentId);
 
+        model.addAttribute("isCompleted",false);
         model.addAttribute("reservation",currentReservation);
-
-
         model.addAttribute("matchingApartments",
-                matchingApartments);
-
+                apartmentService.findApartmentsMatchingReservation(currentReservation));
         model.addAttribute("apartmentSelected",true);
 
+        resetCurrentReservation();
+
         return "/reservation/reservation";
+    }
+
+    @PostMapping("/reservation/{id}/confirm")
+    public String confirmCompletedReservation(@PathVariable("id") Integer reservationId){
+
+        if (!updateCurrentReservation(reservationId) || !currentReservation.isCompleted() ||
+                !reservationService.updateReservationStatusById(reservationId, ReservationStatus.RESERVED)){
+            return "redirect:/error";
+        }
+
+        resetCurrentReservation();
+
+        return "redirect:/";
     }
 
     @PostMapping("/reservation/{id}/confirm/{apartmentId}")
@@ -100,14 +117,14 @@ public class AdminController {
         updateCurrentReservation(reservationId);
 
         if (!apartment.matchesReservation(currentReservation)){
-            return "redirect:/";
+            return "redirect:/error";
         }
 
         reservationService.updateReservationWithApartmentById(apartment,reservationId);
 
         apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED);
 
-        currentReservation=null;
+        resetCurrentReservation();
 
         return "redirect:/";
     }
@@ -144,16 +161,8 @@ public class AdminController {
         return true;
     }
 
-    private boolean updateMatchingApartments(@NotNull Reservation reservation){
-        if (matchingApartments==null || !reservation.equals(currentReservation)){
-            try {
-                matchingApartments = apartmentService.findApartmentsMatchingReservation(reservation);
-            } catch (Exception e){
-                e.printStackTrace();
-                return false;
-            }
-        }
-        return true;
+    private void resetCurrentReservation(){
+        currentReservation=null;
     }
 
 }
