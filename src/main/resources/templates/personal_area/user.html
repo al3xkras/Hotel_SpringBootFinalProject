@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/css/style_navbar.css}" />
-    <link rel="stylesheet" th:href="@{/css/style_personal_area_user.css}" />
+    <link rel="stylesheet" th:href="@{/css/style_personal_area.css}" />
 
 </head>
 <body style="background: #f6f6f6;">
@@ -48,6 +48,7 @@
                 <th class="align-middle">From date</th>
                 <th class="align-middle">To date</th>
                 <th class="align-middle">Submit date</th>
+                <th class="align-middle">Apartment class</th>
                 <th class="align-middle">Apartment id</th>
                 <th class="align-middle">Apartment price</th>
                 <th class="align-middle">Status</th>
@@ -65,6 +66,7 @@
                     th:text='${reservation.toDate.toString().replace("T"," time: ")}'></td>
                 <td class="align-middle"
                     th:text='${reservation.submitDate.toString().replace("T"," time: ")}'></td>
+                <td class="align-middle" th:text="${reservation.apartmentClass}"></td>
                 <td th:class="${reservation.apartmentId==null?'red':'green'}"
                     th:text="${reservation.apartmentId==null?'indefined by admin':reservation.apartmentId}"></td>
                 <td th:class="${reservation.apartmentPrice==null?'red':'green'}"
@@ -72,7 +74,6 @@
                 <td class="green" th:text="${reservation.reservationStatus}"></td>
                 <td th:class="${reservation.isPaid?'green':'red'}"
                     th:text="${reservation.isPaid?'Paid':'Unpaid'}"></td>
-
             </tr>
         </table>
     </div>

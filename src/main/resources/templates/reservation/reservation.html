@@ -2,16 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Apartments</title>
+    <title>New reservation</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/css/style_navbar.css}" />
     <link rel="stylesheet" th:href="@{/css/style_table.css}" />
 
 </head>
 <body>
-
     <div class="custom-navbar">
-        <a class="active" href="/" th:text="#{navbar.home}"></a>
+        <a class="active" href="/" th:text="#{navbar.hotel}"></a>
 
         <div class="custom-navbar-dropdown" style="float: left">
             <button class="dropdown-btn" th:text="#{navbar.language}">
@@ -24,28 +23,15 @@
         </div>
 
         <div class="custom-navbar-dropdown" style="float: right">
-            <button class="dropdown-btn" th:text="#{navbar.user}">
+            <button class="dropdown-btn" th:text="#{navbar.admin}">
                 <i class="fa fa-caret-down"></i>
             </button>
-            <div class="custom-dropdown-content" style="left: 80%; width: 19.5%">
-                <a href="/create_reservation" th:text="#{navbar.new_reservation}"></a>
-                <a href="/personal_data" th:text="#{navbar.personal_data}"></a>
-            </div>
         </div>
     </div>
 
-    <h1 style="text-align: center" th:text="#{apartments.header}"></h1>
+    <div>
+        <h1>Apartments that match reservation</h1>
 
-    <label for="sort_by" th:text="#{apartments.sort_by}"
-        style="margin-left: 16px"></label>
-    <select id="sort_by">
-        <option value="price" th:text="#{apartments.sort_by.price}"></option>
-        <option value="places" th:text="#{apartments.sort_by.places}"></option>
-        <option value="class" th:text="#{apartments.sort_by.class}"></option>
-        <option value="status" th:text="#{apartments.sort_by.status}"></option>
-    </select>
-
-    <div class="d-flex justify-content-center">
         <table>
             <tr>
                 <th>Id</th>
@@ -57,7 +43,7 @@
             </tr>
 
             <tr class="align-middle"
-                th:each="apartment : ${allApartments}"
+                th:each="apartment : ${matchingApartments}"
                 th:onclick="'window.location=\'/apartment/'+${apartment.id}+'\';'">
                 <td class="align-middle"  th:text="${apartment.id}"></td>
                 <td class="align-middle" th:text="${apartment.name}"></td>
@@ -67,6 +53,10 @@
                 <td class="align-middle" th:text="${apartment.price}"></td>
             </tr>
         </table>
+
+
+
+
     </div>
 </body>
 </html>

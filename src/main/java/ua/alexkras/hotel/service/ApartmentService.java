@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.alexkras.hotel.entity.Apartment;
+import ua.alexkras.hotel.entity.Reservation;
+import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.repository.ApartmentRepository;
 
 import java.util.List;
@@ -46,6 +48,11 @@ public class ApartmentService {
             return false;
         }
         return true;
+    }
+
+    public List<Apartment> findApartmentsMatchingReservation(Reservation reservation){
+        return apartmentRepository.findApartmentsByApartmentClassAndPlacesAndStatus(reservation.getApartmentClass(),
+                reservation.getPlaces(), ApartmentStatus.AVAILABLE);
     }
 
 }

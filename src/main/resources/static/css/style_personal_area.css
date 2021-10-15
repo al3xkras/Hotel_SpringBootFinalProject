@@ -53,7 +53,7 @@ div.reservations-list{
     height: available;
 }
 
-div.reservations-list table.reservations{
+table.reservations{
     width: 100%;
     height: available;
 }

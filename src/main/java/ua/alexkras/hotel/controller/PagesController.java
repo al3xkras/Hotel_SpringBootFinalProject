@@ -64,16 +64,6 @@ public class PagesController {
         return "personal_area/user";
     }
 
-
-    @GetMapping("/admin")
-    public String adminMainPage(Model model){
-
-        model.addAttribute("allReservations",
-                reservationService.getAllReservations());
-
-        return "personal_area/admin";
-    }
-
     @GetMapping("/error")
     public String errorPage(){
         return "/error_page";
