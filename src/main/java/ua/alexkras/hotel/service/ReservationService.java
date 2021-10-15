@@ -1,9 +1,9 @@
 package ua.alexkras.hotel.service;
 
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.repository.ReservationRepository;
@@ -11,8 +11,8 @@ import ua.alexkras.hotel.repository.ReservationRepository;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
+@Transactional
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -44,5 +44,29 @@ public class ReservationService {
 
     public List<Reservation> getPendingReservations(){
         return reservationRepository.findByReservationStatus(ReservationStatus.PENDING);
+    }
+
+    public boolean updateReservationStatusById(int id, ReservationStatus reservationStatus){
+        try {
+            reservationRepository.updateReservationStatusById(id, reservationStatus);
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean updateReservationWithApartmentById(Apartment apartment, int id){
+        try {
+            reservationRepository.updateApartmentIdAndPriceAndReservationStatusById(
+                    apartment.getId(),
+                    apartment.getPrice(),
+                    ReservationStatus.RESERVED,
+                    id);
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

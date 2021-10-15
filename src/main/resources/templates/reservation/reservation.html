@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>New reservation</title>
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/css/style_navbar.css}" />
     <link rel="stylesheet" th:href="@{/css/style_table.css}" />
@@ -30,9 +31,9 @@
     </div>
 
     <div>
-        <h1>Apartments that match reservation</h1>
+        <h1 style="text-align: center; margin-bottom: 30px">Apartments that match reservation</h1>
 
-        <table>
+        <table id="apartments">
             <tr>
                 <th>Id</th>
                 <th>Name</th>
@@ -42,21 +43,87 @@
                 <th>Price</th>
             </tr>
 
-            <tr class="align-middle"
+            <tr id="list_item" class="align-middle"
                 th:each="apartment : ${matchingApartments}"
-                th:onclick="'window.location=\'/apartment/'+${apartment.id}+'\';'">
-                <td class="align-middle"  th:text="${apartment.id}"></td>
-                <td class="align-middle" th:text="${apartment.name}"></td>
-                <td class="align-middle" th:text="${apartment.places}"></td>
-                <td class="align-middle" th:text="${apartment.apartmentClass}"></td>
-                <td class="align-middle" th:text="${apartment.status}"></td>
-                <td class="align-middle" th:text="${apartment.price}"></td>
+                th:onclick="'window.location = \'/admin/reservation/'+${reservation.id}+'/select/'+${apartment.id}+'\''">
+
+                <td id="apartmentId" class="align-middle"  th:text="${apartment.id}"></td>
+                <td id="apartmentName" class="align-middle" th:text="${apartment.name}"></td>
+                <td id="apartmentPlaces" class="align-middle" th:text="${apartment.places}"></td>
+                <td id="apartmentClass" class="align-middle" th:text="${apartment.apartmentClass}"></td>
+                <td id="apartmentStatus" class="align-middle" th:text="${apartment.status}"></td>
+                <td id="apartmentPrice" class="align-middle" th:text="${apartment.price}"></td>
             </tr>
         </table>
 
+        <div class="d-flex flex-row-reverse">
+            <button type="button" class="btn btn-outline-danger"
+                style="margin-top: 15px; margin-right: 5%; padding: 10px"
+                onclick="discardReservation()">Discard reservation</button>
+        </div>
 
+        <dialog id="select-apartment">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+            </div>
 
+            <div class="form-body">
+                <p th:text="'Assign apartment with id'+${reservation.apartmentId}+' to the reservation?'"></p>
+            </div>
 
+            <form method="post" th:action="@{'/admin/reservation/'+${reservation.id}+'/confirm/'+${reservation.apartmentId}}">
+                <button type="button" class="btn btn-primary" id="cancel-select-apartment">Cancel</button>
+                <button type="submit" class="btn btn-secondary" style="float: right">Confirm</button>
+            </form>
+
+        </dialog>
+
+        <dialog id="discard-reservation" style="background: white">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+            </div>
+
+            <div class="form-body">
+                <p>Drop this reservation request?</p>
+            </div>
+
+            <form action="#" th:action="@{'/admin/reservation/'+${reservation.id}+'/cancel'}" method="post">
+                <button type="button" class="btn btn-secondary" id="cancel-discard-reservation">Cancel</button>
+                <button type="submit" class="btn btn-outline-danger" style="float: right">Drop</button>
+            </form>
+
+        </dialog>
     </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const apartmentSelected = /*[[${apartmentSelected}]]*/ false;
+        /*]]>*/
+
+        const dialog_select = document.getElementById("select-apartment");
+        const dialog_discard = document.getElementById("discard-reservation");
+
+        if (apartmentSelected){
+            dialog_select.showModal()
+        }
+
+        function discardReservation(){
+            dialog_discard.showModal()
+        }
+
+        const cancelSelect = document.getElementById("cancel-select-apartment");
+        const cancelDiscard = document.getElementById("cancel-discard-reservation");
+
+        cancelSelect.addEventListener('click', function() {
+            dialog_select.close();
+        });
+
+        cancelDiscard.addEventListener('click', function() {
+            dialog_discard.close();
+        });
+
+    </script>
+
+
 </body>
 </html>

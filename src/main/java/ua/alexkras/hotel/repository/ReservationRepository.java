@@ -1,6 +1,9 @@
 package ua.alexkras.hotel.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ReservationStatus;
@@ -16,4 +19,18 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Optional<Reservation> findById(int reservationId);
 
     List<Reservation> findByReservationStatus(ReservationStatus reservationStatus);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Reservation reservation set reservation.reservationStatus =:reservationStatus where reservation.id =:id")
+    void updateReservationStatusById(@Param("id") int id, @Param("reservationStatus") ReservationStatus reservationStatus);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Reservation reservation set " +
+            "reservation.apartmentId =:apartmentId, reservation.apartmentPrice =:apartmentPrice, " +
+            "reservation.reservationStatus =:reservationStatus  where reservation.id =:reservationId")
+    void updateApartmentIdAndPriceAndReservationStatusById(
+            @Param("apartmentId") int apartmentId,
+            @Param("apartmentPrice") int apartmentPrice,
+            @Param("reservationStatus") ReservationStatus reservationStatus,
+            @Param("reservationId") int reservationId);
 }

@@ -8,6 +8,7 @@ import ua.alexkras.hotel.model.ApartmentClass;
 import ua.alexkras.hotel.model.ApartmentStatus;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "apartments")
@@ -24,7 +25,7 @@ public class Apartment {
     private String name;
 
     @Column(name = "PLACES", nullable = false)
-    private Integer places;
+    private int places;
 
     @Column(name = "APARTMENT_CLASS", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -37,4 +38,7 @@ public class Apartment {
     @Column(name = "PRICE", nullable = false)
     private Integer price;
 
+    public boolean matchesReservation(@NotNull Reservation reservation){
+        return places == reservation.getPlaces() & apartmentClass.equals(reservation.getApartmentClass()) & status.equals(ApartmentStatus.AVAILABLE);
+    }
 }

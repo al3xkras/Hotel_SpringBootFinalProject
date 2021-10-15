@@ -66,7 +66,7 @@ public class PagesController {
 
     @GetMapping("/error")
     public String errorPage(){
-        return "/error_page";
+        return "error_page";
     }
 
 }

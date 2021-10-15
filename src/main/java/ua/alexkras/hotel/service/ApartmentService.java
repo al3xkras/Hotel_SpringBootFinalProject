@@ -4,6 +4,7 @@ package ua.alexkras.hotel.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ApartmentStatus;
@@ -12,8 +13,8 @@ import ua.alexkras.hotel.repository.ApartmentRepository;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
+@Transactional
 public class ApartmentService {
     private final ApartmentRepository apartmentRepository;
 
