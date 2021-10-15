@@ -73,7 +73,8 @@
                     th:text="${reservation.apartmentId==null?'indefined by admin':reservation.apartmentId}"></td>
                 <td th:class="${reservation.apartmentPrice==null?'red':'green'}"
                     th:text="${reservation.apartmentPrice==null?'indefined':reservation.apartmentPrice}"></td>
-                <td class="green" th:text="${reservation.reservationStatus}"></td>
+                <td th:class="${reservation.reservationStatus.htmlClass}"
+                    th:text="#{${reservation.reservationStatus.resourceName}}"></td>
                 <td th:class="${reservation.isPaid?'green':'red'}"
                     th:text="${reservation.isPaid?'Paid':'Unpaid'}"></td>
 

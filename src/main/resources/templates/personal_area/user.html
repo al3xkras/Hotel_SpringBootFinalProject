@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/css/style_navbar.css}" />
+    <link rel="stylesheet" th:href="@{/css/style_reservation_status.css}" />
     <link rel="stylesheet" th:href="@{/css/style_personal_area.css}" />
 
 </head>
@@ -57,7 +58,7 @@
 
             <tr class="align-middle"
                 th:each="reservation : ${allReservations}"
-                th:onclick="'window.location=window.location+\'/reservation?id='+${reservation.id}+'\';'">
+                th:onclick="'window.location=\'/user/reservation/'+${reservation.id}+'\';'">
                 <td class="align-middle"  th:text="${reservation.id}"></td>
                 <td class="align-middle" th:text="${reservation.places}"></td>
                 <td class="align-middle"
@@ -71,7 +72,8 @@
                     th:text="${reservation.apartmentId==null?'indefined by admin':reservation.apartmentId}"></td>
                 <td th:class="${reservation.apartmentPrice==null?'red':'green'}"
                     th:text="${reservation.apartmentPrice==null?'indefined':reservation.apartmentPrice}"></td>
-                <td class="green" th:text="${reservation.reservationStatus}"></td>
+                <td th:class="${reservation.reservationStatus.htmlClass}"
+                    th:text="#{${reservation.reservationStatus.resourceName}}"></td>
                 <td th:class="${reservation.isPaid?'green':'red'}"
                     th:text="${reservation.isPaid?'Paid':'Unpaid'}"></td>
             </tr>

@@ -49,21 +49,6 @@ public class PagesController {
         return "index";
     }
 
-    @GetMapping("/user")
-    public String userMainPage(Model model){
-        Optional<User> optionalUser = authController.getCurrentUser();
-
-        if (!optionalUser.isPresent()){
-            return "index";
-        }
-
-        model.addAttribute("allReservations",
-                reservationService.getReservationsByUserId(
-                        optionalUser.get().getId()));
-
-        return "personal_area/user";
-    }
-
     @GetMapping("/error")
     public String errorPage(){
         return "error_page";
