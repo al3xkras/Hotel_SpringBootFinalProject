@@ -4,144 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin</title>
-    <style>
-        label {
-            display: inline-block;
-            width: 200px;
-            margin: 5px;
-            text-align: left;
-        }
 
-        input[type=text], input[type=password], select {
-            display: inline-block;
-            width: 200px;
-        }
-        input[type=radio] {
-            margin-left: 45px;
-        }
-        input[type=checkbox] {
-            margin-right: 190px;
-        }
-        button {
-            padding: 5px;
-            margin: 10px;
-        }
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/style_navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/style_personal_area_admin.css}" />
 
-        /* Add a black background color to the top navigation */
-        .custom-navbar {
-            background-color: #333;
-            overflow: hidden;
-        }
-
-        /* Style the links inside the navigation bar */
-        .custom-navbar a{
-            float: left;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-size: 17px;
-        }
-
-        /* Change the color of links on hover */
-        .custom-navbar a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-
-        /* Add a color to the active/current link */
-        .custom-navbar a.active {
-            background-color: #04AA6D;
-            color: white;
-        }
-
-        /* The dropdown container */
-        .custom-navbar-dropdown {
-            float: left;
-            overflow: hidden;
-        }
-
-        /* Dropdown button */
-        .dropdown-btn {
-            font-size: 16px;
-            border: none;
-            outline: none;
-            color: white;
-            padding: 15px 16px;
-
-            background-color: inherit;
-            font-family: inherit; /* Important for vertical align on mobile phones */
-            margin: 0; /* Important for vertical align on mobile phones */
-        }
-
-        /* Add a red background color to navbar links on hover */
-        .custom-navbar a:hover, .custom-navbar-dropdown:hover .dropdown-btn {
-            background-color: #04AA6D;
-        }
-
-        /* Dropdown content (hidden by default) */
-        .custom-dropdown-content {
-            display: none;
-            position: absolute;
-
-            background-color: #f9f9f9;
-            min-width: 160px;
-
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-        }
-
-        /* Links inside the dropdown */
-        .custom-dropdown-content a {
-            float: none;
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            text-align: left;
-        }
-
-        /* Add a grey background color to dropdown links on hover */
-        .custom-dropdown-content a:hover {
-            background-color: #ddd;
-        }
-
-        /* Show the dropdown menu on hover */
-        .custom-navbar-dropdown:hover .custom-dropdown-content {
-            display: block;
-        }
-
-        .align-middle{
-            text-align: center;
-            padding: 5px;
-            margin: 0;
-            background: #d9d9d9;
-        }
-
-        .align-middle:hover{
-            color: #4040ff;
-        }
-    </style>
 </head>
 <body>
-    <div class="navbar">
+    <div class="custom-navbar">
         <a class="active" href="/main" th:text="#{navbar.hotel}"></a>
 
-        <div class="dropdown" style="float: left">
+        <div class="custom-navbar-dropdown" style="float: left">
             <button class="dropdown-btn" th:text="#{navbar.language}">
                 <i class="fa fa-caret-down"></i>
             </button>
-            <div class="dropdown-content">
+            <div class="custom-dropdown-content">
                 <a href="?lang=ua" th:text="#{navbar.language.ua}"></a>
                 <a href="?lang=en" th:text="#{navbar.language.en}"></a>
             </div>
         </div>
 
-        <div class="dropdown" style="float: right">
+        <div class="custom-navbar-dropdown" style="float: right">
             <button class="dropdown-btn" th:text="#{navbar.admin}">
                 <i class="fa fa-caret-down"></i>
             </button>
-            <div class="dropdown-content" style="left: 85%; width: 14.5%">
+            <div class="custom-dropdown-content" style="left: 85%; width: 14.5%">
                 <a href="/incoming_reservations" th:text="#{navbar.incoming_reservations}"></a>
                 <a href="/add_apartment" th:text="#{new_apartment.header}"></a>
                 <a href="/apartments" th:text="#{navbar.all_apartments}"></a>
@@ -149,7 +36,7 @@
             </div>
         </div>
 
-        <form class="dropdown" action="/auth/logout" method="post" style="float: right">
+        <form class="custom-navbar-dropdown" action="/auth/logout" method="post" style="float: right">
             <button class="dropdown-btn" type="submit" th:text="#{navbar.logout}"></button>
         </form>
     </div>

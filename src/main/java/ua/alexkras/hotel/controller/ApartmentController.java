@@ -12,8 +12,10 @@ import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.model.ReservationStatus;
+import ua.alexkras.hotel.model.UserType;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -67,7 +69,7 @@ public class ApartmentController {
             return "redirect:/apartments";
         }
 
-        if (!getApartmentByIdIfNotPresent(id)){
+        if (!updateCurrentApartment(id)){
             return "redirect:/apartments";
         }
 
@@ -82,60 +84,61 @@ public class ApartmentController {
                                                      @ModelAttribute("reservation") Reservation reservationDate,
                                                      Model model){
 
-        Optional<User> optionalUser = authController.getCurrentUser();
-
-
-        if (!optionalUser.isPresent() | !getApartmentByIdIfNotPresent(id)){
-            return "redirect:/error";
-        }
-
-        User currentUser = optionalUser.get();
-
         if (reservationDate.getFromDate().compareTo(reservationDate.getToDate())>=0){
+            if (!updateCurrentApartment(id))
+                return "redirect:/error";
             model.addAttribute("apartment",currentApartment);
             model.addAttribute("fromDateIsGreaterThanToDate",true);
             return "/apartment/apartment";
         }
 
+        Optional<User> optionalUser = authController.getCurrentUser();
+        Optional<Apartment> optionalApartment = apartmentService.getApartmentById(id);
 
+        if (!optionalUser.isPresent() | !optionalApartment.isPresent()){
+            return "redirect:/error";
+        }
 
-        if (!currentApartment.getStatus().equals(ApartmentStatus.AVAILABLE)){
+        User currentUser = optionalUser.get();
+        Apartment apartment = optionalApartment.get();
+
+        if (!apartment.getStatus().equals(ApartmentStatus.AVAILABLE) ||
+                !currentUser.getUserType().equals(UserType.USER)){
             return "redirect:/apartments";
         }
 
         Reservation reservation = new Reservation();
 
         reservation.setUserId(currentUser.getId());
-        reservation.setApartmentClass(currentApartment.getApartmentClass());
+        reservation.setApartmentClass(apartment.getApartmentClass());
         reservation.setFromDate(reservationDate.getFromDate());
         reservation.setToDate(reservationDate.getToDate());
         reservation.setSubmitDate(LocalDateTime.now());
-        reservation.setPlaces(currentApartment.getPlaces());
-        reservation.setApartmentId(currentApartment.getId());
-        reservation.setApartmentPrice(currentApartment.getPrice());
+        reservation.setPlaces(apartment.getPlaces());
+        reservation.setApartmentId(apartment.getId());
+        reservation.setApartmentPrice(apartment.getPrice());
         reservation.setReservationStatus(ReservationStatus.PENDING);
 
-        currentApartment.setStatus(ApartmentStatus.RESERVED);
+        apartment.setStatus(ApartmentStatus.RESERVED);
 
-        apartmentService.updateApartmentStatus(currentApartment);
-        currentApartment = null;
+        apartmentService.updateApartmentStatus(apartment);
 
         reservationService.addReservation(reservation);
+
+        currentApartment=null;
 
         System.out.println(reservation);
 
         return "redirect:/";
     }
 
-    private boolean getApartmentByIdIfNotPresent(int id){
-        if (currentApartment==null || currentApartment.getId()!=id){
-            Optional<Apartment> optionalApartment = apartmentService.getApartmentById(id);
+    private boolean updateCurrentApartment(int apartmentId){
+        if (currentApartment==null || currentApartment.getId()!=apartmentId){
+            currentApartment = apartmentService.getApartmentById(apartmentId).orElse(null);
 
-            if (!optionalApartment.isPresent())
-                return false;
-
-            currentApartment = optionalApartment.get();
+            return currentApartment != null;
         }
         return true;
     }
+
 }
