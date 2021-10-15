@@ -16,6 +16,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByUserId(int userId);
 
+    List<Reservation> findByUserIdAndIsActive(int userId, boolean isActive);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Reservation reservation set reservation.isActive =:isActive where reservation.userId =:userId")
+    void updateActiveByUserId(@Param("userId") int userId, @Param("isActive") boolean isActive);
+
     Optional<Reservation> findById(int reservationId);
 
     List<Reservation> findByReservationStatus(ReservationStatus reservationStatus);
@@ -33,4 +39,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("apartmentPrice") int apartmentPrice,
             @Param("reservationStatus") ReservationStatus reservationStatus,
             @Param("reservationId") int reservationId);
+
+
 }

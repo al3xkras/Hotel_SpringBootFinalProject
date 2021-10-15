@@ -7,7 +7,6 @@ import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.repository.ReservationRepository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +31,10 @@ public class ReservationService {
 
     public List<Reservation> getReservationsByUserId(int userId){
         return reservationRepository.findByUserId(userId);
+    }
+
+    public List<Reservation> getActiveReservationsByUserId(int userId){
+        return reservationRepository.findByUserIdAndIsActive(userId,true);
     }
 
     public Optional<Reservation> getReservationById(int reservationId){
@@ -61,7 +64,7 @@ public class ReservationService {
             reservationRepository.updateApartmentIdAndPriceAndReservationStatusById(
                     apartment.getId(),
                     apartment.getPrice(),
-                    ReservationStatus.RESERVED,
+                    ReservationStatus.CONFIRMED,
                     id);
         } catch (Exception e){
             e.printStackTrace();

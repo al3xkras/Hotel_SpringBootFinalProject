@@ -14,9 +14,6 @@ import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
-
-import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -84,6 +81,7 @@ public class AdminController {
                 apartmentService.findApartmentsMatchingReservation(currentReservation));
         model.addAttribute("apartmentSelected",true);
 
+
         resetCurrentReservation();
 
         return "/reservation/reservation";
@@ -93,7 +91,7 @@ public class AdminController {
     public String confirmCompletedReservation(@PathVariable("id") Integer reservationId){
 
         if (!updateCurrentReservation(reservationId) || !currentReservation.isCompleted() ||
-                !reservationService.updateReservationStatusById(reservationId, ReservationStatus.RESERVED)){
+                !reservationService.updateReservationStatusById(reservationId, ReservationStatus.CONFIRMED)){
             return "redirect:/error";
         }
 

@@ -24,7 +24,6 @@ public class Reservation {
     @Column(name = "USER_ID", nullable = false)
     private int userId;
 
-
     @Column(name = "APARTMENT_CLASS", nullable = false)
     @Enumerated(EnumType.STRING)
     private ApartmentClass apartmentClass;
@@ -43,7 +42,7 @@ public class Reservation {
     private LocalDateTime submitDate;
 
     @Column(name = "PLACES",nullable = false)
-    private Integer places;
+    private int places;
 
     @Column(name = "APARTMENT_ID")
     private Integer apartmentId;
@@ -54,9 +53,12 @@ public class Reservation {
     @Column(name = "IS_PAID", nullable = false)
     private boolean isPaid = false;
 
-    @Column(name="STATUS",nullable = false)
+    @Column(name="STATUS", nullable = false)
     @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
+
+    @Column(name = "IS_ACTIVE", nullable = false, columnDefinition = "boolean default 1")
+    private boolean isActive = true;
 
     public boolean isCompleted(){
         return apartmentId!=null & apartmentPrice!=null;
