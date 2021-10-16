@@ -57,3 +57,41 @@ table.reservations{
     width: 100%;
     height: available;
 }
+
+.apartment-class-a{
+    color: #ffa500;
+}
+
+.apartment-class-b{
+    color: #9d6a00;
+}
+
+.apartment-class-c{
+    color: #815b00;
+}
+
+.apartment-class-d{
+    color: #724e00;
+}
+
+.apartment-class-a:hover{
+    color: #d08900;
+}
+
+.apartment-class-b:hover{
+    color: #7e5700;
+}
+
+.apartment-class-c:hover{
+    color: #644800;
+}
+
+.apartment-class-d:hover{
+    color: #5e4100;
+}
+
+.align-middle th{
+    text-align: center;
+    padding: 5px;
+    margin-bottom: 3px;
+}

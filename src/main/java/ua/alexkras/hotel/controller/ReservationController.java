@@ -12,6 +12,7 @@ import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.service.ReservationService;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Controller
@@ -54,7 +55,7 @@ public class ReservationController {
         }
 
         reservation.setUserId(currentUser.getId());
-        reservation.setSubmitDate(LocalDateTime.now());
+        reservation.setSubmitDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
         reservation.setReservationStatus(ReservationStatus.PENDING);
 
         System.out.println(reservation);
