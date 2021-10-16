@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Make payment</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-6">Make payment</h1>
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col-lg-6 mx-auto">
+                <div class="card ">
+                    <div class="card-header">
+                        <div class="tab-content">
+                            <div id="credit-card" class="tab-pane fade show active pt-3">
+                                <form action="#" th:action="@{'/user/reservation/'+${payment.reservationId}+'/make_payment'}" th:object="${payment}" method="post">
+
+                                    <div class="form-group">
+                                        <label for="cardNumber">
+                                            <h6>Card number</h6>
+                                        </label>
+
+                                        <div class="input-group">
+                                            <input type="text" id="cardNumber"
+                                                   name="cardNumber"
+                                                   placeholder="Valid card number"
+                                                   th:field="*{cardNumber}"
+                                                   class="form-control " required>
+
+                                            <div class="input-group-append">
+                                                <span class="input-group-text text-muted">
+                                                    <i class="fab fa-cc-visa mx-1"></i>
+                                                    <i class="fab fa-cc-mastercard mx-1"></i>
+                                                    <i class="fab fa-cc-amex mx-1"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <div class="form-group"> <label><span class="hidden-xs">
+                                                    <h6>Expiration Date</h6>
+                                                </span></label>
+                                                <div class="input-group">
+                                                    <input id="expirationDate" type="date" th:field="*{cardExpirationDate}" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group mb-4">
+                                                <label data-toggle="tooltip" title="Three digit CV code on the back of your card">
+                                                    <h6>CVV</h6>
+                                                </label>
+
+                                                <div>
+                                                    <input id="cardCvv" type="text" minlength="3" maxlength="3"  class="form-control"
+                                                           th:field="*{cardCvv}" required><br/>
+
+                                                    <div th:if="${invalidCvv!=null and invalidCvv}"
+                                                         class="alert alert-warning" role="alert">Invalid CVV</div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="card-footer">
+                                        <button type="submit" class="subscribe btn btn-primary btn-block shadow-sm">Confirm Payment</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    document.getElementById("expirationDate").min = new Date().toLocaleDateString('en-ca')
+
+    $(function() {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+</body>
+
+</html>
