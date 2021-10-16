@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/css/style_navbar.css}" />
     <link rel="stylesheet" th:href="@{/css/style_table.css}" />
+    <link rel="stylesheet" th:href="@{/css/style_reservation_status.css}" />
 
+    <style>
+
+    </style>
 </head>
 <body>
     <div class="custom-navbar">
@@ -69,7 +73,26 @@
                 <label th:text="#{new_apartment.places}+': '+${reservation.places}"></label><br/>
                 <label th:text="#{new_apartment.price}+': '+${reservation.apartmentPrice}"></label><br/>
 
+                <div class="d-flex flex-row">
+                    <label th:text="#{reservation.status}+': '"></label>
+                    <label th:text="#{${reservation.reservationStatus.resourceName}}"
+                           th:class="${reservation.reservationStatus.htmlClass}"
+                            style="margin-left: 5px"></label><br/>
+                </div>
+
+                <div class="d-flex flex-row">
+                    <label th:text="#{reservation.payment_status}+': '"></label>
+                    <label th:text="#{${reservation.paid?'reservation.paid':'reservation.unpaid'}}"
+                           th:class="${reservation.paid?'reservation-paid':'reservation-unpaid'}"
+                            style="margin-left: 5px"></label>
+                </div><br/>
+
                 <div class="d-flex flex-row-reverse">
+                    <button type="submit" class="btn btn-outline-primary"
+                            th:if="${!reservation.paid and reservation.reservationStatus.name().equalsIgnoreCase('reserved')}"
+                            th:onclick="'window.location = \'/user/reservation/'+${reservation.id}+'/make_payment\';'"
+                            style="margin-top: 15px; margin-right: 5%; padding: 10px">Make payment</button>
+
                     <button type="button"
                             class="btn btn-outline-primary"
                             th:if="${reservation.reservationStatus.canConfirm}"
@@ -188,6 +211,7 @@
         const dialog_confirm_user = document.getElementById("confirm-reservation-user");
         const dialog_discard_admin = document.getElementById("discard-reservation-admin");
         const dialog_discard_user = document.getElementById("discard-reservation-user");
+        const dialog_make_payment = document.getElementById("dialog-make-payment")
 
         if (apartmentSelected){
             dialog_select.showModal()
@@ -215,6 +239,14 @@
 
         function hideDiscardReservationUser(){
             dialog_discard_user.close();
+        }
+
+        function makePaymentDialog(){
+            dialog_make_payment.showModal()
+        }
+
+        function hideMakePaymentDialog(){
+            dialog_make_payment.close()
         }
 
         document.getElementById("cancel-select-apartment").addEventListener('click', function() {

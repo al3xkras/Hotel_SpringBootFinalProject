@@ -40,5 +40,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("reservationStatus") ReservationStatus reservationStatus,
             @Param("reservationId") int reservationId);
 
+    @Modifying(clearAutomatically = true)
+    @Query("update Reservation reservation set reservation.isPaid =:isPaid where reservation.id =:id")
+    void updateIsPaidById(@Param("id") int id, @Param("isPaid") boolean isPaid);
 
 }

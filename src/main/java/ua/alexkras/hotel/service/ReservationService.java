@@ -72,4 +72,14 @@ public class ReservationService {
         }
         return true;
     }
+
+    public boolean updateReservationPaymentStatusById(int reservationId, boolean isPaid){
+        try{
+            reservationRepository.updateIsPaidById(reservationId,isPaid);
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }

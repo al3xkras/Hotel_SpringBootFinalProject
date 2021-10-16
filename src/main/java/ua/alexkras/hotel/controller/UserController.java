@@ -4,15 +4,17 @@ package ua.alexkras.hotel.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import ua.alexkras.hotel.entity.Payment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.entity.User;
+import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.model.ReservationStatus;
+import ua.alexkras.hotel.service.ApartmentService;
+import ua.alexkras.hotel.service.PaymentService;
 import ua.alexkras.hotel.service.ReservationService;
-
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Controller
@@ -21,13 +23,20 @@ public class UserController {
 
     private final AuthController authController;
     private final ReservationService reservationService;
+    private final PaymentService paymentService;
+    private final ApartmentService apartmentService;
 
     @Autowired
     public UserController(AuthController authController,
-                          ReservationService reservationService){
+                          ReservationService reservationService,
+                          PaymentService paymentService,
+                          ApartmentService apartmentService){
         this.authController=authController;
         this.reservationService=reservationService;
+        this.paymentService=paymentService;
+        this.apartmentService=apartmentService;
     }
+
 
     @GetMapping
     public String userMainPage(Model model){
@@ -43,6 +52,7 @@ public class UserController {
 
         return "personal_area/user";
     }
+
 
     @GetMapping("/reservation/{id}")
     public String reservationFromTable(@PathVariable("id") Integer reservationId,
@@ -68,9 +78,9 @@ public class UserController {
         return "/reservation/reservation";
     }
 
+
     @PostMapping("/reservation/{id}/confirm")
     public String confirmReservation(@PathVariable("id") Integer reservationId){
-
         Optional<Reservation> optionalReservation;
 
         if (reservationId==null ||
@@ -95,6 +105,7 @@ public class UserController {
         return "redirect:/";
     }
 
+
     @PostMapping("/reservation/{id}/cancel")
     public String cancelReservation(@PathVariable("id") Integer reservationId) {
         Optional<Reservation> optionalReservation;
@@ -112,12 +123,71 @@ public class UserController {
         }
 
 
-        reservation.setReservationStatus(ReservationStatus.CANCELLED);
-
-        if (!reservationService.updateReservationStatusById(reservationId,ReservationStatus.CANCELLED)){
+        if (!apartmentService.updateApartmentStatusById(reservation.getApartmentId(), ApartmentStatus.AVAILABLE) ||
+                !reservationService.updateReservationStatusById(reservationId,ReservationStatus.CANCELLED)){
             return "redirect:/error";
         }
 
         return "redirect:/";
     }
+
+
+    @GetMapping("/reservation/{id}/make_payment")
+    public String makePaymentPage(@PathVariable("id") Integer reservationId,
+                                  Model model){
+        if (reservationId==null || !authController.getCurrentUser().isPresent()){
+            return "redirect:/error";
+        }
+
+        Payment payment = new Payment();
+
+        payment.setReservationId(reservationId);
+
+        model.addAttribute("payment",payment);
+
+        return "/personal_area/user/payment";
+    }
+
+
+    @PostMapping("/reservation/{id}/make_payment")
+    public String makePayment(@PathVariable("id") Integer reservationId,
+                              @ModelAttribute("payment") Payment payment,
+                              Model model){
+
+        if (reservationId==null || !authController.getCurrentUser().isPresent()){
+            return "redirect:/";
+        }
+
+        if (!payment.getCardCvv().matches("^(\\d{3})$")){
+            payment.setReservationId(reservationId);
+            model.addAttribute("invalidCvv",true);
+            return "/personal_area/user/payment";
+        }
+
+        Optional<Reservation> optionalReservation = reservationService.getReservationById(reservationId);
+
+        if (!optionalReservation.isPresent()) {
+            return "redirect:/error";
+        }
+
+        Reservation reservation = optionalReservation.get();
+
+        if (authController.getCurrentUser().get().getId()!=reservation.getUserId()){
+            return "redirect:/";
+        }
+
+        payment.setUserId(reservation.getUserId());
+        payment.setReservationId(reservation.getId());
+        payment.setValue(reservation.getApartmentPrice());
+        payment.setPaymentDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+
+        if (!paymentService.addPayment(payment) ||
+                !reservationService.updateReservationPaymentStatusById(reservationId,true)){
+            return "redirect:/error";
+        }
+
+        return "redirect:/";
+    }
+
+
 }
