@@ -39,7 +39,7 @@ public class Payment {
     @Column(name = "CARD_EXPIRATION_DATE", nullable = false)
     private LocalDate cardExpirationDate;
 
-    @Column(name = "CARD_CVV", nullable = false)
+    @Column(name = "CARD_CVV", nullable = false, length = 3)
     private String cardCvv;
 
 }

@@ -26,6 +26,8 @@ public class UserController {
     private final PaymentService paymentService;
     private final ApartmentService apartmentService;
 
+    private Optional<Reservation> currentPaymentReservation = Optional.empty();
+
     @Autowired
     public UserController(AuthController authController,
                           ReservationService reservationService,
@@ -74,6 +76,8 @@ public class UserController {
 
         model.addAttribute("isCompleted",true);
         model.addAttribute("userAccount",true);
+
+        currentPaymentReservation=Optional.empty();
 
         return "/reservation/reservation";
     }
@@ -139,9 +143,19 @@ public class UserController {
             return "redirect:/error";
         }
 
+        if (!currentPaymentReservation.isPresent()){
+            currentPaymentReservation = reservationService.getReservationById(reservationId);
+
+            if (!currentPaymentReservation.isPresent()){
+                return "redirect:/";
+            }
+        }
+
         Payment payment = new Payment();
 
         payment.setReservationId(reservationId);
+        payment.setUserId(authController.getCurrentUser().get().getId());
+        payment.setValue(currentPaymentReservation.get().getApartmentPrice());
 
         model.addAttribute("payment",payment);
 
@@ -154,12 +168,15 @@ public class UserController {
                               @ModelAttribute("payment") Payment payment,
                               Model model){
 
-        if (reservationId==null || !authController.getCurrentUser().isPresent()){
+        if (reservationId==null || !authController.getCurrentUser().isPresent() || !currentPaymentReservation.isPresent()){
             return "redirect:/";
         }
 
         if (!payment.getCardCvv().matches("^(\\d{3})$")){
             payment.setReservationId(reservationId);
+            payment.setUserId(authController.getCurrentUser().get().getId());
+            payment.setValue(currentPaymentReservation.get().getApartmentPrice());
+
             model.addAttribute("invalidCvv",true);
             return "/personal_area/user/payment";
         }
@@ -185,6 +202,8 @@ public class UserController {
                 !reservationService.updateReservationPaymentStatusById(reservationId,true)){
             return "redirect:/error";
         }
+
+        currentPaymentReservation=Optional.empty();
 
         return "redirect:/";
     }

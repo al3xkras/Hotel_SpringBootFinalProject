@@ -13,7 +13,7 @@
     <div class="container py-5">
         <div class="row mb-4">
             <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-6">Make payment</h1>
+                <h1 class="display-6" th:text="#{payment.header}"></h1>
             </div>
         </div>
 
@@ -29,13 +29,13 @@
 
                                     <div class="form-group">
                                         <label for="cardNumber">
-                                            <h6>Card number</h6>
+                                            <h6 th:text="#{payment.card.number}"></h6>
                                         </label>
 
                                         <div class="input-group">
                                             <input type="text" id="cardNumber"
                                                    name="cardNumber"
-                                                   placeholder="Valid card number"
+                                                   th:placeholder="#{payment.card.number.placeholder}"
                                                    th:field="*{cardNumber}"
                                                    class="form-control " required>
 
@@ -50,36 +50,56 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-sm-8">
-                                            <div class="form-group"> <label><span class="hidden-xs">
-                                                    <h6>Expiration Date</h6>
-                                                </span></label>
-                                                <div class="input-group">
-                                                    <input id="expirationDate" type="date" th:field="*{cardExpirationDate}" required>
-                                                </div>
+                                        <div class="col">
+                                            <label>
+                                                <span class="hidden-xs">
+                                                    <h6 th:text="#{payment.expiration_date}"></h6>
+                                                </span>
+                                            </label>
+                                            <div class="input-group">
+                                                <input id="expirationDate" type="date" th:field="*{cardExpirationDate}" required>
                                             </div>
                                         </div>
+
                                         <div class="col-sm-4">
-                                            <div class="form-group mb-4">
-                                                <label data-toggle="tooltip" title="Three digit CV code on the back of your card">
+                                                <label>
+                                                <span class="hidden-xs">
                                                     <h6>CVV</h6>
+                                                </span>
                                                 </label>
-
-                                                <div>
-                                                    <input id="cardCvv" type="text" minlength="3" maxlength="3"  class="form-control"
-                                                           th:field="*{cardCvv}" required><br/>
-
-                                                    <div th:if="${invalidCvv!=null and invalidCvv}"
-                                                         class="alert alert-warning" role="alert">Invalid CVV</div>
+                                                <div class="input-group">
+                                                    <input id="cardCvv" type="text" minlength="3" maxlength="3"
+                                                           style="width: 30%; min-width: 50px"
+                                                           th:field="*{cardCvv}" placeholder="CVV" required><br/>
                                                 </div>
 
-                                            </div>
                                         </div>
                                     </div>
 
+                                    <div class="row">
+                                        <div class="col">
+
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div th:if="${invalidCvv!=null and invalidCvv}"
+                                                 class="alert alert-danger" role="alert" style="padding: 3px; margin-top: 1px" th:text="#{payment.invalid_cvv}"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <label th:text="#{table.user.id}+': '+${payment.userId}"></label>
+                                    </div>
+
+                                    <div class="row">
+                                        <label th:text="#{reservation.id}+': '+${payment.reservationId}"></label>
+                                    </div>
+
+                                    <div class="row">
+                                        <label th:text="#{new_apartment.price}+': '+${payment.value}"></label>
+                                    </div>
 
                                     <div class="card-footer">
-                                        <button type="submit" class="subscribe btn btn-primary btn-block shadow-sm">Confirm Payment</button>
+                                        <button type="submit" class="subscribe btn btn-primary btn-block shadow-sm" th:text="#{payment.confirm}"></button>
                                     </div>
                                 </form>
                             </div>
