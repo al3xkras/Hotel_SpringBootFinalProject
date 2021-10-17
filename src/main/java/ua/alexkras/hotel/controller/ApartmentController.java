@@ -3,10 +3,7 @@ package ua.alexkras.hotel.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.entity.User;
@@ -17,6 +14,7 @@ import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Optional;
 
 @Controller
@@ -25,8 +23,6 @@ public class ApartmentController {
     private final ApartmentService apartmentService;
     private final AuthController authController;
     private final ReservationService reservationService;
-
-    private Apartment currentApartment;
 
     @Autowired
     public ApartmentController(ApartmentService apartmentService,
@@ -38,10 +34,30 @@ public class ApartmentController {
     }
 
     @GetMapping("/apartments")
-    public String listApartments(Model model){
+    public String listApartments(@RequestParam(value = "sort",required=false) String by,Model model){
 
-        model.addAttribute("allApartments",
-                apartmentService.getAllApartments());
+        if (!apartmentService.updateApartments()){
+            return "redirect:/error";
+        }
+
+        by = by==null?"price":by;
+
+        switch (by){
+            case "price":
+                apartmentService.getApartments().sort(Comparator.comparing(Apartment::getPrice));
+                break;
+            case "places":
+                apartmentService.getApartments().sort(Comparator.comparing(Apartment::getPlaces).reversed());
+                break;
+            case "class":
+                apartmentService.getApartments().sort(Comparator.comparing(Apartment::getApartmentClass));
+                break;
+            case "status":
+                apartmentService.getApartments().sort(Comparator.comparing(Apartment::getStatus));
+                break;
+        }
+
+        model.addAttribute("allApartments", apartmentService.getApartments());
 
         return "/apartment/apartments_menu";
     }
@@ -65,15 +81,12 @@ public class ApartmentController {
     @GetMapping("/apartment/{id}")
     public String apartmentPage(@PathVariable("id") Integer id,
                                 Model model){
-        if (id==null){
+
+        if (id==null || !apartmentService.updateCurrentApartment(id)){
             return "redirect:/apartments";
         }
 
-        if (!updateCurrentApartment(id)){
-            return "redirect:/apartments";
-        }
-
-        model.addAttribute("apartment",currentApartment);
+        model.addAttribute("apartment",apartmentService.getCurrentApartment());
         model.addAttribute("reservation", new Reservation());
 
         return "/apartment/apartment";
@@ -85,9 +98,9 @@ public class ApartmentController {
                                                      Model model){
 
         if (reservationDate.getFromDate().compareTo(reservationDate.getToDate())>=0){
-            if (!updateCurrentApartment(id))
+            if (!apartmentService.updateCurrentApartment(id))
                 return "redirect:/error";
-            model.addAttribute("apartment",currentApartment);
+            model.addAttribute("apartment",apartmentService.getCurrentApartment());
             model.addAttribute("fromDateIsGreaterThanToDate",true);
             return "/apartment/apartment";
         }
@@ -124,20 +137,9 @@ public class ApartmentController {
 
         reservationService.addReservation(reservation);
 
-        currentApartment=null;
-
-        System.out.println(reservation);
-
         return "redirect:/";
     }
 
-    private boolean updateCurrentApartment(int apartmentId){
-        if (currentApartment==null || currentApartment.getId()!=apartmentId){
-            currentApartment = apartmentService.getApartmentById(apartmentId).orElse(null);
 
-            return currentApartment != null;
-        }
-        return true;
-    }
 
 }
