@@ -6,23 +6,25 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import ua.alexkras.hotel.dao.UserDAO;
-import ua.alexkras.hotel.model.CustomLogoutSuccessHandler;
+import ua.alexkras.hotel.controller.CustomLogoutSuccessHandler;
 import ua.alexkras.hotel.model.UserType;
-
-import javax.annotation.PostConstruct;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final CustomLogoutSuccessHandler logoutSuccessHandler;
+
+    @Autowired
+    public SecurityConfig(CustomLogoutSuccessHandler logoutSuccessHandler){
+        this.logoutSuccessHandler=logoutSuccessHandler;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -53,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public LogoutSuccessHandler logoutSuccessHandler() {
-        return new CustomLogoutSuccessHandler();
+        return logoutSuccessHandler;
     }
 
     @Bean

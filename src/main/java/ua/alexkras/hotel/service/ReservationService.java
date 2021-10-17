@@ -31,7 +31,7 @@ public class ReservationService {
             ex.printStackTrace();
         }
 
-        resetCurrentReservation();
+        clearCurrentReservation();
         clearCurrentUserActiveReservations();
     }
 
@@ -62,7 +62,7 @@ public class ReservationService {
             e.printStackTrace();
             return false;
         }
-        resetCurrentReservation();
+        clearCurrentReservation();
         clearCurrentUserActiveReservations();
         return true;
     }
@@ -78,7 +78,7 @@ public class ReservationService {
             e.printStackTrace();
             return false;
         }
-        resetCurrentReservation();
+        clearCurrentReservation();
         clearCurrentUserActiveReservations();
         return true;
     }
@@ -90,7 +90,7 @@ public class ReservationService {
             e.printStackTrace();
             return false;
         }
-        resetCurrentReservation();
+        clearCurrentReservation();
         clearCurrentUserActiveReservations();
         return true;
     }
@@ -103,7 +103,7 @@ public class ReservationService {
         return true;
     }
 
-    public void resetCurrentReservation(){
+    public void clearCurrentReservation(){
         currentReservation=null;
     }
 
@@ -116,9 +116,8 @@ public class ReservationService {
                 return false;
             }
         }
-
         //Assuming all the reservations in list have the same userId
-        if (currentUserActiveReservations.get(0).getUserId()!=userId){
+        else if (currentUserActiveReservations.get(0).getUserId()!=userId){
             currentUserActiveReservations = getActiveReservationsByUserId(userId);
         }
 
