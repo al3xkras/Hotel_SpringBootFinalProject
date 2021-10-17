@@ -23,8 +23,6 @@ public class AdminController {
     private final ReservationService reservationService;
     private final ApartmentService apartmentService;
 
-    private Reservation currentReservation;
-
     @Autowired
     public AdminController(ReservationService reservationService,
                            ApartmentService apartmentService){
@@ -47,18 +45,18 @@ public class AdminController {
             return "redirect:/";
         }
 
-        if (!updateCurrentReservation(id)){
+        if (!reservationService.updateCurrentReservation(id)){
             return "redirect:/error";
         }
 
-        model.addAttribute("reservation",currentReservation);
+        model.addAttribute("reservation",reservationService.getCurrentReservation());
 
-        boolean isCompleted = currentReservation.isCompleted();
+        boolean isCompleted = reservationService.getCurrentReservation().isCompleted();
         model.addAttribute("isCompleted", isCompleted);
 
         if (!isCompleted) {
             model.addAttribute("matchingApartments",
-                    apartmentService.findApartmentsMatchingReservation(currentReservation));
+                    apartmentService.findApartmentsMatchingReservation(reservationService.getCurrentReservation()));
         }
 
         return "/reservation/reservation";
@@ -69,20 +67,17 @@ public class AdminController {
                                          @PathVariable("apartmentId") Integer apartmentId,
                                          Model model){
 
-        if (!updateCurrentReservation(reservationId)){
+        if (!reservationService.updateCurrentReservation(reservationId)){
             return "redirect:/error";
         }
 
-        currentReservation.setApartmentId(apartmentId);
+        reservationService.getCurrentReservation().setApartmentId(apartmentId);
 
         model.addAttribute("isCompleted",false);
-        model.addAttribute("reservation",currentReservation);
+        model.addAttribute("reservation",reservationService.getCurrentReservation());
         model.addAttribute("matchingApartments",
-                apartmentService.findApartmentsMatchingReservation(currentReservation));
+                apartmentService.findApartmentsMatchingReservation(reservationService.getCurrentReservation()));
         model.addAttribute("apartmentSelected",true);
-
-
-        resetCurrentReservation();
 
         return "/reservation/reservation";
     }
@@ -90,12 +85,11 @@ public class AdminController {
     @PostMapping("/reservation/{id}/confirm")
     public String confirmCompletedReservation(@PathVariable("id") Integer reservationId){
 
-        if (!updateCurrentReservation(reservationId) || !currentReservation.isCompleted() ||
+        if (!reservationService.updateCurrentReservation(reservationId) ||
+                !reservationService.getCurrentReservation().isCompleted() ||
                 !reservationService.updateReservationStatusById(reservationId, ReservationStatus.CONFIRMED)){
             return "redirect:/error";
         }
-
-        resetCurrentReservation();
 
         return "redirect:/";
     }
@@ -112,17 +106,15 @@ public class AdminController {
 
         Apartment apartment = optionalApartment.get();
 
-        updateCurrentReservation(reservationId);
+        reservationService.updateCurrentReservation(reservationId);
 
-        if (!apartment.matchesReservation(currentReservation)){
+        if (!apartment.matchesReservation(reservationService.getCurrentReservation())){
             return "redirect:/error";
         }
 
         reservationService.updateReservationWithApartmentById(apartment,reservationId);
 
         apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED);
-
-        resetCurrentReservation();
 
         return "redirect:/";
     }
@@ -148,19 +140,6 @@ public class AdminController {
         }
 
         return "redirect:/";
-    }
-
-    private boolean updateCurrentReservation(int reservationId){
-        if (currentReservation==null || currentReservation.getId()!=reservationId){
-            currentReservation = reservationService.getReservationById(reservationId).orElse(null);
-
-            return currentReservation != null;
-        }
-        return true;
-    }
-
-    private void resetCurrentReservation(){
-        currentReservation=null;
     }
 
 }
