@@ -9,9 +9,6 @@
     <link rel="stylesheet" th:href="@{/css/style_table.css}" />
     <link rel="stylesheet" th:href="@{/css/style_reservation_status.css}" />
 
-    <style>
-
-    </style>
 </head>
 <body>
     <div class="custom-navbar">
@@ -46,20 +43,21 @@
                 <label th:text="#{new_apartment.places}+': '+${reservation.places}"></label><br/>
                 <label th:text="#{new_apartment.price}+': '+${reservation.apartmentPrice}"></label><br/>
 
-                <form method="post" th:action="@{'/admin/reservation/'+${reservation.id}+'/confirm'}">
-                    <div class="d-flex flex-row-reverse">
-                        <button type="submit"
-                                class="btn btn-outline-primary"
-                                style="margin-top: 15px; margin-right: 5%; padding: 10px"
-                                id="create_reservation"
-                                th:text="#{reservation.confirm}"></button>
 
-                        <button type="button" class="btn btn-outline-danger"
-                                style="margin-top: 15px; margin-right: 5%; padding: 10px"
-                                onclick="discardReservationAdmin()"
-                                th:text="#{reservation.discard}"></button>
-                    </div>
-                </form>
+                <div class="d-flex flex-row-reverse">
+                    <button type="button"
+                            class="btn btn-outline-primary"
+                            style="margin-top: 15px; margin-right: 5%; padding: 10px"
+                            id="create_reservation"
+                            onclick="showConfirmReservationAdmin()"
+                            th:text="#{reservation.confirm}"></button>
+
+                    <button type="button" class="btn btn-outline-danger"
+                            style="margin-top: 15px; margin-right: 5%; padding: 10px"
+                            onclick="discardReservationAdmin()"
+                            th:text="#{reservation.discard}"></button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -208,60 +206,21 @@
         </form>
     </dialog>
 
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        const apartmentSelected = /*[[${apartmentSelected}]]*/ false;
-        /*]]>*/
+    <dialog id="confirm-reservation-admin" style="background: white">
+        <div class="modal-header">
+            <h5 class="modal-title" th:text="#{dialog.confirmation}"></h5>
+        </div>
 
-        const dialog_select = document.getElementById("select-apartment");
-        const dialog_confirm_user = document.getElementById("confirm-reservation-user");
-        const dialog_discard_admin = document.getElementById("discard-reservation-admin");
-        const dialog_discard_user = document.getElementById("discard-reservation-user");
-        const dialog_make_payment = document.getElementById("dialog-make-payment")
+        <div class="form-body">
+            <p th:text="#{dialog.confirm_reservation}"></p>
+        </div>
 
-        if (apartmentSelected){
-            dialog_select.showModal()
-        }
+        <form method="post" th:action="@{'/admin/reservation/'+${reservation.id}+'/confirm'}">
+            <button type="button" class="btn btn-secondary" onclick="hideConfirmReservationAdmin()" th:text="#{dialog.cancel}" style="margin: 5px"></button>
+            <button type="submit" class="btn btn-outline-primary" style="float: right; margin: 5px" th:text="#{dialog.confirm}"></button>
+        </form>
+    </dialog>
 
-        function discardReservationAdmin(){
-            dialog_discard_admin.showModal()
-        }
-
-        function hideDiscardReservationAdmin(){
-            dialog_discard_admin.close();
-        }
-
-        function confirmReservationUser(){
-            dialog_confirm_user.showModal()
-        }
-
-        function hideConfirmReservationUser(){
-            dialog_confirm_user.close()
-        }
-
-        function discardReservationUser(){
-            dialog_discard_user.showModal()
-        }
-
-        function hideDiscardReservationUser(){
-            dialog_discard_user.close();
-        }
-
-        function makePaymentDialog(){
-            dialog_make_payment.showModal()
-        }
-
-        function hideMakePaymentDialog(){
-            dialog_make_payment.close()
-        }
-
-        document.getElementById("cancel-select-apartment").addEventListener('click', function() {
-            dialog_select.close();
-        });
-
-
-    </script>
-
-
+    <script  th:inline="javascript" type="text/javascript" th:src="@{/js/reservation/reservation.js}"></script>
 </body>
 </html>

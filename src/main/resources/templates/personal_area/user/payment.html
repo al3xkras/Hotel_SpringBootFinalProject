@@ -109,13 +109,9 @@
             </div>
         </div>
     </div>
-<script>
-    document.getElementById("expirationDate").min = new Date().toLocaleDateString('en-ca')
 
-    $(function() {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
-</script>
+    <script type="text/javascript" th:src="@{/js/payment.js}"></script>
+
 </body>
 
 </html>
