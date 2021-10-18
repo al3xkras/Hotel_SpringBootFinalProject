@@ -1,6 +1,7 @@
 package ua.alexkras.hotel.controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import ua.alexkras.hotel.service.ReservationService;
 import java.time.LocalDate;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -35,8 +37,12 @@ public class AdminController {
     @GetMapping
     public String adminMainPage(Model model){
 
+        if (!reservationService.updateCurrentPendingReservations()){
+            return "redirect:/error";
+        }
+
         model.addAttribute("pendingReservations",
-                reservationService.getPendingReservations());
+                reservationService.getCurrentPendingReservations());
 
         return "personal_area/admin";
     }
@@ -57,8 +63,10 @@ public class AdminController {
         model.addAttribute("isCompleted", isCompleted);
 
         if (!isCompleted) {
-            model.addAttribute("matchingApartments",
-                    apartmentService.findApartmentsMatchingReservation(reservationService.getCurrentReservation()));
+            if (!apartmentService.updateApartmentsMatchingCurrentReservation()) {
+                return "redirect:/error";
+            }
+            model.addAttribute("matchingApartments", apartmentService.getApartmentsMatchingCurrentReservation());
         }
 
         return "/reservation/reservation";

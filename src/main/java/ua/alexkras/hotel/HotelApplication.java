@@ -3,18 +3,14 @@ package ua.alexkras.hotel;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import ua.alexkras.hotel.dao.UserDAO;
-import ua.alexkras.hotel.model.MySqlStrings;
-import ua.alexkras.hotel.entity.User;
-import ua.alexkras.hotel.model.UserType;
-import java.sql.*;
-import java.time.LocalDate;
 
 
 @SpringBootApplication
@@ -52,4 +48,5 @@ public class HotelApplication implements WebMvcConfigurer {
 		registry.addResourceHandler("/**")
 				.addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
 	}
+
 }

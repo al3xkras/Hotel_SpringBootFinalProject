@@ -3,8 +3,6 @@ package ua.alexkras.hotel.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ua.alexkras.hotel.controller.ApartmentController;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ApartmentStatus;
@@ -16,13 +14,18 @@ import java.util.Optional;
 @Service
 public class ApartmentService {
     private final ApartmentRepository apartmentRepository;
+    private final ReservationService reservationService;
 
     private Apartment currentApartment;
     private List<Apartment> apartments;
 
+    private List<Apartment> apartmentsMatchingCurrentReservation;
+
     @Autowired
-    public ApartmentService(ApartmentRepository apartmentRepository){
+    public ApartmentService(ApartmentRepository apartmentRepository,
+                            ReservationService reservationService){
         this.apartmentRepository=apartmentRepository;
+        this.reservationService=reservationService;
     }
 
     public List<Apartment> getAllApartments(){
@@ -42,6 +45,7 @@ public class ApartmentService {
         }
         clearApartments();
         clearCurrentApartment();
+        clearApartmentsMatchingCurrentReservation();
         return true;
     }
 
@@ -54,6 +58,7 @@ public class ApartmentService {
         }
         clearApartments();
         clearCurrentApartment();
+        clearApartmentsMatchingCurrentReservation();
         return true;
     }
 
@@ -85,6 +90,22 @@ public class ApartmentService {
         return true;
     }
 
+    public boolean updateApartmentsMatchingCurrentReservation(){
+        if (apartmentsMatchingCurrentReservation==null || apartmentsMatchingCurrentReservation.isEmpty()) {
+            try {
+                apartmentsMatchingCurrentReservation = findApartmentsMatchingReservation(reservationService.getCurrentReservation());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void clearApartmentsMatchingCurrentReservation(){
+        apartmentsMatchingCurrentReservation=null;
+    }
+
     public void clearApartments(){apartments=null;}
 
     public Apartment getCurrentApartment() {
@@ -93,5 +114,9 @@ public class ApartmentService {
 
     public List<Apartment> getApartments() {
         return apartments;
+    }
+
+    public List<Apartment> getApartmentsMatchingCurrentReservation() {
+        return apartmentsMatchingCurrentReservation;
     }
 }

@@ -1,5 +1,6 @@
 package ua.alexkras.hotel.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.alexkras.hotel.entity.Apartment;
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
+@Slf4j
 @Service
 public class ReservationService {
 
@@ -19,6 +21,7 @@ public class ReservationService {
 
     private Reservation currentReservation;
     private List<Reservation> currentUserActiveReservations;
+    private List<Reservation> currentPendingReservations;
 
     private static final long daysToCancelPayment = 1L;
 
@@ -73,6 +76,7 @@ public class ReservationService {
         }
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
+        clearCurrentPendingReservations();
         return true;
     }
 
@@ -85,6 +89,7 @@ public class ReservationService {
         }
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
+        clearCurrentPendingReservations();
         return true;
     }
 
@@ -102,6 +107,7 @@ public class ReservationService {
         }
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
+        clearCurrentPendingReservations();
         return true;
     }
 
@@ -114,11 +120,13 @@ public class ReservationService {
         }
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
+        clearCurrentPendingReservations();
         return true;
     }
 
     public boolean updateCurrentReservation(int reservationId){
         if (currentReservation==null || currentReservation.getId()!=reservationId){
+            log.info("updating current reservation...");
             currentReservation = getReservationById(reservationId).orElse(null);
         }
         if (currentReservation==null){
@@ -141,6 +149,18 @@ public class ReservationService {
 
         currentUserActiveReservations.forEach(this::updateReservationExpiredStatus);
 
+        return true;
+    }
+
+    public boolean updateCurrentPendingReservations(){
+        if (currentPendingReservations==null || currentPendingReservations.isEmpty()) {
+            try {
+                currentPendingReservations = getPendingReservations();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
         return true;
     }
 
@@ -167,11 +187,19 @@ public class ReservationService {
         currentReservation=null;
     }
 
+    public void clearCurrentPendingReservations(){
+        currentPendingReservations=null;
+    }
+
     public Reservation getCurrentReservation() {
         return currentReservation;
     }
 
     public List<Reservation> getCurrentUserActiveReservations() {
         return currentUserActiveReservations;
+    }
+
+    public List<Reservation> getCurrentPendingReservations() {
+        return currentPendingReservations;
     }
 }

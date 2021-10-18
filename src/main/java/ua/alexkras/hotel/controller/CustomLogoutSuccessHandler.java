@@ -42,6 +42,7 @@ public class CustomLogoutSuccessHandler extends
 
         apartmentService.clearApartments();
         apartmentService.clearCurrentApartment();
+        apartmentService.clearApartmentsMatchingCurrentReservation();
 
         reservationService.clearCurrentReservation();
         reservationService.clearCurrentUserActiveReservations();

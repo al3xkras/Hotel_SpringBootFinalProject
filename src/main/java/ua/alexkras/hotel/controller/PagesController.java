@@ -2,6 +2,7 @@ package ua.alexkras.hotel.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +10,12 @@ import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.UserType;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Controller
-public class PagesController {
+public class PagesController implements ErrorController {
     private final ReservationService reservationService;
     private final AuthController authController;
 
@@ -49,9 +52,15 @@ public class PagesController {
         return "index";
     }
 
-    @GetMapping("/error")
-    public String errorPage(){
+    @RequestMapping("/error")
+    public String handleError() {
         return "error_page";
     }
 
+    /*
+    @ExceptionHandler({ CustomException1.class, CustomException2.class })
+    public void handleException() {
+
+    }
+     */
 }
