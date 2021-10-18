@@ -13,6 +13,9 @@ public class PaymentService {
     private final ReservationService reservationService;
 
     private Reservation currentPaymentReservation;
+    public void clearEverything(){
+        currentPaymentReservation=null;
+    }
 
     @Autowired
     public PaymentService(PaymentRepository paymentRepository,

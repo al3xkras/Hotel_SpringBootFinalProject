@@ -40,14 +40,9 @@ public class CustomLogoutSuccessHandler extends
 
         UserDAO.setCurrentUser(null);
 
-        apartmentService.clearApartments();
-        apartmentService.clearCurrentApartment();
-        apartmentService.clearApartmentsMatchingCurrentReservation();
-
-        reservationService.clearCurrentReservation();
-        reservationService.clearCurrentUserActiveReservations();
-
-        paymentService.clearCurrentPaymentReservation();
+        apartmentService.clearEverything();
+        reservationService.clearEverything();
+        paymentService.clearEverything();
 
         super.onLogoutSuccess(request, response, authentication);
     }

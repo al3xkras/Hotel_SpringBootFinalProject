@@ -22,8 +22,13 @@ public class ReservationService {
     private Reservation currentReservation;
     private List<Reservation> currentUserActiveReservations;
     private List<Reservation> currentPendingReservations;
+    public void clearEverything(){
+        currentReservation=null;
+        currentUserActiveReservations=null;
+        currentPendingReservations=null;
+    }
 
-    private static final long daysToCancelPayment = 1L;
+    private static final long daysToCancelPayment = 2L;
 
     private final LocalDate now = LocalDate.now();
 

@@ -4,14 +4,11 @@ package ua.alexkras.hotel.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.UserType;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Controller

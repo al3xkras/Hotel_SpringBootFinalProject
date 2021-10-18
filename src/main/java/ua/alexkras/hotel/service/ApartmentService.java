@@ -18,6 +18,10 @@ public class ApartmentService {
 
     private Apartment currentApartment;
     private List<Apartment> apartments;
+    public void clearEverything(){
+        currentApartment=null;
+        apartments=null;
+    }
 
     private List<Apartment> apartmentsMatchingCurrentReservation;
 
