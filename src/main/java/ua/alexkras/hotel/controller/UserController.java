@@ -13,9 +13,13 @@ import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.PaymentService;
 import ua.alexkras.hotel.service.ReservationService;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Controller
 @RequestMapping("/user")
@@ -52,8 +56,7 @@ public class UserController {
             return "redirect:/error";
         }
 
-        model.addAttribute("allReservations",
-                reservationService.getCurrentUserActiveReservations());
+        model.addAttribute("allReservations", reservationService.getCurrentUserActiveReservations());
 
         return "personal_area/user";
     }
@@ -90,7 +93,8 @@ public class UserController {
 
 
         if (!authController.getCurrentUser().isPresent() ||
-                reservationService.getCurrentReservation().getUserId()!=authController.getCurrentUser().get().getId()){
+                reservationService.getCurrentReservation().getUserId()!=authController.getCurrentUser().get().getId() ||
+                reservationService.getCurrentReservation().isExpired()){
             return "redirect:/";
         }
 
@@ -118,7 +122,8 @@ public class UserController {
 
         if (!authController.getCurrentUser().isPresent() ||
                 reservationService.getCurrentReservation().getUserId()!=
-                        authController.getCurrentUser().get().getId()){
+                        authController.getCurrentUser().get().getId() ||
+                reservationService.getCurrentReservation().isExpired()){
             return "redirect:/";
         }
 

@@ -87,7 +87,7 @@
                             style="margin-left: 5px"></label>
                 </div><br/>
 
-                <div class="d-flex flex-row-reverse">
+                <div class="d-flex flex-row-reverse" th:if="${!reservation.expired}">
                     <button type="submit" class="btn btn-outline-primary"
                             th:if="${!reservation.paid and reservation.reservationStatus.name().equalsIgnoreCase('reserved')}"
                             th:onclick="'window.location = \'/user/reservation/'+${reservation.id}+'/make_payment\';'"
@@ -221,6 +221,12 @@
         </form>
     </dialog>
 
-    <script  th:inline="javascript" type="text/javascript" th:src="@{/js/reservation/reservation.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const apartmentSelected = /*[[${apartmentSelected}]]*/ false;
+        /*]]>*/
+    </script>
+
+    <script type="text/javascript" th:src="@{/js/reservation/reservation.js}"></script>
 </body>
 </html>

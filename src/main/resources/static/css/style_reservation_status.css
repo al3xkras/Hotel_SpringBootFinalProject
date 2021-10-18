@@ -48,9 +48,17 @@
 }
 
 .reservation-unpaid{
-    color: red;
+    color: #bdbd00;
 }
 
 .reservation-unpaid:hover{
+    color: #8d8d00;
+}
+
+.reservation-expired{
+    color: red;
+}
+
+.reservation-expired:hover{
     color: #8a0000;
 }

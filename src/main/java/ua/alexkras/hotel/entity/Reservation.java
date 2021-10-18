@@ -7,6 +7,7 @@ import ua.alexkras.hotel.model.ApartmentClass;
 import ua.alexkras.hotel.model.ReservationStatus;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -41,6 +42,9 @@ public class Reservation {
     @Column(name = "SUBMIT_DATE", nullable = false)
     private LocalDateTime submitDate;
 
+    @Column(name = "ADMIN_CONFIRMATION_DATE")
+    private LocalDate adminConfirmationDate;
+
     @Column(name = "PLACES",nullable = false)
     private int places;
 
@@ -59,6 +63,12 @@ public class Reservation {
 
     @Column(name = "IS_ACTIVE", nullable = false, columnDefinition = "boolean default 1")
     private boolean isActive = true;
+
+    @Transient
+    private boolean expired;
+
+    @Transient
+    private Long daysUntilExpiration;
 
     public boolean isCompleted(){
         return apartmentId!=null & apartmentPrice!=null;

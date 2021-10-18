@@ -14,6 +14,8 @@ import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
+
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Controller
@@ -87,7 +89,7 @@ public class AdminController {
 
         if (!reservationService.updateCurrentReservation(reservationId) ||
                 !reservationService.getCurrentReservation().isCompleted() ||
-                !reservationService.updateReservationStatusById(reservationId, ReservationStatus.CONFIRMED)){
+                !reservationService.updateReservationStatusAndConfirmationDateById(reservationId, ReservationStatus.CONFIRMED, LocalDate.now())){
             return "redirect:/error";
         }
 
@@ -108,13 +110,11 @@ public class AdminController {
 
         reservationService.updateCurrentReservation(reservationId);
 
-        if (!apartment.matchesReservation(reservationService.getCurrentReservation())){
+        if (!apartment.matchesReservation(reservationService.getCurrentReservation()) ||
+            !reservationService.updateReservationWithApartmentById(apartment,reservationId, LocalDate.now()) ||
+            !apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED)){
             return "redirect:/error";
         }
-
-        reservationService.updateReservationWithApartmentById(apartment,reservationId);
-
-        apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED);
 
         return "redirect:/";
     }

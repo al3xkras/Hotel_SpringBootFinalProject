@@ -70,8 +70,16 @@
                     th:text="${reservation.apartmentPrice==null?'-':reservation.apartmentPrice}"></td>
                 <td th:class="${reservation.reservationStatus.htmlClass}"
                     th:text="#{${reservation.reservationStatus.resourceName}}"></td>
-                <td th:text="#{${reservation.paid?'reservation.paid':'reservation.unpaid'}}"
-                    th:class="${reservation.paid?'reservation-paid':'reservation-unpaid'}"></td>
+                <td>
+                    <label th:if="${reservation.paid}" th:text="#{reservation.paid}"
+                           class="reservation-paid"></label>
+                    <label th:if="${reservation.expired and !reservation.paid}" th:text="#{reservation.status.expired}"
+                           class="reservation-expired"></label>
+                    <label th:if="${!reservation.expired and !reservation.paid and reservation.daysUntilExpiration!=null}" class="reservation-unpaid"
+                            th:text="#{reservation.unpaid1}+${reservation.daysUntilExpiration}+' '+#{reservation.unpaid2}"></label>
+                    <label th:if="${!reservation.expired and !reservation.paid and reservation.daysUntilExpiration==null}" class="reservation-unpaid"
+                           th:text="#{reservation.unpaid}"></label>
+                </td>
             </tr>
         </table>
     </div>

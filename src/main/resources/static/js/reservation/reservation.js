@@ -1,7 +1,3 @@
-/*<![CDATA[*/
-const apartmentSelected = /*[[${apartmentSelected}]]*/ false;
-/*]]>*/
-
 const dialog_select = document.getElementById("select-apartment");
 const dialog_confirm_user = document.getElementById("confirm-reservation-user");
 const dialog_discard_admin = document.getElementById("discard-reservation-admin");

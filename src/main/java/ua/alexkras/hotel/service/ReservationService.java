@@ -7,8 +7,11 @@ import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.repository.ReservationRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 @Transactional
@@ -18,6 +21,10 @@ public class ReservationService {
 
     private Reservation currentReservation;
     private List<Reservation> currentUserActiveReservations;
+
+    private static final long daysToCancelPayment = 1L;
+
+    private final LocalDate now = LocalDate.now();
 
     @Autowired
     public ReservationService(ReservationRepository reservationRepository){
@@ -67,12 +74,25 @@ public class ReservationService {
         return true;
     }
 
-    public boolean updateReservationWithApartmentById(Apartment apartment, int id){
+    public boolean updateReservationStatusAndConfirmationDateById(int id, ReservationStatus reservationStatus, LocalDate confirmationDate){
         try {
-            reservationRepository.updateApartmentIdAndPriceAndReservationStatusById(
+            reservationRepository.updateReservationStatusAndConfirmationDateById(id, reservationStatus, confirmationDate);
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        clearCurrentReservation();
+        clearCurrentUserActiveReservations();
+        return true;
+    }
+
+    public boolean updateReservationWithApartmentById(Apartment apartment, int id, LocalDate confirmationDate){
+        try {
+            reservationRepository.updateApartmentIdAndPriceAndReservationStatusAndConfirmationDateById(
                     apartment.getId(),
                     apartment.getPrice(),
                     ReservationStatus.CONFIRMED,
+                    confirmationDate,
                     id);
         } catch (Exception e){
             e.printStackTrace();
@@ -98,17 +118,17 @@ public class ReservationService {
     public boolean updateCurrentReservation(int reservationId){
         if (currentReservation==null || currentReservation.getId()!=reservationId){
             currentReservation = getReservationById(reservationId).orElse(null);
-            return currentReservation != null;
         }
+        if (currentReservation==null){
+            return false;
+        }
+        updateReservationExpiredStatus(currentReservation);
         return true;
     }
 
-    public void clearCurrentReservation(){
-        currentReservation=null;
-    }
-
     public boolean updateCurrentUserActiveReservationsById(int userId){
-        if (currentUserActiveReservations==null || currentUserActiveReservations.isEmpty()){
+        if (currentUserActiveReservations==null || currentUserActiveReservations.isEmpty() ||
+                currentUserActiveReservations.get(0).getUserId()!=userId){
             try {
                 currentUserActiveReservations = getActiveReservationsByUserId(userId);
             } catch (Exception e){
@@ -116,15 +136,34 @@ public class ReservationService {
                 return false;
             }
         }
-        //Assuming all the reservations in list have the same userId
-        else if (currentUserActiveReservations.get(0).getUserId()!=userId){
-            currentUserActiveReservations = getActiveReservationsByUserId(userId);
-        }
+
+        currentUserActiveReservations.forEach(this::updateReservationExpiredStatus);
 
         return true;
     }
 
+    private void updateReservationExpiredStatus(Reservation reservation){
+        if (reservation.getAdminConfirmationDate()==null){
+            reservation.setExpired(false);
+            return;
+        }
+
+        LocalDate submitDate=reservation.getAdminConfirmationDate();
+        long daysBetween = DAYS.between(now,submitDate);
+
+        reservation.setExpired(daysBetween<0 || daysBetween>=daysToCancelPayment);
+
+        if (reservation.getReservationStatus().equals(ReservationStatus.PENDING)){
+            reservation.setExpired(false);
+        }
+        reservation.setDaysUntilExpiration(daysToCancelPayment-daysBetween);
+    }
+
     public void clearCurrentUserActiveReservations(){currentUserActiveReservations=null;}
+
+    public void clearCurrentReservation(){
+        currentReservation=null;
+    }
 
     public Reservation getCurrentReservation() {
         return currentReservation;
