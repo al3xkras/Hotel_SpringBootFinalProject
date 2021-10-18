@@ -1,5 +1,6 @@
 package ua.alexkras.hotel.dao;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 
+@Slf4j
 public class UserDAO implements UserDetailsService {
 
     private static User currentUser;
@@ -29,7 +31,8 @@ public class UserDAO implements UserDetailsService {
         PreparedStatement addUserIfNotExists = conn.prepareStatement(
                 String.format(MySqlStrings.sqlInsertIntoUserDB, user.toSqlString()));
 
-        System.out.printf(MySqlStrings.sqlInsertIntoUserDB +"\n", user.toSqlString());
+
+        log.info(String.format(MySqlStrings.sqlInsertIntoUserDB +"\n", user.toSqlString()));
 
         addUserIfNotExists.execute();
 
@@ -74,7 +77,7 @@ public class UserDAO implements UserDetailsService {
 
         } catch (ParseException e){
             e.printStackTrace();
-            System.out.printf("Cannot parse Date string \"%s\" using %s\n",birthdayStr,MySqlStrings.dateFormat);
+            log.info(String.format("Cannot parse Date string \"%s\" using %s\n",birthdayStr,MySqlStrings.dateFormat));
         }
 
         user.setGender(users.getString(MySqlStrings.colUserGender));
