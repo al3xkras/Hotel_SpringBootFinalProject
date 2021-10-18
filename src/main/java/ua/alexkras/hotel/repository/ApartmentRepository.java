@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.model.ApartmentClass;
 import ua.alexkras.hotel.model.ApartmentStatus;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public interface ApartmentRepository extends JpaRepository<Apartment,Long> {
     Optional<Apartment> findApartmentById(Integer id);
 
+    @Transactional
     @Modifying(clearAutomatically = true)
     @Query("update Apartment apartment set apartment.status =:apartmentStatus where apartment.id =:id")
     void updateApartmentStatusById(@Param("id") int id, @Param("apartmentStatus") ApartmentStatus apartmentStatus);

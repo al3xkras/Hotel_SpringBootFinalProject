@@ -2,7 +2,6 @@ package ua.alexkras.hotel.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ReservationStatus;
@@ -14,7 +13,6 @@ import java.util.Optional;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
-@Transactional
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -29,6 +27,10 @@ public class ReservationService {
     @Autowired
     public ReservationService(ReservationRepository reservationRepository){
         this.reservationRepository=reservationRepository;
+    }
+
+    public void updateAllExpiredReservations(){
+
     }
 
     public void addReservation (Reservation reservation){
