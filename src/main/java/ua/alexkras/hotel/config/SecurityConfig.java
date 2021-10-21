@@ -12,21 +12,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import ua.alexkras.hotel.controller.CustomLogoutSuccessHandler;
+import ua.alexkras.hotel.model.HotelUserDetailsService;
 import ua.alexkras.hotel.model.UserType;
-import ua.alexkras.hotel.service.UserService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomLogoutSuccessHandler logoutSuccessHandler;
-    private final UserService userService;
 
     @Autowired
-    public SecurityConfig(CustomLogoutSuccessHandler logoutSuccessHandler,
-                          UserService userService){
+    public SecurityConfig(CustomLogoutSuccessHandler logoutSuccessHandler){
         this.logoutSuccessHandler=logoutSuccessHandler;
-        this.userService=userService;
     }
 
     @Override
@@ -65,7 +62,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     protected UserDetailsService userDetailsService() {
-        return userService;
+        return new HotelUserDetailsService();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder(12);
     }
 
 }

@@ -1,17 +1,13 @@
 package ua.alexkras.hotel.model;
 
-import java.text.SimpleDateFormat;
-
 public interface MySqlStrings {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
     String root = "jdbc:mysql://localhost:3306/";
     String databaseName="hotel_db";
     String tableUser = "user";
 
     String colUserId = "ID";
-    String colUserName = "FIRST_NAME";
-    String colUserSurname = "LAST_NAME";
+    String colUserName = "NAME";
+    String colUserSurname = "SURNAME";
     String colUserUsername = "USERNAME";
     String colUserPassword = "PASSWORD";
     String colUserPhoneNumber = "PHONE_NUMBER";
