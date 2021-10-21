@@ -64,8 +64,8 @@ public class Reservation {
     @Column(name = "IS_ACTIVE", nullable = false, columnDefinition = "boolean default 1")
     private boolean isActive = true;
 
-    @Transient
-    private boolean expired;
+    @Column(name = "EXPIRED", nullable = false, columnDefinition = "boolean default 0")
+    private boolean expired = false;
 
     @Transient
     private Long daysUntilExpiration;

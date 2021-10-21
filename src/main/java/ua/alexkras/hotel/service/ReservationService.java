@@ -5,8 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
+import ua.alexkras.hotel.model.ApartmentStatus;
+import ua.alexkras.hotel.model.MySqlStrings;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.repository.ReservationRepository;
+
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +32,7 @@ public class ReservationService {
         currentPendingReservations=null;
     }
 
-    private static final long daysToCancelPayment = 2L;
+    private static final long daysToCancelPayment = 0L;
 
     private final LocalDate now = LocalDate.now();
 
@@ -37,8 +41,39 @@ public class ReservationService {
         this.reservationRepository=reservationRepository;
     }
 
-    public void updateAllExpiredReservations(){
+    public boolean updateAllExpiredReservations(){
+        try (Connection conn = DriverManager.getConnection(MySqlStrings.root, MySqlStrings.user, MySqlStrings.password);
+             PreparedStatement updateExpired = conn.prepareStatement("UPDATE " +
+                     "hotel_db.reservations SET " +
+                     "status=?,"+
+                     "expired=true "+
+                     "WHERE not expired and not is_paid and " +
+                     "admin_confirmation_date is not null and " +
+                     "DATEDIFF(admin_confirmation_date,?)>=?");
+             PreparedStatement setExpiredReservationApartmentsAvailable = conn.prepareStatement("UPDATE " +
+                     "hotel_db.apartments SET "+
+                     "apartment_status=? "+
+                     "WHERE apartment_status='"+ApartmentStatus.RESERVED+"' and "+
+                     "id IN (SELECT apartment_id FROM hotel_db.reservations WHERE expired and is_active)");
+             PreparedStatement updateActive = conn.prepareStatement("UPDATE " +
+                     "hotel_db.reservations SET " +
+                     "is_active=false "+
+                     "WHERE is_active and expired ")
+             ){
+            updateExpired.setString(1,ReservationStatus.CANCELLED.name());
+            updateExpired.setDate(2, Date.valueOf(LocalDate.now()));
+            updateExpired.setLong(3,daysToCancelPayment);
+            updateExpired.executeUpdate();
 
+            setExpiredReservationApartmentsAvailable.setString(1,ApartmentStatus.AVAILABLE.name());
+            setExpiredReservationApartmentsAvailable.executeUpdate();
+
+            updateActive.executeUpdate();
+        } catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     public void addReservation (Reservation reservation){
@@ -131,13 +166,12 @@ public class ReservationService {
 
     public boolean updateCurrentReservation(int reservationId){
         if (currentReservation==null || currentReservation.getId()!=reservationId){
-            log.info("updating current reservation...");
             currentReservation = getReservationById(reservationId).orElse(null);
         }
         if (currentReservation==null){
             return false;
         }
-        updateReservationExpiredStatus(currentReservation);
+        updateReservationDaysUntilExpiration(currentReservation);
         return true;
     }
 
@@ -152,7 +186,7 @@ public class ReservationService {
             }
         }
 
-        currentUserActiveReservations.forEach(this::updateReservationExpiredStatus);
+        currentUserActiveReservations.forEach(this::updateReservationDaysUntilExpiration);
 
         return true;
     }
@@ -169,20 +203,12 @@ public class ReservationService {
         return true;
     }
 
-    private void updateReservationExpiredStatus(Reservation reservation){
+    private void updateReservationDaysUntilExpiration(Reservation reservation){
         if (reservation.getAdminConfirmationDate()==null){
-            reservation.setExpired(false);
             return;
         }
-
         LocalDate submitDate=reservation.getAdminConfirmationDate();
         long daysBetween = DAYS.between(now,submitDate);
-
-        reservation.setExpired(daysBetween<0 || daysBetween>=daysToCancelPayment);
-
-        if (reservation.getReservationStatus().equals(ReservationStatus.PENDING)){
-            reservation.setExpired(false);
-        }
         reservation.setDaysUntilExpiration(daysToCancelPayment-daysBetween);
     }
 

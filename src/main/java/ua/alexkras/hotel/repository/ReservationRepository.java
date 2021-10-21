@@ -59,11 +59,4 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Modifying(clearAutomatically = true)
     @Query("update Reservation reservation set reservation.isPaid =:isPaid where reservation.id =:id")
     void updateIsPaidById(@Param("id") int id, @Param("isPaid") boolean isPaid);
-
-    /*@Transactional
-    @Modifying(clearAutomatically = true)
-    @Query("update Reservation reservation set reservation.isPaid =:isPaid where reservation.id =:id")
-    void updateReservationStatusAndActiveAndExpired(){
-    }
-     */
 }
