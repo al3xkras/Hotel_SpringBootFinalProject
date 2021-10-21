@@ -1,6 +1,7 @@
 package ua.alexkras.hotel.controller;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,11 +29,13 @@ public class AuthController {
 
     @Bean
     public Optional<User> getCurrentUser(){
-        UserDetails currentUserDetails =  HotelUserDetailsService.getCurrentUser();
 
-        if (currentUserDetails==null){
-            return Optional.empty();
+        if (HotelUserDetailsService.getCurrentUser()==null){
+            UserDetails springUserDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            HotelUserDetailsService.updateCurrentUserDetails(springUserDetails.getUsername());
         }
+
+        UserDetails currentUserDetails = HotelUserDetailsService.getCurrentUser();
 
         if (currentUser!=null && currentUser.getUsername()
                 .equalsIgnoreCase(currentUserDetails.getUsername())) {
