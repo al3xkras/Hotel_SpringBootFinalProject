@@ -1,6 +1,5 @@
 package ua.alexkras.hotel;
 
-import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.MySqlStrings;
 import ua.alexkras.hotel.model.UserType;
@@ -16,12 +15,11 @@ public class FirstLaunch {
              PreparedStatement createUserTable = conn.prepareStatement(MySqlStrings.sqlCreateUserTableIfNotExists)
         ) {
             createDB.execute();
-            createUserTable.execute();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Unable to establish MqSQL connection and create database: "+MySqlStrings.databaseName);
         }
-
+        /*
         try {
             UserDAO.addUser(
                     new User("Admin", "0",
@@ -44,5 +42,7 @@ public class FirstLaunch {
             e.printStackTrace();
             System.out.println("Cannot add Admin accounts to hotel's database.");
         }
+
+         */
     }
 }

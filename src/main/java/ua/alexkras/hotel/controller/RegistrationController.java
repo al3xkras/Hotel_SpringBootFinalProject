@@ -8,16 +8,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.dto.RegistrationRequest;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.UserType;
+import ua.alexkras.hotel.service.UserService;
 import javax.validation.Valid;
-import java.sql.*;
 
 @Slf4j
 @Controller
 public class RegistrationController {
+
+    private final UserService userService;
+    public RegistrationController(UserService userService){
+        this.userService=userService;
+    }
 
     @GetMapping("/registration")
     public String registrationPage(Model model){
@@ -44,8 +48,8 @@ public class RegistrationController {
         User user = new User(request, UserType.USER);
 
         try{
-            UserDAO.addUser(user);
-        } catch (SQLException e) {
+            userService.addUser(user);
+        } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("usernameExists",true);
             return "registration";

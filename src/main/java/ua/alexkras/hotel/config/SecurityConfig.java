@@ -11,19 +11,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.controller.CustomLogoutSuccessHandler;
 import ua.alexkras.hotel.model.UserType;
+import ua.alexkras.hotel.service.UserService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomLogoutSuccessHandler logoutSuccessHandler;
+    private final UserService userService;
 
     @Autowired
-    public SecurityConfig(CustomLogoutSuccessHandler logoutSuccessHandler){
+    public SecurityConfig(CustomLogoutSuccessHandler logoutSuccessHandler,
+                          UserService userService){
         this.logoutSuccessHandler=logoutSuccessHandler;
+        this.userService=userService;
     }
 
     @Override
@@ -62,12 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     protected UserDetailsService userDetailsService() {
-        return new UserDAO();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(12);
+        return userService;
     }
 
 }

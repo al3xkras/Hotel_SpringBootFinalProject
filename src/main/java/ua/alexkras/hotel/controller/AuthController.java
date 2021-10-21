@@ -9,15 +9,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ua.alexkras.hotel.dao.UserDAO;
 import ua.alexkras.hotel.entity.User;
-
-import java.sql.SQLException;
+import ua.alexkras.hotel.model.CustomUserDetailsService;
+import ua.alexkras.hotel.service.UserService;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
+
+    private final UserService userService;
+
+    public AuthController(UserService userService){
+        this.userService=userService;
+    }
 
     @GetMapping("/login")
     public String getLoginPage(){
@@ -26,10 +31,11 @@ public class AuthController {
 
     @Bean
     public Optional<User> getCurrentUser(){
-        User currentUser =  UserDAO.getCurrentUser();
+        User currentUser =  CustomUserDetailsService.getCurrentUser();
 
-        if (currentUser!=null)
+        if (currentUser!=null) {
             return Optional.of(currentUser);
+        }
 
         UserDetails springSecurityUser;
 
@@ -39,16 +45,7 @@ public class AuthController {
             return Optional.empty();
         }
 
-        Optional<User> optionalUser = Optional.empty();
-
-        try {
-            optionalUser =  UserDAO.getUserByUsername(springSecurityUser.getUsername());
-            UserDAO.setCurrentUser(optionalUser.orElse(null));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return optionalUser;
+        return userService.getUserByUserName(springSecurityUser.getUsername());
     }
 
 }
