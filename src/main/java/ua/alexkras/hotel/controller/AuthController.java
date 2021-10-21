@@ -29,10 +29,16 @@ public class AuthController {
 
     @Bean
     public Optional<User> getCurrentUser(){
+        UserDetails springSecurityUser;
+
+        try {
+            springSecurityUser = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Exception e){
+            return Optional.empty();
+        }
 
         if (HotelUserDetailsService.getCurrentUser()==null){
-            UserDetails springUserDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            HotelUserDetailsService.updateCurrentUserDetails(springUserDetails.getUsername());
+            HotelUserDetailsService.updateCurrentUserDetails(springSecurityUser.getUsername());
         }
 
         UserDetails currentUserDetails = HotelUserDetailsService.getCurrentUser();
