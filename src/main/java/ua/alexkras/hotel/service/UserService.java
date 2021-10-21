@@ -3,6 +3,7 @@ package ua.alexkras.hotel.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.alexkras.hotel.entity.User;
+import ua.alexkras.hotel.model.HotelUserDetailsService;
 import ua.alexkras.hotel.repository.UserRepository;
 import java.util.Optional;
 
@@ -25,7 +26,16 @@ public class UserService {
     }
 
     public void addUser(User user){
-        userRepository.save(user);
+        String notEncodedPassword=user.getPassword();
+
+        try {
+            user.setPassword(HotelUserDetailsService.passwordEncoder().encode(user.getPassword()));
+            userRepository.save(user);
+        } catch (Exception e){
+            user.setPassword(notEncodedPassword);
+            throw e;
+        }
+
     }
 
 

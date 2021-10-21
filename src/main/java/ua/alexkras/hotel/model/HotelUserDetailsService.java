@@ -36,7 +36,7 @@ public class HotelUserDetailsService implements UserDetailsService {
 
             currentUserDetails = org.springframework.security.core.userdetails.User.builder()
                     .username(users.getString(MySqlStrings.colUserUsername))
-                    .password(passwordEncoder().encode(users.getString(MySqlStrings.colUserPassword)))
+                    .password(users.getString(MySqlStrings.colUserPassword))
                     .authorities(
                             new SimpleGrantedAuthority(
                                     Optional.of(UserType.valueOf(users.getString(MySqlStrings.colUserUserType))).orElse(UserType.USER).name()

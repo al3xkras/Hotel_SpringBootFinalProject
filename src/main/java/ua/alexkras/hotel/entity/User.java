@@ -15,8 +15,8 @@ import java.time.LocalDate;
 @ToString
 public class User {
     @Id
-    @GeneratedValue
-    @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
     private int id;
 
     @Column(name = "NAME", nullable = false, length = 25)

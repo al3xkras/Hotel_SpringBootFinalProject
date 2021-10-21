@@ -97,19 +97,15 @@ public class AdminController {
     public String confirmReservation(@PathVariable("id") Integer reservationId,
                                      @PathVariable("apartmentId") Integer apartmentId){
 
-        Optional<Apartment> optionalApartment = apartmentService.getApartmentById(apartmentId);
-        optionalApartment.orElseThrow(IllegalStateException::new);
-
-        Apartment apartment = optionalApartment.get();
-
+        apartmentService.updateCurrentApartment(apartmentId);
         reservationService.updateCurrentReservation(reservationId);
 
-        reservationService.updateReservationWithApartmentById(apartment,reservationId, LocalDate.now());
-        apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED);
-
-        if (!apartment.matchesReservation(reservationService.getCurrentReservation())){
+        if (!apartmentService.getCurrentApartment().matchesReservation(reservationService.getCurrentReservation())){
             return "redirect:/error";
         }
+
+        reservationService.updateReservationWithApartmentById(apartmentService.getCurrentApartment(),reservationId, LocalDate.now());
+        apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED);
 
         return "redirect:/";
     }
@@ -118,13 +114,14 @@ public class AdminController {
     public String dropReservation(@PathVariable("id") Integer reservationId){
 
         reservationService.updateCurrentReservation(reservationId);
-        reservationService.updateReservationStatusById(reservationId, ReservationStatus.CANCELLED);
 
         if (reservationService.getCurrentReservation().getApartmentId()!=null) {
             apartmentService.updateApartmentStatusById(
                     reservationService.getCurrentReservation().getApartmentId(),
                     ApartmentStatus.AVAILABLE);
         }
+
+        reservationService.updateReservationStatusById(reservationId, ReservationStatus.CANCELLED);
 
         return "redirect:/";
     }

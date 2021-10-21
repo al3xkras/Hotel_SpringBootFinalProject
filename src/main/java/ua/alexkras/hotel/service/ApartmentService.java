@@ -22,6 +22,7 @@ public class ApartmentService {
         apartments=null;
     }
 
+    private Integer currentReservationId;
     private List<Apartment> apartmentsMatchingCurrentReservation;
 
     @Autowired
@@ -73,8 +74,10 @@ public class ApartmentService {
     }
 
     public void updateApartmentsMatchingCurrentReservation(){
-        if (apartmentsMatchingCurrentReservation==null || apartmentsMatchingCurrentReservation.isEmpty()) {
+        if (apartmentsMatchingCurrentReservation==null || apartmentsMatchingCurrentReservation.isEmpty() ||
+                currentReservationId==null || currentReservationId!=reservationService.getCurrentReservation().getId()) {
             apartmentsMatchingCurrentReservation = findApartmentsMatchingReservation(reservationService.getCurrentReservation());
+            currentReservationId=reservationService.getCurrentReservation().getId();
         }
     }
 
