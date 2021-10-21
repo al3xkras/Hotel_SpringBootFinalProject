@@ -3,12 +3,16 @@ package ua.alexkras.hotel.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.UserType;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
+
+import java.sql.SQLException;
 import java.util.Optional;
 
 @Controller
@@ -50,14 +54,12 @@ public class PagesController implements ErrorController {
     }
 
     @RequestMapping("/error")
-    public String handleError() {
+    public String handleUnexpectedError() {
         return "error_page";
     }
 
-    /*
-    @ExceptionHandler({ CustomException1.class, CustomException2.class })
-    public void handleException() {
-
+    @ExceptionHandler(RuntimeException.class)
+    public String databaseError(Model model) {
+        return "error_page";
     }
-     */
 }

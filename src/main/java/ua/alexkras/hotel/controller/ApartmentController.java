@@ -36,9 +36,7 @@ public class ApartmentController {
     @GetMapping("/apartments")
     public String listApartments(@RequestParam(value = "sort",required=false) String by,Model model){
 
-        if (!apartmentService.updateApartments()){
-            return "redirect:/error";
-        }
+        apartmentService.updateApartments();
 
         by = by==null?"price":by;
 
@@ -82,9 +80,7 @@ public class ApartmentController {
     public String apartmentPage(@PathVariable("id") Integer id,
                                 Model model){
 
-        if (id==null || !apartmentService.updateCurrentApartment(id)){
-            return "redirect:/apartments";
-        }
+        apartmentService.updateCurrentApartment(id);
 
         model.addAttribute("apartment",apartmentService.getCurrentApartment());
         model.addAttribute("reservation", new Reservation());
@@ -98,8 +94,7 @@ public class ApartmentController {
                                                      Model model){
 
         if (reservationDate.getFromDate().compareTo(reservationDate.getToDate())>=0){
-            if (!apartmentService.updateCurrentApartment(id))
-                return "redirect:/error";
+            apartmentService.updateCurrentApartment(id);
             model.addAttribute("apartment",apartmentService.getCurrentApartment());
             model.addAttribute("fromDateIsGreaterThanToDate",true);
             return "/apartment/apartment";

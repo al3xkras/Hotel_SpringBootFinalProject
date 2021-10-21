@@ -52,9 +52,7 @@ public class UserController {
             return "index";
         }
 
-        if ( !reservationService.updateCurrentUserActiveReservationsById(optionalUser.get().getId()) ){
-            return "redirect:/error";
-        }
+        reservationService.updateCurrentUserActiveReservationsById(optionalUser.get().getId());
 
         model.addAttribute("allReservations", reservationService.getCurrentUserActiveReservations());
 
@@ -66,9 +64,7 @@ public class UserController {
     public String reservationFromTable(@PathVariable("id") Integer reservationId,
                                        Model model){
 
-        if (reservationId==null || !reservationService.updateCurrentReservation(reservationId)){
-            return "redirect:/error";
-        }
+        reservationService.updateCurrentReservation(reservationId);
 
         if (!reservationService.getCurrentReservation().isCompleted()){
             return "redirect:/";
@@ -86,10 +82,7 @@ public class UserController {
     @PostMapping("/reservation/{id}/confirm")
     public String confirmReservation(@PathVariable("id") Integer reservationId){
 
-        if (reservationId==null ||
-                !reservationService.updateCurrentReservation(reservationId)){
-            return "redirect:/error";
-        }
+        reservationService.updateCurrentReservation(reservationId);
 
 
         if (!authController.getCurrentUser().isPresent() ||
@@ -101,9 +94,7 @@ public class UserController {
 
         reservationService.getCurrentReservation().setReservationStatus(ReservationStatus.RESERVED);
 
-        if (!reservationService.updateReservationStatusById(reservationId,ReservationStatus.RESERVED)){
-            return "redirect:/error";
-        }
+        reservationService.updateReservationStatusById(reservationId,ReservationStatus.RESERVED);
 
         return "redirect:/";
     }
@@ -111,14 +102,8 @@ public class UserController {
 
     @PostMapping("/reservation/{id}/cancel")
     public String cancelReservation(@PathVariable("id") Integer reservationId) {
-        Optional<Reservation> optionalReservation;
 
-        if (reservationId==null ||
-                !reservationService.updateCurrentReservation(reservationId)){
-            return "redirect:/error";
-        }
-
-        ;
+        reservationService.updateCurrentReservation(reservationId);
 
         if (!authController.getCurrentUser().isPresent() ||
                 reservationService.getCurrentReservation().getUserId()!=
@@ -127,19 +112,13 @@ public class UserController {
             return "redirect:/";
         }
 
+        apartmentService.updateApartmentStatusById(
+                reservationService.getCurrentReservation().getApartmentId(),
+                ApartmentStatus.AVAILABLE);
 
-        if (
-                !apartmentService.updateApartmentStatusById(
-                        reservationService.getCurrentReservation().getApartmentId(),
-                        ApartmentStatus.AVAILABLE
-                ) ||
-                !reservationService.updateReservationStatusById(
-                        reservationId,
-                        ReservationStatus.CANCELLED
-                )
-        ){
-            return "redirect:/error";
-        }
+        reservationService.updateReservationStatusById(
+                reservationId,
+                ReservationStatus.CANCELLED);
 
         return "redirect:/";
     }
@@ -152,9 +131,7 @@ public class UserController {
             return "redirect:/error";
         }
 
-        if (!paymentService.setCurrentPaymentReservationByReservationId(reservationId)){
-            return "redirect:/";
-        }
+        paymentService.setCurrentPaymentReservationByReservationId(reservationId);
 
         Payment payment = new Payment();
 
@@ -172,11 +149,11 @@ public class UserController {
     public String makePayment(@PathVariable("id") Integer reservationId,
                               @ModelAttribute("payment") Payment payment,
                               Model model){
-
-        if (reservationId==null || !authController.getCurrentUser().isPresent() ||
-                !paymentService.setCurrentPaymentReservationByReservationId(reservationId)){
+        if (reservationId==null || !authController.getCurrentUser().isPresent()){
             return "redirect:/";
         }
+
+        paymentService.setCurrentPaymentReservationByReservationId(reservationId);
 
         if (!payment.getCardCvv().matches("^(\\d{3})$")){
             payment.setReservationId(reservationId);
@@ -187,13 +164,7 @@ public class UserController {
             return "/personal_area/user/payment";
         }
 
-
-
-        if (!reservationService.updateCurrentReservation(reservationId)) {
-            return "redirect:/error";
-        }
-
-
+        reservationService.updateCurrentReservation(reservationId);
 
         if (authController.getCurrentUser().get().getId()!=
                 reservationService.getCurrentReservation().getUserId()){
@@ -208,10 +179,8 @@ public class UserController {
                 .getCurrentReservation().getApartmentPrice());
         payment.setPaymentDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
 
-        if (!paymentService.addPayment(payment) ||
-                !reservationService.updateReservationPaymentStatusById(reservationId,true)){
-            return "redirect:/error";
-        }
+        paymentService.addPayment(payment);
+        reservationService.updateReservationPaymentStatusById(reservationId,true);
 
         return "redirect:/";
     }

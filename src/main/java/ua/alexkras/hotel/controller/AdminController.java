@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ua.alexkras.hotel.entity.Apartment;
-import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.service.ApartmentService;
@@ -37,9 +36,7 @@ public class AdminController {
     @GetMapping
     public String adminMainPage(Model model){
 
-        if (!reservationService.updateCurrentPendingReservations()){
-            return "redirect:/error";
-        }
+        reservationService.updateCurrentPendingReservations();
 
         model.addAttribute("pendingReservations",
                 reservationService.getCurrentPendingReservations());
@@ -49,13 +46,7 @@ public class AdminController {
 
     @GetMapping("/reservation/{id}")
     public String pendingReservationPage(@PathVariable Integer id, Model model){
-        if (id==null){
-            return "redirect:/";
-        }
-
-        if (!reservationService.updateCurrentReservation(id)){
-            return "redirect:/error";
-        }
+        reservationService.updateCurrentReservation(id);
 
         model.addAttribute("reservation",reservationService.getCurrentReservation());
 
@@ -63,9 +54,7 @@ public class AdminController {
         model.addAttribute("isCompleted", isCompleted);
 
         if (!isCompleted) {
-            if (!apartmentService.updateApartmentsMatchingCurrentReservation()) {
-                return "redirect:/error";
-            }
+            apartmentService.updateApartmentsMatchingCurrentReservation();
             model.addAttribute("matchingApartments", apartmentService.getApartmentsMatchingCurrentReservation());
         }
 
@@ -77,16 +66,15 @@ public class AdminController {
                                          @PathVariable("apartmentId") Integer apartmentId,
                                          Model model){
 
-        if (!reservationService.updateCurrentReservation(reservationId)){
-            return "redirect:/error";
-        }
+        reservationService.updateCurrentReservation(reservationId);
+        apartmentService.updateApartmentsMatchingCurrentReservation();
 
         reservationService.getCurrentReservation().setApartmentId(apartmentId);
 
         model.addAttribute("isCompleted",false);
         model.addAttribute("reservation",reservationService.getCurrentReservation());
         model.addAttribute("matchingApartments",
-                apartmentService.findApartmentsMatchingReservation(reservationService.getCurrentReservation()));
+                apartmentService.getApartmentsMatchingCurrentReservation());
         model.addAttribute("apartmentSelected",true);
 
         return "/reservation/reservation";
@@ -95,11 +83,12 @@ public class AdminController {
     @PostMapping("/reservation/{id}/confirm")
     public String confirmCompletedReservation(@PathVariable("id") Integer reservationId){
 
-        if (!reservationService.updateCurrentReservation(reservationId) ||
-                !reservationService.getCurrentReservation().isCompleted() ||
-                !reservationService.updateReservationStatusAndConfirmationDateById(reservationId, ReservationStatus.CONFIRMED, LocalDate.now())){
-            return "redirect:/error";
-        }
+        reservationService.updateCurrentReservation(reservationId);
+        reservationService.getCurrentReservation().isCompleted();
+        reservationService.updateReservationStatusAndConfirmationDateById(
+                reservationId,
+                ReservationStatus.CONFIRMED,
+                LocalDate.now());
 
         return "redirect:/";
     }
@@ -109,18 +98,16 @@ public class AdminController {
                                      @PathVariable("apartmentId") Integer apartmentId){
 
         Optional<Apartment> optionalApartment = apartmentService.getApartmentById(apartmentId);
-
-        if (reservationId==null || apartmentId==null || !optionalApartment.isPresent()){
-            return "redirect:/error";
-        }
+        optionalApartment.orElseThrow(IllegalStateException::new);
 
         Apartment apartment = optionalApartment.get();
 
         reservationService.updateCurrentReservation(reservationId);
 
-        if (!apartment.matchesReservation(reservationService.getCurrentReservation()) ||
-            !reservationService.updateReservationWithApartmentById(apartment,reservationId, LocalDate.now()) ||
-            !apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED)){
+        reservationService.updateReservationWithApartmentById(apartment,reservationId, LocalDate.now());
+        apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED);
+
+        if (!apartment.matchesReservation(reservationService.getCurrentReservation())){
             return "redirect:/error";
         }
 
@@ -129,21 +116,13 @@ public class AdminController {
 
     @PostMapping("/reservation/{id}/cancel")
     public String dropReservation(@PathVariable("id") Integer reservationId){
-        if (reservationId==null){
-            return "redirect:/error";
-        }
 
-        Optional<Reservation> optionalReservation = reservationService.getReservationById(reservationId);
+        reservationService.updateCurrentReservation(reservationId);
+        reservationService.updateReservationStatusById(reservationId, ReservationStatus.CANCELLED);
 
-        if (!optionalReservation.isPresent() ||
-                !reservationService.updateReservationStatusById(
-                        reservationId, ReservationStatus.CANCELLED)){
-            return "redirect:/error";
-        }
-
-        if (optionalReservation.get().getApartmentId()!=null) {
+        if (reservationService.getCurrentReservation().getApartmentId()!=null) {
             apartmentService.updateApartmentStatusById(
-                    optionalReservation.get().getApartmentId(),
+                    reservationService.getCurrentReservation().getApartmentId(),
                     ApartmentStatus.AVAILABLE);
         }
 

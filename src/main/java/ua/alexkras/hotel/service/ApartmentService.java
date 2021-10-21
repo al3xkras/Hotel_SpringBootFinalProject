@@ -7,7 +7,6 @@ import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.repository.ApartmentRepository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -40,30 +39,18 @@ public class ApartmentService {
         return apartmentRepository.findApartmentById(id);
     }
 
-    public boolean addApartment(Apartment apartment){
-        try {
-            apartmentRepository.save(apartment);
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+    public void addApartment(Apartment apartment) {
+        apartmentRepository.save(apartment);
         clearApartments();
         clearCurrentApartment();
         clearApartmentsMatchingCurrentReservation();
-        return true;
     }
 
-    public boolean updateApartmentStatusById(int id,ApartmentStatus apartmentStatus){
-        try {
-            apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+    public void updateApartmentStatusById(int id,ApartmentStatus apartmentStatus) {
+        apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
         clearApartments();
         clearCurrentApartment();
         clearApartmentsMatchingCurrentReservation();
-        return true;
     }
 
     public List<Apartment> findApartmentsMatchingReservation(Reservation reservation){
@@ -71,39 +58,24 @@ public class ApartmentService {
                 reservation.getPlaces(), ApartmentStatus.AVAILABLE);
     }
 
-    public boolean updateCurrentApartment(int apartmentId){
+    public void updateCurrentApartment(int apartmentId) {
         if (currentApartment==null || currentApartment.getId()!=apartmentId){
-            currentApartment = getApartmentById(apartmentId).orElse(null);
-
-            return currentApartment != null;
+            currentApartment = getApartmentById(apartmentId).orElseThrow(IllegalStateException::new);
         }
-        return true;
     }
 
     public void clearCurrentApartment(){currentApartment=null;}
 
-    public boolean updateApartments(){
+    public void updateApartments(){
         if (apartments==null){
-            try {
-                apartments = getAllApartments();
-            } catch (Exception e){
-                e.printStackTrace();
-                return false;
-            }
+            apartments = getAllApartments();
         }
-        return true;
     }
 
-    public boolean updateApartmentsMatchingCurrentReservation(){
+    public void updateApartmentsMatchingCurrentReservation(){
         if (apartmentsMatchingCurrentReservation==null || apartmentsMatchingCurrentReservation.isEmpty()) {
-            try {
-                apartmentsMatchingCurrentReservation = findApartmentsMatchingReservation(reservationService.getCurrentReservation());
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
+            apartmentsMatchingCurrentReservation = findApartmentsMatchingReservation(reservationService.getCurrentReservation());
         }
-        return true;
     }
 
     public void clearApartmentsMatchingCurrentReservation(){

@@ -107,100 +107,59 @@ public class ReservationService {
         return reservationRepository.findByReservationStatus(ReservationStatus.PENDING);
     }
 
-    public boolean updateReservationStatusById(int id, ReservationStatus reservationStatus){
-        try {
-            reservationRepository.updateReservationStatusById(id, reservationStatus);
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+    public void updateReservationStatusById(int id, ReservationStatus reservationStatus){
+        reservationRepository.updateReservationStatusById(id, reservationStatus);
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
         clearCurrentPendingReservations();
-        return true;
     }
 
-    public boolean updateReservationStatusAndConfirmationDateById(int id, ReservationStatus reservationStatus, LocalDate confirmationDate){
-        try {
-            reservationRepository.updateReservationStatusAndConfirmationDateById(id, reservationStatus, confirmationDate);
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+    public void updateReservationStatusAndConfirmationDateById(int id, ReservationStatus reservationStatus, LocalDate confirmationDate){
+        reservationRepository.updateReservationStatusAndConfirmationDateById(id, reservationStatus, confirmationDate);
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
         clearCurrentPendingReservations();
-        return true;
     }
 
-    public boolean updateReservationWithApartmentById(Apartment apartment, int id, LocalDate confirmationDate){
-        try {
-            reservationRepository.updateApartmentIdAndPriceAndReservationStatusAndConfirmationDateById(
-                    apartment.getId(),
-                    apartment.getPrice(),
-                    ReservationStatus.CONFIRMED,
-                    confirmationDate,
-                    id);
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+    public void updateReservationWithApartmentById(Apartment apartment, int id, LocalDate confirmationDate){
+        reservationRepository.updateApartmentIdAndPriceAndReservationStatusAndConfirmationDateById(
+                apartment.getId(),
+                apartment.getPrice(),
+                ReservationStatus.CONFIRMED,
+                confirmationDate,
+                id);
+
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
         clearCurrentPendingReservations();
-        return true;
     }
 
-    public boolean updateReservationPaymentStatusById(int reservationId, boolean isPaid){
-        try{
-            reservationRepository.updateIsPaidById(reservationId,isPaid);
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+    public void updateReservationPaymentStatusById(int reservationId, boolean isPaid){
+        reservationRepository.updateIsPaidById(reservationId,isPaid);
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
         clearCurrentPendingReservations();
-        return true;
     }
 
-    public boolean updateCurrentReservation(int reservationId){
+    public void updateCurrentReservation(int reservationId){
         if (currentReservation==null || currentReservation.getId()!=reservationId){
-            currentReservation = getReservationById(reservationId).orElse(null);
-        }
-        if (currentReservation==null){
-            return false;
+            currentReservation = getReservationById(reservationId).orElseThrow(IllegalStateException::new);
         }
         updateReservationDaysUntilExpiration(currentReservation);
-        return true;
     }
 
-    public boolean updateCurrentUserActiveReservationsById(int userId){
+    public void updateCurrentUserActiveReservationsById(int userId){
         if (currentUserActiveReservations==null || currentUserActiveReservations.isEmpty() ||
                 currentUserActiveReservations.get(0).getUserId()!=userId){
-            try {
-                currentUserActiveReservations = getActiveReservationsByUserId(userId);
-            } catch (Exception e){
-                e.printStackTrace();
-                return false;
-            }
+            currentUserActiveReservations = getActiveReservationsByUserId(userId);
         }
-
         currentUserActiveReservations.forEach(this::updateReservationDaysUntilExpiration);
-
-        return true;
     }
 
-    public boolean updateCurrentPendingReservations(){
+    public void updateCurrentPendingReservations(){
         if (currentPendingReservations==null || currentPendingReservations.isEmpty()) {
-            try {
-                currentPendingReservations = getPendingReservations();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
+            currentPendingReservations = getPendingReservations();
         }
-        return true;
     }
 
     private void updateReservationDaysUntilExpiration(Reservation reservation){

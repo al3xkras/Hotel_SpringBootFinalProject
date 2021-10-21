@@ -24,28 +24,16 @@ public class PaymentService {
         this.reservationService=reservationService;
     }
 
-    public boolean addPayment(Payment payment){
-        try{
-            paymentRepository.save(payment);
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
-        return true;
+    public void addPayment(Payment payment){
+        paymentRepository.save(payment);
     }
 
-    public boolean setCurrentPaymentReservationByReservationId(int reservationId) {
+    public void setCurrentPaymentReservationByReservationId(int reservationId) {
         if (currentPaymentReservation!=null && currentPaymentReservation.getId()==reservationId){
-            return true;
+            return;
         }
 
-        try {
-            currentPaymentReservation = reservationService.getReservationById(reservationId).orElseThrow(IllegalStateException::new);
-        } catch (Exception e){
-            return false;
-        }
-
-        return true;
+        currentPaymentReservation = reservationService.getReservationById(reservationId).orElseThrow(IllegalStateException::new);
     }
 
     public void clearCurrentPaymentReservation(){
