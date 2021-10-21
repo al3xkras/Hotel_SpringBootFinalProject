@@ -84,13 +84,11 @@ public class UserController {
 
         reservationService.updateCurrentReservation(reservationId);
 
-
-        if (!authController.getCurrentUser().isPresent() ||
-                reservationService.getCurrentReservation().getUserId()!=authController.getCurrentUser().get().getId() ||
+        if (reservationService.getCurrentReservation().getUserId()!=
+                authController.getCurrentUser().orElseThrow(IllegalStateException::new).getId() ||
                 reservationService.getCurrentReservation().isExpired()){
             return "redirect:/";
         }
-
 
         reservationService.getCurrentReservation().setReservationStatus(ReservationStatus.RESERVED);
 
@@ -105,9 +103,9 @@ public class UserController {
 
         reservationService.updateCurrentReservation(reservationId);
 
-        if (!authController.getCurrentUser().isPresent() ||
-                reservationService.getCurrentReservation().getUserId()!=
-                        authController.getCurrentUser().get().getId() ||
+        if (reservationService.getCurrentReservation().getUserId()!= authController
+                .getCurrentUser().orElseThrow(IllegalStateException::new)
+                .getId() ||
                 reservationService.getCurrentReservation().isExpired()){
             return "redirect:/";
         }
@@ -127,9 +125,7 @@ public class UserController {
     @GetMapping("/reservation/{id}/make_payment")
     public String makePaymentPage(@PathVariable("id") Integer reservationId,
                                   Model model){
-        if (reservationId==null || !authController.getCurrentUser().isPresent()){
-            return "redirect:/error";
-        }
+        authController.getCurrentUser().orElseThrow(IllegalStateException::new);
 
         paymentService.setCurrentPaymentReservationByReservationId(reservationId);
 
@@ -149,9 +145,7 @@ public class UserController {
     public String makePayment(@PathVariable("id") Integer reservationId,
                               @ModelAttribute("payment") Payment payment,
                               Model model){
-        if (reservationId==null || !authController.getCurrentUser().isPresent()){
-            return "redirect:/";
-        }
+        authController.getCurrentUser().orElseThrow(IllegalStateException::new);
 
         paymentService.setCurrentPaymentReservationByReservationId(reservationId);
 

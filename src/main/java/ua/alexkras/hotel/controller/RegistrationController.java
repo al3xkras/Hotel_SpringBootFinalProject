@@ -41,13 +41,7 @@ public class RegistrationController {
             return "registration";
         }
 
-        User user;
-
-        try {
-            user = new User(request, UserType.USER);
-        } catch (Exception e){
-            return "registration";
-        }
+        User user = new User(request, UserType.USER);
 
         try{
             UserDAO.addUser(user);

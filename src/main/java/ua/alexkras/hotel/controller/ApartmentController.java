@@ -12,10 +12,8 @@ import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.model.UserType;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
-
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.Optional;
 
 @Controller
 public class ApartmentController {
@@ -100,15 +98,8 @@ public class ApartmentController {
             return "/apartment/apartment";
         }
 
-        Optional<User> optionalUser = authController.getCurrentUser();
-        Optional<Apartment> optionalApartment = apartmentService.getApartmentById(id);
-
-        if (!optionalUser.isPresent() | !optionalApartment.isPresent()){
-            return "redirect:/error";
-        }
-
-        User currentUser = optionalUser.get();
-        Apartment apartment = optionalApartment.get();
+        User currentUser = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
+        Apartment apartment = apartmentService.getApartmentById(id).orElseThrow(IllegalStateException::new);
 
         if (!apartment.getStatus().equals(ApartmentStatus.AVAILABLE) ||
                 !currentUser.getUserType().equals(UserType.USER)){
@@ -116,7 +107,6 @@ public class ApartmentController {
         }
 
         Reservation reservation = new Reservation();
-
         reservation.setUserId(currentUser.getId());
         reservation.setApartmentClass(apartment.getApartmentClass());
         reservation.setFromDate(reservationDate.getFromDate());
@@ -127,11 +117,8 @@ public class ApartmentController {
         reservation.setApartmentPrice(apartment.getPrice());
         reservation.setReservationStatus(ReservationStatus.PENDING);
 
-
         apartmentService.updateApartmentStatusById(apartment.getId(),ApartmentStatus.RESERVED);
-
         reservationService.addReservation(reservation);
-
         return "redirect:/";
     }
 

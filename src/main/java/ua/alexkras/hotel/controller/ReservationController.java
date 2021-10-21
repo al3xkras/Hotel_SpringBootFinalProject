@@ -13,7 +13,6 @@ import ua.alexkras.hotel.service.ReservationService;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 @Controller
 public class ReservationController {
@@ -41,13 +40,7 @@ public class ReservationController {
             @ModelAttribute("reservationRequest") @Valid Reservation reservation,
             Model model){
 
-        Optional<User> optionalUser = authController.getCurrentUser();
-
-        if (!optionalUser.isPresent()){
-            return "redirect:/";
-        }
-
-        User currentUser = optionalUser.get();
+        User currentUser = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
 
         if (reservation.getFromDate().compareTo(reservation.getToDate())>=0){
             model.addAttribute("fromDateIsGreaterThanToDate",true);
