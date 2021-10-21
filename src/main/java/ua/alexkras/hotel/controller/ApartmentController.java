@@ -53,7 +53,11 @@ public class ApartmentController {
                 break;
         }
 
+
         model.addAttribute("allApartments", apartmentService.getApartments());
+        model.addAttribute("userAccount", authController.getCurrentUser()
+                .orElseThrow(IllegalStateException::new)
+                .getUserType().equals(UserType.USER));
 
         return "/apartment/apartments_menu";
     }
@@ -82,6 +86,9 @@ public class ApartmentController {
 
         model.addAttribute("apartment",apartmentService.getCurrentApartment());
         model.addAttribute("reservation", new Reservation());
+        model.addAttribute("userAccount", authController.getCurrentUser()
+                .orElseThrow(IllegalStateException::new)
+                .getUserType().equals(UserType.USER));
 
         return "/apartment/apartment";
     }

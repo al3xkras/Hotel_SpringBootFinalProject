@@ -12,7 +12,7 @@
 </head>
 <body>
     <div class="custom-navbar">
-        <a class="active" href="/" th:text="#{navbar.hotel}"></a>
+        <a class="active" href="/" th:text="#{navbar.home}"></a>
 
         <div class="custom-navbar-dropdown" style="float: left">
             <button class="dropdown-btn" th:text="#{navbar.language}">
@@ -25,7 +25,7 @@
         </div>
 
         <div class="custom-navbar-dropdown" style="float: right">
-            <button class="dropdown-btn" th:text="#{navbar.admin}">
+            <button class="dropdown-btn" th:text="#{${userAccount!=null and userAccount?'navbar.user':'navbar.admin'}}">
                 <i class="fa fa-caret-down"></i>
             </button>
         </div>

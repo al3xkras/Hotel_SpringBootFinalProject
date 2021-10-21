@@ -7,7 +7,6 @@ import ua.alexkras.hotel.model.HotelUserDetailsService;
 import ua.alexkras.hotel.model.MySqlStrings;
 import ua.alexkras.hotel.model.UserType;
 
-import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -17,25 +16,22 @@ public class FirstLaunch {
         //Create database if not exists before starting Spring Boot application
         try (Connection conn = DriverManager.getConnection(MySqlStrings.root, MySqlStrings.user, MySqlStrings.password);
              PreparedStatement createDB = conn.prepareStatement(MySqlStrings.sqlCreateDatabaseIfNotExists);
-             PreparedStatement createUserTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " +
-                     "hotel_db.user (ID INT PRIMARY KEY UNIQUE)")
         ) {
             createDB.execute();
-            createUserTable.execute();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Unable to establish MqSQL connection and create database: "+MySqlStrings.databaseName);
+            throw new RuntimeException("Unable to create database: "+MySqlStrings.databaseName);
         }
 
         SpringApplication.run(HotelApplication.class, args);
 
-        addUser(-1L,new User("Admin", "0",
+        addUser(-1L,new User("Admin", "Adminovich",
                 "Admin1", "password1",
                 "+404-23-4567890",
                 LocalDate.parse("2002-03-07"),
                 "Male", UserType.ADMIN));
 
-        addUser(-2L,new User("MyName", "MySurname",
+        addUser(-2L,new User("AdminName", "AdminSurname",
                 "Admin2", "password2",
                 "+404-12-3456789",
                 LocalDate.parse("2002-03-07"),

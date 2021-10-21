@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title th:text="'Apartment: '+${apartment.name}"></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
-
     <link rel="stylesheet" th:href="@{/css/style_navbar.css}" />
+    <link rel="stylesheet" th:href="@{/css/style_apartment.css}"/>
 
     <style>
         div.alert{
@@ -47,11 +47,10 @@
         </div>
 
         <div class="custom-navbar-dropdown" style="float: right">
-            <button class="dropdown-btn" th:text="#{navbar.user}">
+            <button class="dropdown-btn" th:text="#{${userAccount!=null and userAccount?'navbar.user':'navbar.admin'}}">
                 <i class="fa fa-caret-down"></i>
             </button>
             <div class="custom-dropdown-content" style="left: 80%; width: 19.5%">
-                <a href="/create_reservation" th:text="#{navbar.new_reservation}"></a>
                 <a href="/personal_data" th:text="#{navbar.personal_data}"></a>
             </div>
         </div>
@@ -66,8 +65,13 @@
                  alt="Apartment 1" style="min-width: 30%; max-width: 60%">
 
             <div class="d-flex flex-column" style="margin: 5px; min-height: 40%;">
-                <label th:text="#{new_apartment.class}+': '+${apartment.apartmentClass}"></label><br/>
-                <label th:text="#{new_apartment.status}+': '+${apartment.status}"></label><br/>
+                <div>
+                    <label th:text="#{new_apartment.class}+':'"></label><label th:text="#{${apartment.apartmentClass.resName}}" th:class="${apartment.apartmentClass.htmlClass}"></label><br/>
+                </div>
+                <div>
+                    <label th:text="#{new_apartment.status}+':'"></label><label th:text="#{${apartment.status.resName}}" th:class="${apartment.status.htmlClass}"></label><br/>
+                </div>
+
                 <label th:text="#{new_apartment.places}+': '+${apartment.places}"></label><br/>
                 <label th:text="#{new_apartment.price}+': '+${apartment.price}"></label><br/>
                 <label th:if="${!apartment.status.name().equalsIgnoreCase('available')}"

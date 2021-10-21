@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/css/style_navbar.css}" />
     <link rel="stylesheet" th:href="@{/css/style_table.css}" />
-
+    <link rel="stylesheet" th:href="@{/css/style_apartment.css}"/>
 </head>
 <body>
 
@@ -24,11 +24,10 @@
         </div>
 
         <div class="custom-navbar-dropdown" style="float: right">
-            <button class="dropdown-btn" th:text="#{navbar.user}">
+            <button class="dropdown-btn" th:text="#{${userAccount!=null and userAccount?'navbar.user':'navbar.admin'}}">
                 <i class="fa fa-caret-down"></i>
             </button>
             <div class="custom-dropdown-content" style="left: 80%; width: 19.5%">
-                <a href="/create_reservation" th:text="#{navbar.new_reservation}"></a>
                 <a href="/personal_data" th:text="#{navbar.personal_data}"></a>
             </div>
         </div>
@@ -52,12 +51,12 @@
     <div class="d-flex justify-content-center">
         <table>
             <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Places</th>
-                <th>Apartment class</th>
-                <th>Apartment Status</th>
-                <th>Price</th>
+                <th th:text="#{table.id}"></th>
+                <th th:text="#{new_apartment.name}"></th>
+                <th th:text="#{new_apartment.places}"></th>
+                <th th:text="#{new_apartment.price}"></th>
+                <th th:text="#{new_apartment.class}"></th>
+                <th th:text="#{new_apartment.status}"></th>
             </tr>
 
             <tr class="align-middle"
@@ -66,9 +65,11 @@
                 <td class="align-middle"  th:text="${apartment.id}"></td>
                 <td class="align-middle" th:text="${apartment.name}"></td>
                 <td class="align-middle" th:text="${apartment.places}"></td>
-                <td class="align-middle" th:text="${apartment.apartmentClass}"></td>
-                <td class="align-middle" th:text="${apartment.status}"></td>
                 <td class="align-middle" th:text="${apartment.price}"></td>
+                <td th:class="${apartment.apartmentClass.htmlClass}"
+                    th:text="#{${apartment.apartmentClass.resName}}"></td>
+                <td th:class="${apartment.status.htmlClass}"
+                    th:text="#{${apartment.status.resName}}"></td>
             </tr>
         </table>
     </div>

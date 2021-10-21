@@ -29,24 +29,6 @@ public interface MySqlStrings {
     String sqlCreateDatabaseIfNotExists = String.format("CREATE DATABASE IF NOT EXISTS %s;",
             databaseName);
 
-    String sqlCreateUserTableIfNotExists = "CREATE TABLE IF NOT EXISTS "+
-                    databaseName+"."+
-                    tableUser+" ("+
-                    colUserId+" INT AUTO_INCREMENT PRIMARY KEY UNIQUE, "+
-                    colUserName+" VARCHAR(25),"+
-                    colUserSurname+" VARCHAR(25), "+
-                    colUserUsername+" VARCHAR(30) UNIQUE, "+
-                    colUserPassword+" VARCHAR(100), "+
-                    colUserPhoneNumber+" VARCHAR(20), "+
-                    colUserBirthday+" DATE, "+
-                    colUserGender+" VARCHAR(10), "+
-                    colUserUserType+" VARCHAR(10)"+
-                    ");";
-
-    String sqlInsertIntoUserDB = "INSERT INTO " + databaseName + "." + tableUser +
-            " ("+String.join(", ",tableUserColumns)+
-            ") VALUES ( NULL, %s );";
-
     String sqlSelectColumnsFromUserDB = "SELECT %s FROM " + databaseName + "." + tableUser;
 
 }
