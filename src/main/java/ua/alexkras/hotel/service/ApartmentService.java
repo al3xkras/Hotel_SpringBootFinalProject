@@ -23,8 +23,8 @@ public class ApartmentService {
         clearCurrentApartment();
     }
 
-    private Integer currentReservationId;
-    private List<Apartment> apartmentsMatchingCurrentReservation;
+    private Optional<Integer> currentReservationId;
+    private Optional<List<Apartment>> apartmentsMatchingCurrentReservation;
 
     @Autowired
     public ApartmentService(ApartmentRepository apartmentRepository,
@@ -47,17 +47,41 @@ public class ApartmentService {
         clearApartmentsMatchingCurrentReservation();
     }
 
+    /**
+     * Update Apartment's status by apartment id
+     *
+     * @param id Apartment's id
+     * @param apartmentStatus New apartment status
+     * @throws org.hibernate.HibernateException if hibernate was unable to update apartment
+     */
     public void updateApartmentStatusById(int id,ApartmentStatus apartmentStatus) {
         apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
         clearCurrentApartment();
         clearApartmentsMatchingCurrentReservation();
     }
 
+    /**
+     * Get List of Apartments that can be assigned to a specific Reservation
+     *
+     * @param reservation reservation to match Apartments in list
+     * @return List of apartments
+     */
     public List<Apartment> findApartmentsMatchingReservation(Reservation reservation){
-        return apartmentRepository.findApartmentsByApartmentClassAndPlacesAndStatus(reservation.getApartmentClass(),
-                reservation.getPlaces(), ApartmentStatus.AVAILABLE);
+        return apartmentRepository.findApartmentsByApartmentClassAndPlacesAndStatus(
+                reservation.getApartmentClass(),
+                reservation.getPlaces(),
+                ApartmentStatus.AVAILABLE);
     }
 
+    /**
+     * Update current apartment by id
+     * - If current apartment is present and has the same id, this method will do nothing
+     * - If current apartment is not present, or has different id, new apartment will be requested from a database
+     *
+     * @param apartmentId - id of an Apartment
+     * @return newly updated Apartment (or an existing one)
+     * @throws IllegalStateException if Apartment was not found
+     */
     public Apartment updateCurrentApartment(int apartmentId) {
         if (!currentApartment.isPresent() || currentApartment.get().getId()!=apartmentId){
             currentApartment = getApartmentById(apartmentId);
@@ -69,12 +93,28 @@ public class ApartmentService {
         currentApartment=Optional.empty();
     }
 
-    public void updateApartmentsMatchingCurrentReservation(){
-        if (apartmentsMatchingCurrentReservation==null || apartmentsMatchingCurrentReservation.isEmpty() ||
-                currentReservationId==null || currentReservationId!=reservationService.getCurrentReservation().getId()) {
-            apartmentsMatchingCurrentReservation = findApartmentsMatchingReservation(reservationService.getCurrentReservation());
-            currentReservationId=reservationService.getCurrentReservation().getId();
+    /**
+     * Update List of Apartments, that match current Reservation, referenced from ReservationService
+     * -If List of apartments is not initialized,
+     *   or is empty,
+     *   or apartments in list do not match current Reservation:
+     *   Requests List of apartments from a data source
+     * -Otherwise:
+     *   returns previously saved in memory list of apartments, that match reservation
+     *
+     * @return List of apartments, that match current Reservation, referenced from ReservationService
+     */
+    public List<Apartment> updateApartmentsMatchingCurrentReservation(){
+        if (    !apartmentsMatchingCurrentReservation.isPresent() ||
+                apartmentsMatchingCurrentReservation.get().isEmpty() ||
+                !currentReservationId.isPresent() ||
+                currentReservationId.get()!=reservationService.getCurrentReservation().getId()) {
+
+            apartmentsMatchingCurrentReservation =
+                    Optional.of(findApartmentsMatchingReservation(reservationService.getCurrentReservation()));
+            currentReservationId=Optional.of(reservationService.getCurrentReservation().getId());
         }
+        return getApartmentsMatchingCurrentReservation();
     }
 
     public void clearApartmentsMatchingCurrentReservation(){
@@ -86,6 +126,6 @@ public class ApartmentService {
     }
 
     public List<Apartment> getApartmentsMatchingCurrentReservation() {
-        return apartmentsMatchingCurrentReservation;
+        return apartmentsMatchingCurrentReservation.orElseThrow(IllegalStateException::new);
     }
 }

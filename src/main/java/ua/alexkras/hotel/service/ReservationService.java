@@ -101,6 +101,12 @@ public class ReservationService {
         return reservationRepository.findByReservationStatus(ReservationStatus.PENDING);
     }
 
+    /**
+     * Update Reservation status by id
+     *
+     * @param id id of Reservation to be updated
+     * @param reservationStatus reservation status to assign to the Reservation
+     */
     public void updateReservationStatusById(int id, ReservationStatus reservationStatus){
         reservationRepository.updateReservationStatusById(id, reservationStatus);
         clearCurrentReservation();
@@ -108,6 +114,13 @@ public class ReservationService {
         clearCurrentPendingReservations();
     }
 
+    /**
+     * Update Reservation status and date of confirmation by admin by Reservation's id
+     *
+     * @param id id of Reservation to be updated
+     * @param reservationStatus new Reservation's status (after admins confirmation)
+     * @param confirmationDate date of confirmation by Admin
+     */
     public void updateReservationStatusAndConfirmationDateById(int id, ReservationStatus reservationStatus, LocalDate confirmationDate){
         reservationRepository.updateReservationStatusAndConfirmationDateById(id, reservationStatus, confirmationDate);
         clearCurrentReservation();
@@ -115,7 +128,16 @@ public class ReservationService {
         clearCurrentPendingReservations();
     }
 
-    public void updateReservationWithApartmentById(Apartment apartment, int id, LocalDate confirmationDate){
+    /**
+     * Update Reservation's associated apartment (apartment id, price), and
+     * set status of reservation to 'Confirmed', and set confirmation date
+     * to @confirmationDate
+     *
+     * @param id id of Reservation
+     * @param apartment apartment to associate with Reservation
+     * @param confirmationDate date of confirmation by Admin
+     */
+    public void updateReservationWithApartmentById(int id, Apartment apartment, LocalDate confirmationDate){
         reservationRepository.updateApartmentIdAndPriceAndReservationStatusAndConfirmationDateById(
                 apartment.getId(),
                 apartment.getPrice(),
@@ -128,6 +150,11 @@ public class ReservationService {
         clearCurrentPendingReservations();
     }
 
+    /**
+     * Update Reservation's payment status by id
+     * @param reservationId id of Reservation
+     * @param isPaid new payment status
+     */
     public void updateReservationPaymentStatusById(int reservationId, boolean isPaid){
         reservationRepository.updateIsPaidById(reservationId,isPaid);
         clearCurrentReservation();
@@ -135,6 +162,21 @@ public class ReservationService {
         clearCurrentPendingReservations();
     }
 
+    /**
+     * Update current Reservation by reservation id
+     * -If current reservation is not initialized, or
+     *   current reservation's id is not equal to @reservationId:
+     *
+     *   -request new Reservation by @reservationId from data source
+     *   -updates current reservation's days until expiration (@Transient field)
+     * -Otherwise:
+     *
+     *   -Only updates current reservation's days until expiration (@Transient field)
+     *
+     * @param reservationId id of Reservation
+     * @return newly updated (or existing) Reservation
+     * @throws IllegalStateException if Reservation with @reservationId was not found in a data source
+     */
     public Reservation updateCurrentReservation(int reservationId){
         if (!currentReservation.isPresent() || currentReservation.get().getId()!=reservationId){
             currentReservation = getReservationById(reservationId);
@@ -143,6 +185,23 @@ public class ReservationService {
         return getCurrentReservation();
     }
 
+    /**
+     * Update current User's active reservations by User id
+     * -If List of current User's active reservations are present, and
+     *   the list is not empty, and
+     *   the list contains reservations with userId equal to @userId
+     *   (only first item of the list is checked, assuming all the items have the same userId):
+     *
+     *   -Does not request new List of Reservations from a data source
+     * -Otherwise:
+     *
+     *   -Request new List of Reservations from a data source
+     *   -Updates every reservation's days until expiration (@Transient field) in the list
+     *
+     * @param userId id of User to find Reservations by
+     * @return newly created, or existing List of Reservations,
+     *   which are active and created by user with id @userId
+     */
     public List<Reservation> updateCurrentUserActiveReservationsById(int userId){
         if (currentUserActiveReservations.isPresent() &&
                 !currentUserActiveReservations.get().isEmpty() &&
@@ -156,6 +215,18 @@ public class ReservationService {
         return getCurrentUserActiveReservations();
     }
 
+    /**
+     * Update list of all reservations, that are currently pending
+     * -If list of reservations, that are currently pending is not present, or
+     *   is empty,
+     *
+     *   -Request new List of Reservations from a data source
+     * -Otherwise
+     *
+     *   -Return list, that was saved in memory
+     *
+     * @return List of Reservations, that are currently pending
+     */
     public List<Reservation> updateCurrentPendingReservations(){
         if (!currentPendingReservations.isPresent() || currentPendingReservations.get().isEmpty()) {
             currentPendingReservations = Optional.of(getPendingReservations());
@@ -163,6 +234,18 @@ public class ReservationService {
         return getCurrentPendingReservations();
     }
 
+    /**
+     * Update reservation's days until expiration
+     * -If reservation is not confirmed by admin:
+     *   -Do nothing
+     *
+     * -Otherwise:
+     *   -Calculate days between confirmation date and today
+     *   -Update Reservation's days until expiration
+     * @param reservation Reservation that will be updated
+     * @return Reservation with updated days until expiration,
+     *   if it was confirmed by admin. Otherwise, returns @reservation
+     */
     private Reservation updateReservationDaysUntilExpiration(Reservation reservation){
         if (reservation.getAdminConfirmationDate()==null){
             return reservation;

@@ -51,8 +51,7 @@ public class AdminController {
         model.addAttribute("isCompleted", isCompleted);
 
         if (!isCompleted) {
-            apartmentService.updateApartmentsMatchingCurrentReservation();
-            model.addAttribute("matchingApartments", apartmentService.getApartmentsMatchingCurrentReservation());
+            model.addAttribute("matchingApartments", apartmentService.updateApartmentsMatchingCurrentReservation());
         }
 
         return "/reservation/reservation";
@@ -64,14 +63,12 @@ public class AdminController {
                                          Model model){
 
         reservationService.updateCurrentReservation(reservationId);
-        apartmentService.updateApartmentsMatchingCurrentReservation();
-
         reservationService.getCurrentReservation().setApartmentId(apartmentId);
 
         model.addAttribute("isCompleted",false);
         model.addAttribute("reservation",reservationService.getCurrentReservation());
         model.addAttribute("matchingApartments",
-                apartmentService.getApartmentsMatchingCurrentReservation());
+                apartmentService.updateApartmentsMatchingCurrentReservation());
         model.addAttribute("apartmentSelected",true);
 
         return "/reservation/reservation";
@@ -81,7 +78,8 @@ public class AdminController {
     public String confirmCompletedReservation(@PathVariable("id") Integer reservationId){
 
         reservationService.updateCurrentReservation(reservationId);
-        reservationService.getCurrentReservation().isCompleted();
+        if (!reservationService.getCurrentReservation().isCompleted())
+            return "redirect:/error";
         reservationService.updateReservationStatusAndConfirmationDateById(
                 reservationId,
                 ReservationStatus.CONFIRMED,
@@ -101,7 +99,7 @@ public class AdminController {
             return "redirect:/error";
         }
 
-        reservationService.updateReservationWithApartmentById(apartmentService.getCurrentApartment(),reservationId, LocalDate.now());
+        reservationService.updateReservationWithApartmentById(reservationId, apartmentService.getCurrentApartment(), LocalDate.now());
         apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED);
 
         return "redirect:/";
