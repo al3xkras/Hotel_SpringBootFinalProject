@@ -87,9 +87,9 @@ public class ApartmentController {
     public String apartmentPage(@PathVariable("id") Integer id,
                                 Model model){
 
-        apartmentService.updateCurrentApartment(id);
+        Apartment currentApartment = apartmentService.updateCurrentApartment(id);
 
-        model.addAttribute("apartment",apartmentService.getCurrentApartment());
+        model.addAttribute("apartment",currentApartment);
         model.addAttribute("reservation", new Reservation());
         model.addAttribute("userAccount", authController.getCurrentUser()
                 .orElseThrow(IllegalStateException::new)
@@ -104,14 +104,13 @@ public class ApartmentController {
                                                      Model model){
 
         if (reservationDate.getFromDate().compareTo(reservationDate.getToDate())>=0){
-            apartmentService.updateCurrentApartment(id);
-            model.addAttribute("apartment",apartmentService.getCurrentApartment());
+            model.addAttribute("apartment",apartmentService.updateCurrentApartment(id));
             model.addAttribute("fromDateIsGreaterThanToDate",true);
             return "/apartment/apartment";
         }
 
         User currentUser = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
-        Apartment apartment = apartmentService.getApartmentById(id).orElseThrow(IllegalStateException::new);
+        Apartment apartment = apartmentService.updateCurrentApartment(id);
 
         if (!apartment.getStatus().equals(ApartmentStatus.AVAILABLE) ||
                 !currentUser.getUserType().equals(UserType.USER)){

@@ -18,11 +18,9 @@ public class ApartmentService {
     private final ApartmentRepository apartmentRepository;
     private final ReservationService reservationService;
 
-    private Apartment currentApartment;
-    private Page<Apartment> apartments;
+    private Optional<Apartment> currentApartment=Optional.empty();
     public void clearEverything(){
-        currentApartment=null;
-        apartments=null;
+        clearCurrentApartment();
     }
 
     private Integer currentReservationId;
@@ -45,14 +43,12 @@ public class ApartmentService {
 
     public void addApartment(Apartment apartment) {
         apartmentRepository.save(apartment);
-        clearApartments();
         clearCurrentApartment();
         clearApartmentsMatchingCurrentReservation();
     }
 
     public void updateApartmentStatusById(int id,ApartmentStatus apartmentStatus) {
         apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
-        clearApartments();
         clearCurrentApartment();
         clearApartmentsMatchingCurrentReservation();
     }
@@ -62,13 +58,16 @@ public class ApartmentService {
                 reservation.getPlaces(), ApartmentStatus.AVAILABLE);
     }
 
-    public void updateCurrentApartment(int apartmentId) {
-        if (currentApartment==null || currentApartment.getId()!=apartmentId){
-            currentApartment = getApartmentById(apartmentId).orElseThrow(IllegalStateException::new);
+    public Apartment updateCurrentApartment(int apartmentId) {
+        if (!currentApartment.isPresent() || currentApartment.get().getId()!=apartmentId){
+            currentApartment = getApartmentById(apartmentId);
         }
+        return getCurrentApartment();
     }
 
-    public void clearCurrentApartment(){currentApartment=null;}
+    public void clearCurrentApartment(){
+        currentApartment=Optional.empty();
+    }
 
     public void updateApartmentsMatchingCurrentReservation(){
         if (apartmentsMatchingCurrentReservation==null || apartmentsMatchingCurrentReservation.isEmpty() ||
@@ -82,14 +81,8 @@ public class ApartmentService {
         apartmentsMatchingCurrentReservation=null;
     }
 
-    public void clearApartments(){apartments=null;}
-
     public Apartment getCurrentApartment() {
-        return currentApartment;
-    }
-
-    public Page<Apartment> getApartments() {
-        return apartments;
+        return currentApartment.orElseThrow(IllegalStateException::new);
     }
 
     public List<Apartment> getApartmentsMatchingCurrentReservation() {

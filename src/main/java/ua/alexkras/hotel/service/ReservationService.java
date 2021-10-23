@@ -12,6 +12,7 @@ import ua.alexkras.hotel.repository.ReservationRepository;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,18 +24,16 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
 
-    private Reservation currentReservation;
-    private List<Reservation> currentUserActiveReservations;
-    private List<Reservation> currentPendingReservations;
+    private Optional<Reservation> currentReservation=Optional.empty();
+    private Optional<List<Reservation>> currentUserActiveReservations=Optional.empty();
+    private Optional<List<Reservation>> currentPendingReservations=Optional.empty();
     public void clearEverything(){
-        currentReservation=null;
-        currentUserActiveReservations=null;
-        currentPendingReservations=null;
+        currentReservation=Optional.empty();
+        currentUserActiveReservations=Optional.empty();
+        currentPendingReservations=Optional.empty();
     }
 
     private static final long daysToCancelPayment = 2L;
-
-    private final LocalDate now = LocalDate.now();
 
     @Autowired
     public ReservationService(ReservationRepository reservationRepository){
@@ -77,12 +76,7 @@ public class ReservationService {
     }
 
     public void addReservation (Reservation reservation){
-        try {
-            reservationRepository.save(reservation);
-        } catch (Exception ex){
-            ex.printStackTrace();
-        }
-
+        reservationRepository.save(reservation);
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
     }
@@ -141,55 +135,63 @@ public class ReservationService {
         clearCurrentPendingReservations();
     }
 
-    public void updateCurrentReservation(int reservationId){
-        if (currentReservation==null || currentReservation.getId()!=reservationId){
-            currentReservation = getReservationById(reservationId).orElseThrow(IllegalStateException::new);
+    public Reservation updateCurrentReservation(int reservationId){
+        if (!currentReservation.isPresent() || currentReservation.get().getId()!=reservationId){
+            currentReservation = getReservationById(reservationId);
         }
-        updateReservationDaysUntilExpiration(currentReservation);
+        updateReservationDaysUntilExpiration(getCurrentReservation());
+        return getCurrentReservation();
     }
 
-    public void updateCurrentUserActiveReservationsById(int userId){
-        if (currentUserActiveReservations==null || currentUserActiveReservations.isEmpty() ||
-                currentUserActiveReservations.get(0).getUserId()!=userId){
-            currentUserActiveReservations = getActiveReservationsByUserId(userId);
+    public List<Reservation> updateCurrentUserActiveReservationsById(int userId){
+        if (currentUserActiveReservations.isPresent() &&
+                !currentUserActiveReservations.get().isEmpty() &&
+                currentUserActiveReservations.get().get(0).getUserId()==userId){
+            return getCurrentUserActiveReservations();
         }
-        currentUserActiveReservations.forEach(this::updateReservationDaysUntilExpiration);
+
+        currentUserActiveReservations = Optional.of(getActiveReservationsByUserId(userId));
+        currentUserActiveReservations.get().forEach(this::updateReservationDaysUntilExpiration);
+
+        return getCurrentUserActiveReservations();
     }
 
-    public void updateCurrentPendingReservations(){
-        if (currentPendingReservations==null || currentPendingReservations.isEmpty()) {
-            currentPendingReservations = getPendingReservations();
+    public List<Reservation> updateCurrentPendingReservations(){
+        if (!currentPendingReservations.isPresent() || currentPendingReservations.get().isEmpty()) {
+            currentPendingReservations = Optional.of(getPendingReservations());
         }
+        return getCurrentPendingReservations();
     }
 
-    private void updateReservationDaysUntilExpiration(Reservation reservation){
+    private Reservation updateReservationDaysUntilExpiration(Reservation reservation){
         if (reservation.getAdminConfirmationDate()==null){
-            return;
+            return reservation;
         }
         LocalDate submitDate=reservation.getAdminConfirmationDate();
-        long daysBetween = DAYS.between(now,submitDate);
+        long daysBetween = DAYS.between(LocalDate.now(),submitDate);
         reservation.setDaysUntilExpiration(daysToCancelPayment-daysBetween);
+        return reservation;
     }
 
-    public void clearCurrentUserActiveReservations(){currentUserActiveReservations=null;}
+    public void clearCurrentUserActiveReservations(){currentUserActiveReservations=Optional.empty();}
 
     public void clearCurrentReservation(){
-        currentReservation=null;
+        currentReservation=Optional.empty();
     }
 
     public void clearCurrentPendingReservations(){
-        currentPendingReservations=null;
+        currentPendingReservations=Optional.empty();
     }
 
     public Reservation getCurrentReservation() {
-        return currentReservation;
+        return currentReservation.orElseThrow(IllegalStateException::new);
     }
 
     public List<Reservation> getCurrentUserActiveReservations() {
-        return currentUserActiveReservations;
+        return currentUserActiveReservations.orElseThrow(IllegalStateException::new);
     }
 
     public List<Reservation> getCurrentPendingReservations() {
-        return currentPendingReservations;
+        return currentPendingReservations.orElseThrow(IllegalStateException::new);
     }
 }

@@ -52,9 +52,9 @@ public class UserController {
             return "index";
         }
 
-        reservationService.updateCurrentUserActiveReservationsById(optionalUser.get().getId());
-
-        model.addAttribute("allReservations", reservationService.getCurrentUserActiveReservations());
+        model.addAttribute("allReservations",
+                reservationService.updateCurrentUserActiveReservationsById(optionalUser.get().getId())
+        );
 
         return "personal_area/user";
     }
@@ -64,14 +64,13 @@ public class UserController {
     public String reservationFromTable(@PathVariable("id") Integer reservationId,
                                        Model model){
 
-        reservationService.updateCurrentReservation(reservationId);
+        Reservation currentReservation = reservationService.updateCurrentReservation(reservationId);
 
-        if (!reservationService.getCurrentReservation().isCompleted()){
+        if (!currentReservation.isCompleted()){
             return "redirect:/";
         }
 
-        model.addAttribute("reservation",reservationService.getCurrentReservation());
-
+        model.addAttribute("reservation",currentReservation);
         model.addAttribute("isCompleted",true);
         model.addAttribute("userAccount",true);
 
@@ -82,15 +81,13 @@ public class UserController {
     @PostMapping("/reservation/{id}/confirm")
     public String confirmReservation(@PathVariable("id") Integer reservationId){
 
-        reservationService.updateCurrentReservation(reservationId);
+        Reservation currentReservation = reservationService.updateCurrentReservation(reservationId);
 
-        if (reservationService.getCurrentReservation().getUserId()!=
+        if (currentReservation.getUserId()!=
                 authController.getCurrentUser().orElseThrow(IllegalStateException::new).getId() ||
-                reservationService.getCurrentReservation().isExpired()){
+                currentReservation.isExpired()){
             return "redirect:/";
         }
-
-        reservationService.getCurrentReservation().setReservationStatus(ReservationStatus.RESERVED);
 
         reservationService.updateReservationStatusById(reservationId,ReservationStatus.RESERVED);
 
@@ -101,17 +98,17 @@ public class UserController {
     @PostMapping("/reservation/{id}/cancel")
     public String cancelReservation(@PathVariable("id") Integer reservationId) {
 
-        reservationService.updateCurrentReservation(reservationId);
+        Reservation currentReservation = reservationService.updateCurrentReservation(reservationId);
 
-        if (reservationService.getCurrentReservation().getUserId()!= authController
+        if (currentReservation.getUserId()!= authController
                 .getCurrentUser().orElseThrow(IllegalStateException::new)
                 .getId() ||
-                reservationService.getCurrentReservation().isExpired()){
+                currentReservation.isExpired()){
             return "redirect:/";
         }
 
         apartmentService.updateApartmentStatusById(
-                reservationService.getCurrentReservation().getApartmentId(),
+                currentReservation.getApartmentId(),
                 ApartmentStatus.AVAILABLE);
 
         reservationService.updateReservationStatusById(
@@ -125,15 +122,13 @@ public class UserController {
     @GetMapping("/reservation/{id}/make_payment")
     public String makePaymentPage(@PathVariable("id") Integer reservationId,
                                   Model model){
-        authController.getCurrentUser().orElseThrow(IllegalStateException::new);
-
-        paymentService.setCurrentPaymentReservationByReservationId(reservationId);
+        User user = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
+        Reservation currentPaymentReservation = paymentService.updateCurrentPaymentReservationByReservationId(reservationId);
 
         Payment payment = new Payment();
-
         payment.setReservationId(reservationId);
-        payment.setUserId(authController.getCurrentUser().get().getId());
-        payment.setValue(paymentService.getCurrentPaymentReservation().getApartmentPrice());
+        payment.setUserId(user.getId());
+        payment.setValue(currentPaymentReservation.getApartmentPrice());
 
         model.addAttribute("payment",payment);
 
@@ -145,14 +140,14 @@ public class UserController {
     public String makePayment(@PathVariable("id") Integer reservationId,
                               @ModelAttribute("payment") Payment payment,
                               Model model){
-        authController.getCurrentUser().orElseThrow(IllegalStateException::new);
+        User user = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
 
-        paymentService.setCurrentPaymentReservationByReservationId(reservationId);
+        Reservation currentPaymentReservation = paymentService.updateCurrentPaymentReservationByReservationId(reservationId);
 
         if (!payment.getCardCvv().matches("^(\\d{3})$")){
             payment.setReservationId(reservationId);
-            payment.setUserId(authController.getCurrentUser().get().getId());
-            payment.setValue(paymentService.getCurrentPaymentReservation().getApartmentPrice());
+            payment.setUserId(user.getId());
+            payment.setValue(currentPaymentReservation.getApartmentPrice());
 
             model.addAttribute("invalidCvv",true);
             return "/personal_area/user/payment";
@@ -160,8 +155,7 @@ public class UserController {
 
         reservationService.updateCurrentReservation(reservationId);
 
-        if (authController.getCurrentUser().get().getId()!=
-                reservationService.getCurrentReservation().getUserId()){
+        if (user.getId()!= reservationService.getCurrentReservation().getUserId()){
             return "redirect:/";
         }
 

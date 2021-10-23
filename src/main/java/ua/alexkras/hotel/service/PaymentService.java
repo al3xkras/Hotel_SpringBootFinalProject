@@ -6,15 +6,17 @@ import ua.alexkras.hotel.entity.Payment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.repository.PaymentRepository;
 
+import java.util.Optional;
+
 @Service
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final ReservationService reservationService;
 
-    private Reservation currentPaymentReservation;
+    private Optional<Reservation> currentPaymentReservation = Optional.empty();
     public void clearEverything(){
-        currentPaymentReservation=null;
+        clearCurrentPaymentReservation();
     }
 
     @Autowired
@@ -28,19 +30,19 @@ public class PaymentService {
         paymentRepository.save(payment);
     }
 
-    public void setCurrentPaymentReservationByReservationId(int reservationId) {
-        if (currentPaymentReservation!=null && currentPaymentReservation.getId()==reservationId){
-            return;
+    public Reservation updateCurrentPaymentReservationByReservationId(int reservationId) {
+        if (currentPaymentReservation.isPresent() && currentPaymentReservation.get().getId()==reservationId){
+            return getCurrentPaymentReservation();
         }
-
-        currentPaymentReservation = reservationService.getReservationById(reservationId).orElseThrow(IllegalStateException::new);
+        currentPaymentReservation = reservationService.getReservationById(reservationId);
+        return getCurrentPaymentReservation();
     }
 
     public void clearCurrentPaymentReservation(){
-        currentPaymentReservation=null;
+        currentPaymentReservation=Optional.empty();
     }
 
     public Reservation getCurrentPaymentReservation() {
-        return currentPaymentReservation;
+        return currentPaymentReservation.orElseThrow(IllegalStateException::new);
     }
 }
