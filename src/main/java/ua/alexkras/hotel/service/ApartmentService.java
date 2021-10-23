@@ -2,11 +2,14 @@ package ua.alexkras.hotel.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.repository.ApartmentRepository;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +19,7 @@ public class ApartmentService {
     private final ReservationService reservationService;
 
     private Apartment currentApartment;
-    private List<Apartment> apartments;
+    private Page<Apartment> apartments;
     public void clearEverything(){
         currentApartment=null;
         apartments=null;
@@ -32,8 +35,8 @@ public class ApartmentService {
         this.reservationService=reservationService;
     }
 
-    public List<Apartment> getAllApartments(){
-        return apartmentRepository.findAll();
+    public Page<Apartment> getAllApartments(Pageable pageable){
+        return apartmentRepository.findAll(pageable);
     }
 
     public Optional<Apartment> getApartmentById(Integer id){
@@ -67,12 +70,6 @@ public class ApartmentService {
 
     public void clearCurrentApartment(){currentApartment=null;}
 
-    public void updateApartments(){
-        if (apartments==null){
-            apartments = getAllApartments();
-        }
-    }
-
     public void updateApartmentsMatchingCurrentReservation(){
         if (apartmentsMatchingCurrentReservation==null || apartmentsMatchingCurrentReservation.isEmpty() ||
                 currentReservationId==null || currentReservationId!=reservationService.getCurrentReservation().getId()) {
@@ -91,7 +88,7 @@ public class ApartmentService {
         return currentApartment;
     }
 
-    public List<Apartment> getApartments() {
+    public Page<Apartment> getApartments() {
         return apartments;
     }
 

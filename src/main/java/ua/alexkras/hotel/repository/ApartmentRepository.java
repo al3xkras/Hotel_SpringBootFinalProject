@@ -1,8 +1,11 @@
 package ua.alexkras.hotel.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import ua.alexkras.hotel.entity.Apartment;
@@ -12,7 +15,7 @@ import ua.alexkras.hotel.model.ApartmentStatus;
 import java.util.List;
 import java.util.Optional;
 
-public interface ApartmentRepository extends JpaRepository<Apartment,Long> {
+public interface ApartmentRepository extends PagingAndSortingRepository<Apartment,Long> {
     Optional<Apartment> findApartmentById(Integer id);
 
     @Transactional
@@ -24,4 +27,6 @@ public interface ApartmentRepository extends JpaRepository<Apartment,Long> {
     List<Apartment> findApartmentsByApartmentClassAndPlacesAndStatus(ApartmentClass apartmentClass,
                                                                      int places,
                                                                      ApartmentStatus apartmentStatus);
+
+    Page<Apartment> findAll(Pageable pageable);
 }

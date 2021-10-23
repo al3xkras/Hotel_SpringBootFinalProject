@@ -1,6 +1,12 @@
 package ua.alexkras.hotel.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +18,15 @@ import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.model.UserType;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
+
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+@Slf4j
 @Controller
 public class ApartmentController {
 
@@ -32,32 +44,25 @@ public class ApartmentController {
     }
 
     @GetMapping("/apartments")
-    public String listApartments(@RequestParam(value = "sort",required=false) String by,Model model){
-
-        apartmentService.updateApartments();
+    public String listApartments(@RequestParam(value = "sort",required=false) String by,
+                                 @RequestParam("page") Optional<Integer> page,
+                                 Model model){
 
         by = by==null?"price":by;
 
-        switch (by){
-            case "price":
-                apartmentService.getApartments().sort(Comparator.comparing(Apartment::getPrice));
-                break;
-            case "places":
-                apartmentService.getApartments().sort(Comparator.comparing(Apartment::getPlaces).reversed());
-                break;
-            case "class":
-                apartmentService.getApartments().sort(Comparator.comparing(Apartment::getApartmentClass));
-                break;
-            case "status":
-                apartmentService.getApartments().sort(Comparator.comparing(Apartment::getStatus));
-                break;
-        }
+        Pageable currentPage = PageRequest.of(page.orElse(0), 2, Sort.by(by));
 
 
-        model.addAttribute("allApartments", apartmentService.getApartments());
+        Page<Apartment> apartments = apartmentService.getAllApartments(currentPage);
+
+        model.addAttribute("allApartments", apartments);
         model.addAttribute("userAccount", authController.getCurrentUser()
                 .orElseThrow(IllegalStateException::new)
                 .getUserType().equals(UserType.USER));
+
+        log.info("Page size: "+currentPage.getPageSize()+
+                " Page number: "+currentPage.getPageNumber()+
+                " Total pages: "+apartments.getTotalPages());
 
         return "/apartment/apartments_menu";
     }
