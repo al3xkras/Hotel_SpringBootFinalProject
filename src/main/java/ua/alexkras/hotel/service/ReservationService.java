@@ -32,7 +32,7 @@ public class ReservationService {
         currentPendingReservations=null;
     }
 
-    private static final long daysToCancelPayment = 0L;
+    private static final long daysToCancelPayment = 2L;
 
     private final LocalDate now = LocalDate.now();
 
