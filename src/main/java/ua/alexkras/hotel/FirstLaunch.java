@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.HotelUserDetailsService;
-import ua.alexkras.hotel.model.MySqlStrings;
+import ua.alexkras.hotel.model.mysql.MySqlStrings;
 import ua.alexkras.hotel.model.UserType;
 import java.sql.*;
 import java.time.LocalDate;

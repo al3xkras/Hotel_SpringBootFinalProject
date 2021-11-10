@@ -45,7 +45,7 @@ public class ApartmentController {
 
         by = by==null?"price":by;
 
-        Pageable currentPage = PageRequest.of(page.orElse(0), 2, Sort.by(by));
+        Pageable currentPage = PageRequest.of(page.orElse(0), 10, Sort.by(by));
 
 
         Page<Apartment> apartments = apartmentService.findAll(currentPage);

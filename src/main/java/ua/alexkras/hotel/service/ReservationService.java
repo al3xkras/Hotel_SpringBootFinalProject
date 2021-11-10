@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ApartmentStatus;
-import ua.alexkras.hotel.model.MySqlStrings;
+import ua.alexkras.hotel.model.mysql.MySqlStrings;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.repository.ReservationRepository;
 

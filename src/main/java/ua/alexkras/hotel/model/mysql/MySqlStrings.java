@@ -1,4 +1,9 @@
-package ua.alexkras.hotel.model;
+package ua.alexkras.hotel.model.mysql;
+
+import ua.alexkras.hotel.model.ApartmentStatus;
+
+import static ua.alexkras.hotel.model.mysql.ReservationTableStrings.*;
+import static ua.alexkras.hotel.model.mysql.ApartmentTableStrings.*;
 
 public interface MySqlStrings {
     String root = "jdbc:mysql://localhost:3306/";
@@ -32,20 +37,23 @@ public interface MySqlStrings {
     String sqlSelectColumnsFromUserDB = "SELECT %s FROM " + databaseName + "." + tableUser;
 
     String updateExpired = "UPDATE " +
-            "hotel_db.reservations SET " +
-            "status=?,"+
-            "expired=true "+
-            "WHERE not expired and not is_paid and " +
-            "admin_confirmation_date is not null and " +
-            "DATEDIFF(admin_confirmation_date,?)>=?";
+            databaseName+"."+tableReservation+" SET " +
+            colReservationStatus+"=?,"+
+            colIsExpired+"=true "+
+            "WHERE not "+colIsExpired+" and not "+colIsPaid+" and " +
+            colAdminConfirmationDate+" is not null and " +
+            "DATEDIFF("+colAdminConfirmationDate+",?)>=?";
+
     String setExpiredReservationApartmentsAvailable = "UPDATE " +
-            "hotel_db.apartments SET "+
-            "apartment_status=? "+
-            "WHERE apartment_status='"+ApartmentStatus.RESERVED+"' and "+
-            "id IN (SELECT apartment_id FROM hotel_db.reservations WHERE expired and is_active)";
+            "hotel_db."+tableApartment+" SET "+
+            colApartmentStatus+"=? "+
+            "WHERE "+colApartmentStatus+"='"+ ApartmentStatus.RESERVED+"' and "+
+            "id IN (SELECT "+ReservationTableStrings.colApartmentId+" FROM "+databaseName+"."+tableReservation+" WHERE "+
+            colIsExpired+" and "+colIsActive+")";
+
     String updateActive = "UPDATE " +
-            "hotel_db.reservations SET " +
-            "is_active=false "+
-            "WHERE is_active and expired ";
+            databaseName+"."+tableReservation+" SET " +
+            colIsActive+"=false "+
+            "WHERE "+colIsActive+" and "+colIsExpired;
 
 }
