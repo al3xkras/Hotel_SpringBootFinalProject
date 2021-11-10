@@ -22,7 +22,7 @@ public class UserService {
         this.userRepository=userRepository;
     }
 
-    public Optional<User> getUserById(long id){
+    public Optional<User> findById(long id){
         return userRepository.findById(id);
     }
 
@@ -32,7 +32,7 @@ public class UserService {
      * @param username User's login (username)
      * @return Optional\<User>, if user was found, Optional.empty() otherwise.
      */
-    public Optional<User> getUserByUserName(String username){
+    public Optional<User> findByUsername(String username){
         return userRepository.findByUsername(username);
     }
 
@@ -44,7 +44,7 @@ public class UserService {
      * @param user User to add
      * @throws RuntimeException if User was not added to the data source
      */
-    public void addUser(User user){
+    public void create(User user){
         String notEncodedPassword=user.getPassword();
         boolean userWasAdded = false;
         try {

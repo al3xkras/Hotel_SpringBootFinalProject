@@ -57,7 +57,7 @@ public class AuthController {
         if (currentUser!=null && currentUser.getUsername().equalsIgnoreCase(username)){
             return;
         }
-        currentUser = userService.getUserByUserName(username).orElseThrow(IllegalStateException::new);
+        currentUser = userService.findByUsername(username).orElseThrow(IllegalStateException::new);
     }
 
     public void clearCurrentUser(){

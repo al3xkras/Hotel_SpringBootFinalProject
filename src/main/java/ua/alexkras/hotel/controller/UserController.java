@@ -122,7 +122,8 @@ public class UserController {
     public String makePaymentPage(@PathVariable("id") Integer reservationId,
                                   Model model){
         User user = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
-        Reservation currentPaymentReservation = paymentService.updateCurrentPaymentReservationByReservationId(reservationId);
+        Reservation currentPaymentReservation = reservationService.findById(reservationId)
+                .orElseThrow(IllegalStateException::new);
 
         Payment payment = new Payment();
         payment.setReservationId(reservationId);
@@ -141,7 +142,8 @@ public class UserController {
                               Model model){
         User user = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
 
-        Reservation currentPaymentReservation = paymentService.updateCurrentPaymentReservationByReservationId(reservationId);
+        Reservation currentPaymentReservation = reservationService.findById(reservationId)
+                .orElseThrow(IllegalStateException::new);
 
         if (!payment.getCardCvv().matches("^(\\d{3})$")){
             payment.setReservationId(reservationId);
@@ -165,7 +167,7 @@ public class UserController {
         payment.setPaymentDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
 
         //TODO execute in transaction
-        paymentService.addPayment(payment);
+        paymentService.create(payment);
         reservationService.updateIsPaidById(reservationId,true);
 
         return "redirect:/";

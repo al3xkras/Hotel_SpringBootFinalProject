@@ -48,7 +48,7 @@ public class RegistrationController {
         User user = new User(request, UserType.USER);
 
         try{
-            userService.addUser(user);
+            userService.create(user);
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("usernameExists",true);
