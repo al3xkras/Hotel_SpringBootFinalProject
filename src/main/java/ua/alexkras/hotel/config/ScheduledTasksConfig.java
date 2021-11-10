@@ -22,8 +22,7 @@ public class ScheduledTasksConfig {
     //@Scheduled(cron = "0 0 10 * * ?", zone = "Europe/London")
     @Scheduled(fixedDelay = 86400000)
     public void scheduleFindExpiredReservations(){
-        if (reservationService.updateAllExpiredReservations()){
-            log.info("Expired Reservations has been updated");
-        }
+        reservationService.updateAllExpiredReservations();
+        log.info("Expired Reservations has been updated");
     }
 }

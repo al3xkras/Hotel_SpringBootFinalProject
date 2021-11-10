@@ -45,8 +45,8 @@ public class CustomLogoutSuccessHandler extends
         HotelUserDetailsService.clearCurrentUserDetails();
         authController.clearCurrentUser();
 
-        apartmentService.clearEverything();
-        reservationService.clearEverything();
+        apartmentService.flush();
+        reservationService.flush();
         paymentService.clearEverything();
 
         super.onLogoutSuccess(request, response, authentication);

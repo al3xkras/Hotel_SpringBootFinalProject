@@ -46,7 +46,7 @@ public class PaymentService {
         if (currentPaymentReservation.isPresent() && currentPaymentReservation.get().getId()==reservationId){
             return getCurrentPaymentReservation();
         }
-        currentPaymentReservation = reservationService.getReservationById(reservationId);
+        currentPaymentReservation = reservationService.findById(reservationId);
         return getCurrentPaymentReservation();
     }
 

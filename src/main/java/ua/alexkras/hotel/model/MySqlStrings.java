@@ -31,4 +31,21 @@ public interface MySqlStrings {
 
     String sqlSelectColumnsFromUserDB = "SELECT %s FROM " + databaseName + "." + tableUser;
 
+    String updateExpired = "UPDATE " +
+            "hotel_db.reservations SET " +
+            "status=?,"+
+            "expired=true "+
+            "WHERE not expired and not is_paid and " +
+            "admin_confirmation_date is not null and " +
+            "DATEDIFF(admin_confirmation_date,?)>=?";
+    String setExpiredReservationApartmentsAvailable = "UPDATE " +
+            "hotel_db.apartments SET "+
+            "apartment_status=? "+
+            "WHERE apartment_status='"+ApartmentStatus.RESERVED+"' and "+
+            "id IN (SELECT apartment_id FROM hotel_db.reservations WHERE expired and is_active)";
+    String updateActive = "UPDATE " +
+            "hotel_db.reservations SET " +
+            "is_active=false "+
+            "WHERE is_active and expired ";
+
 }

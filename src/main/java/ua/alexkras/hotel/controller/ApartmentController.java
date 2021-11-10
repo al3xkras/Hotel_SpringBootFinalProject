@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +19,7 @@ import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Controller
@@ -53,7 +48,7 @@ public class ApartmentController {
         Pageable currentPage = PageRequest.of(page.orElse(0), 2, Sort.by(by));
 
 
-        Page<Apartment> apartments = apartmentService.getAllApartments(currentPage);
+        Page<Apartment> apartments = apartmentService.findAll(currentPage);
 
         model.addAttribute("allApartments", apartments);
         model.addAttribute("userAccount", authController.getCurrentUser()
@@ -78,7 +73,7 @@ public class ApartmentController {
     public String onApartmentAdd(
             @ModelAttribute("apartment") Apartment apartment){
 
-        apartmentService.addApartment(apartment);
+        apartmentService.create(apartment);
 
         return "redirect:/";
     }
@@ -87,7 +82,8 @@ public class ApartmentController {
     public String apartmentPage(@PathVariable("id") Integer id,
                                 Model model){
 
-        Apartment currentApartment = apartmentService.updateCurrentApartment(id);
+        Apartment currentApartment = apartmentService.findById(id)
+                .orElseThrow(IllegalStateException::new);
 
         model.addAttribute("apartment",currentApartment);
         model.addAttribute("reservation", new Reservation());
@@ -104,13 +100,13 @@ public class ApartmentController {
                                                      Model model){
 
         if (reservationDate.getFromDate().compareTo(reservationDate.getToDate())>=0){
-            model.addAttribute("apartment",apartmentService.updateCurrentApartment(id));
+            model.addAttribute("apartment",apartmentService.findById(id));
             model.addAttribute("fromDateIsGreaterThanToDate",true);
             return "/apartment/apartment";
         }
 
         User currentUser = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
-        Apartment apartment = apartmentService.updateCurrentApartment(id);
+        Apartment apartment = apartmentService.findById(id).orElseThrow(IllegalStateException::new);
 
         if (!apartment.getStatus().equals(ApartmentStatus.AVAILABLE) ||
                 !currentUser.getUserType().equals(UserType.USER)){
@@ -128,8 +124,8 @@ public class ApartmentController {
         reservation.setApartmentPrice(apartment.getPrice());
         reservation.setReservationStatus(ReservationStatus.PENDING);
 
-        apartmentService.updateApartmentStatusById(apartment.getId(),ApartmentStatus.RESERVED);
-        reservationService.addReservation(reservation);
+        apartmentService.updateStatusById(apartment.getId(),ApartmentStatus.RESERVED);
+        reservationService.create(reservation);
         return "redirect:/";
     }
 

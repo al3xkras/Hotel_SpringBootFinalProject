@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ua.alexkras.hotel.entity.Apartment;
+import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.ReservationService;
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -32,26 +35,24 @@ public class AdminController {
 
     @GetMapping
     public String adminMainPage(Model model){
-
-        reservationService.updateCurrentPendingReservations();
-
-        model.addAttribute("pendingReservations",
-                reservationService.getCurrentPendingReservations());
-
+        List<Reservation> pending = reservationService.findAllByActiveAndStatus(true,ReservationStatus.PENDING);
+        model.addAttribute("pendingReservations", pending);
         return "personal_area/admin";
     }
 
     @GetMapping("/reservation/{id}")
     public String pendingReservationPage(@PathVariable Integer id, Model model){
-        reservationService.updateCurrentReservation(id);
+        Reservation reservation = reservationService.findById(id)
+                .orElseThrow(IllegalStateException::new);
 
-        model.addAttribute("reservation",reservationService.getCurrentReservation());
+        model.addAttribute("reservation",reservation);
 
-        boolean isCompleted = reservationService.getCurrentReservation().isCompleted();
+        boolean isCompleted = reservation.isCompleted();
         model.addAttribute("isCompleted", isCompleted);
 
         if (!isCompleted) {
-            model.addAttribute("matchingApartments", apartmentService.updateApartmentsMatchingCurrentReservation());
+            List<Apartment> matching = apartmentService.findAllMatchingReservation(reservation);
+            model.addAttribute("matchingApartments", matching);
         }
 
         return "/reservation/reservation";
@@ -62,13 +63,14 @@ public class AdminController {
                                          @PathVariable("apartmentId") Integer apartmentId,
                                          Model model){
 
-        reservationService.updateCurrentReservation(reservationId);
-        reservationService.getCurrentReservation().setApartmentId(apartmentId);
+        Reservation reservation = reservationService.findById(reservationId)
+                .orElseThrow(IllegalStateException::new);
+        reservation.setApartmentId(apartmentId);
 
         model.addAttribute("isCompleted",false);
-        model.addAttribute("reservation",reservationService.getCurrentReservation());
+        model.addAttribute("reservation",reservation);
         model.addAttribute("matchingApartments",
-                apartmentService.updateApartmentsMatchingCurrentReservation());
+                apartmentService.findAllMatchingReservation(reservation));
         model.addAttribute("apartmentSelected",true);
 
         return "/reservation/reservation";
@@ -77,10 +79,12 @@ public class AdminController {
     @PostMapping("/reservation/{id}/confirm")
     public String confirmCompletedReservation(@PathVariable("id") Integer reservationId){
 
-        reservationService.updateCurrentReservation(reservationId);
-        if (!reservationService.getCurrentReservation().isCompleted())
+        Reservation reservation = reservationService.findById(reservationId)
+                .orElseThrow(IllegalStateException::new);
+
+        if (!reservation.isCompleted())
             return "redirect:/error";
-        reservationService.updateReservationStatusAndConfirmationDateById(
+        reservationService.updateStatusAndConfirmationDateById(
                 reservationId,
                 ReservationStatus.CONFIRMED,
                 LocalDate.now());
@@ -92,15 +96,20 @@ public class AdminController {
     public String confirmReservation(@PathVariable("id") Integer reservationId,
                                      @PathVariable("apartmentId") Integer apartmentId){
 
-        apartmentService.updateCurrentApartment(apartmentId);
-        reservationService.updateCurrentReservation(reservationId);
+        Apartment apartment = apartmentService.findById(apartmentId)
+                .orElseThrow(IllegalStateException::new);
 
-        if (!apartmentService.getCurrentApartment().matchesReservation(reservationService.getCurrentReservation())){
+        Reservation reservation = reservationService.findById(reservationId)
+                .orElseThrow(IllegalStateException::new);
+
+        if (!apartment.matchesReservation(reservation)){
             return "redirect:/error";
         }
 
-        reservationService.updateReservationWithApartmentById(reservationId, apartmentService.getCurrentApartment(), LocalDate.now());
-        apartmentService.updateApartmentStatusById(apartmentId, ApartmentStatus.RESERVED);
+        //TODO execute in transaction
+        reservationService.updateReservationApartmentDataAndConfirmationDateByIdWithApartment(
+                reservationId, apartment, LocalDate.now());
+        apartmentService.updateStatusById(apartmentId, ApartmentStatus.RESERVED);
 
         return "redirect:/";
     }
@@ -108,15 +117,17 @@ public class AdminController {
     @PostMapping("/reservation/{id}/cancel")
     public String dropReservation(@PathVariable("id") Integer reservationId){
 
-        reservationService.updateCurrentReservation(reservationId);
+        Reservation reservation = reservationService.findById(reservationId)
+                .orElseThrow(IllegalStateException::new);
 
-        if (reservationService.getCurrentReservation().getApartmentId()!=null) {
-            apartmentService.updateApartmentStatusById(
-                    reservationService.getCurrentReservation().getApartmentId(),
+        //TODO execute in transaction
+        if (reservation.getApartmentId()!=null) {
+            apartmentService.updateStatusById(
+                    reservation.getApartmentId(),
                     ApartmentStatus.AVAILABLE);
         }
 
-        reservationService.updateReservationStatusById(reservationId, ReservationStatus.CANCELLED);
+        reservationService.updateStatusById(reservationId, ReservationStatus.CANCELLED);
 
         return "redirect:/";
     }

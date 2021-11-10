@@ -53,7 +53,7 @@ public class ReservationController {
 
         System.out.println(reservation);
 
-        reservationService.addReservation(reservation);
+        reservationService.create(reservation);
 
         return "redirect:/";
     }

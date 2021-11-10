@@ -14,12 +14,9 @@ import ua.alexkras.hotel.service.ApartmentService;
 import ua.alexkras.hotel.service.PaymentService;
 import ua.alexkras.hotel.service.ReservationService;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 
 @Controller
 @RequestMapping("/user")
@@ -53,8 +50,7 @@ public class UserController {
         }
 
         model.addAttribute("allReservations",
-                reservationService.updateCurrentUserActiveReservationsById(optionalUser.get().getId())
-        );
+                reservationService.findAllByUserIdAndActive(optionalUser.get().getId(),true));
 
         return "personal_area/user";
     }
@@ -64,7 +60,8 @@ public class UserController {
     public String reservationFromTable(@PathVariable("id") Integer reservationId,
                                        Model model){
 
-        Reservation currentReservation = reservationService.updateCurrentReservation(reservationId);
+        Reservation currentReservation = reservationService.findById(reservationId)
+                .orElseThrow(IllegalStateException::new);
 
         if (!currentReservation.isCompleted()){
             return "redirect:/";
@@ -81,7 +78,8 @@ public class UserController {
     @PostMapping("/reservation/{id}/confirm")
     public String confirmReservation(@PathVariable("id") Integer reservationId){
 
-        Reservation currentReservation = reservationService.updateCurrentReservation(reservationId);
+        Reservation currentReservation = reservationService.findById(reservationId)
+                .orElseThrow(IllegalStateException::new);
 
         if (currentReservation.getUserId()!=
                 authController.getCurrentUser().orElseThrow(IllegalStateException::new).getId() ||
@@ -89,7 +87,7 @@ public class UserController {
             return "redirect:/";
         }
 
-        reservationService.updateReservationStatusById(reservationId,ReservationStatus.RESERVED);
+        reservationService.updateStatusById(reservationId,ReservationStatus.RESERVED);
 
         return "redirect:/";
     }
@@ -98,7 +96,8 @@ public class UserController {
     @PostMapping("/reservation/{id}/cancel")
     public String cancelReservation(@PathVariable("id") Integer reservationId) {
 
-        Reservation currentReservation = reservationService.updateCurrentReservation(reservationId);
+        Reservation currentReservation = reservationService.findById(reservationId)
+                .orElseThrow(IllegalStateException::new);
 
         if (currentReservation.getUserId()!= authController
                 .getCurrentUser().orElseThrow(IllegalStateException::new)
@@ -107,11 +106,11 @@ public class UserController {
             return "redirect:/";
         }
 
-        apartmentService.updateApartmentStatusById(
+        apartmentService.updateStatusById(
                 currentReservation.getApartmentId(),
                 ApartmentStatus.AVAILABLE);
 
-        reservationService.updateReservationStatusById(
+        reservationService.updateStatusById(
                 reservationId,
                 ReservationStatus.CANCELLED);
 
@@ -153,22 +152,21 @@ public class UserController {
             return "/personal_area/user/payment";
         }
 
-        reservationService.updateCurrentReservation(reservationId);
+        Reservation reservation = reservationService.findById(reservationId)
+                .orElseThrow(IllegalStateException::new);
 
-        if (user.getId()!= reservationService.getCurrentReservation().getUserId()){
+        if (user.getId()!= reservation.getUserId()){
             return "redirect:/";
         }
 
-        payment.setUserId(reservationService
-                .getCurrentReservation().getUserId());
-        payment.setReservationId(reservationService
-                .getCurrentReservation().getId());
-        payment.setValue(reservationService
-                .getCurrentReservation().getApartmentPrice());
+        payment.setUserId(reservation.getUserId());
+        payment.setReservationId(reservation.getId());
+        payment.setValue(reservation.getApartmentPrice());
         payment.setPaymentDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
 
+        //TODO execute in transaction
         paymentService.addPayment(payment);
-        reservationService.updateReservationPaymentStatusById(reservationId,true);
+        reservationService.updateIsPaidById(reservationId,true);
 
         return "redirect:/";
     }

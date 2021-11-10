@@ -11,6 +11,7 @@ import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.repository.ReservationRepository;
 
 import java.sql.*;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +26,13 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
 
     private Optional<Reservation> currentReservation=Optional.empty();
-    private Optional<List<Reservation>> currentUserActiveReservations=Optional.empty();
-    private Optional<List<Reservation>> currentPendingReservations=Optional.empty();
-    public void clearEverything(){
-        currentReservation=Optional.empty();
-        currentUserActiveReservations=Optional.empty();
-        currentPendingReservations=Optional.empty();
+    private List<Reservation> currentUserActiveReservations=new ArrayList<>();
+    private List<Reservation> currentPendingReservations=new ArrayList<>();
+
+    public void flush(){
+        clearCurrentUserActiveReservations();
+        clearCurrentReservation();
+        clearCurrentPendingReservations();
     }
 
     private static final long daysToCancelPayment = 2L;
@@ -40,25 +42,12 @@ public class ReservationService {
         this.reservationRepository=reservationRepository;
     }
 
-    public boolean updateAllExpiredReservations(){
+    public void updateAllExpiredReservations(){
         try (Connection conn = DriverManager.getConnection(MySqlStrings.root, MySqlStrings.user, MySqlStrings.password);
-             PreparedStatement updateExpired = conn.prepareStatement("UPDATE " +
-                     "hotel_db.reservations SET " +
-                     "status=?,"+
-                     "expired=true "+
-                     "WHERE not expired and not is_paid and " +
-                     "admin_confirmation_date is not null and " +
-                     "DATEDIFF(admin_confirmation_date,?)>=?");
-             PreparedStatement setExpiredReservationApartmentsAvailable = conn.prepareStatement("UPDATE " +
-                     "hotel_db.apartments SET "+
-                     "apartment_status=? "+
-                     "WHERE apartment_status='"+ApartmentStatus.RESERVED+"' and "+
-                     "id IN (SELECT apartment_id FROM hotel_db.reservations WHERE expired and is_active)");
-             PreparedStatement updateActive = conn.prepareStatement("UPDATE " +
-                     "hotel_db.reservations SET " +
-                     "is_active=false "+
-                     "WHERE is_active and expired ")
-             ){
+             PreparedStatement updateExpired = conn.prepareStatement(MySqlStrings.updateExpired);
+             PreparedStatement setExpiredReservationApartmentsAvailable = conn.prepareStatement(MySqlStrings.setExpiredReservationApartmentsAvailable);
+             PreparedStatement updateActive = conn.prepareStatement(MySqlStrings.updateActive)
+            ){
             updateExpired.setString(1,ReservationStatus.CANCELLED.name());
             updateExpired.setDate(2, Date.valueOf(LocalDate.now()));
             updateExpired.setLong(3,daysToCancelPayment);
@@ -70,35 +59,35 @@ public class ReservationService {
             updateActive.executeUpdate();
         } catch (SQLException e){
             e.printStackTrace();
-            return false;
+            throw new RuntimeException();
         }
-        return true;
     }
 
-    public void addReservation (Reservation reservation){
+    public void create(Reservation reservation){
         reservationRepository.save(reservation);
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
     }
 
-    public List<Reservation> getReservationsByUserId(int userId){
-        return reservationRepository.findByUserId(userId);
+    public List<Reservation> findAllByActiveAndStatus(boolean isActive, ReservationStatus reservationStatus){
+        if (currentPendingReservations.isEmpty()) {
+            currentPendingReservations = reservationRepository.findByActiveAndReservationStatus(isActive,reservationStatus);
+        }
+        return currentPendingReservations;
     }
 
-    public List<Reservation> getActiveReservationsByUserId(int userId){
-        return reservationRepository.findByUserIdAndIsActive(userId,true);
-    }
-
-    public Optional<Reservation> getReservationById(int reservationId){
-        return reservationRepository.findById(reservationId);
-    }
-
-    public List<Reservation> getAllReservations(){
-        return reservationRepository.findAll();
-    }
-
-    public List<Reservation> getPendingReservations(){
-        return reservationRepository.findByReservationStatus(ReservationStatus.PENDING);
+    /**
+     * Get full cost of a @reservation
+     * Full cost is calculated by formula:
+     *  (reservation's apartment price for 1 day)*(date difference in days between reservation's "from date" and "to date")
+     * @param reservation valid reservation ("from date","to date",all apartment-related columns are not-null)
+     * @throws NullPointerException if @reservation is invalid
+     * @return full cost of @reservation
+     */
+    public int getReservationFullCost(Reservation reservation){
+        return reservation.getApartmentPrice() *
+                (int) Duration.between(reservation.getFromDate(),
+                        reservation.getToDate()).toDays();
     }
 
     /**
@@ -107,7 +96,7 @@ public class ReservationService {
      * @param id id of Reservation to be updated
      * @param reservationStatus reservation status to assign to the Reservation
      */
-    public void updateReservationStatusById(int id, ReservationStatus reservationStatus){
+    public void updateStatusById(long id, ReservationStatus reservationStatus){
         reservationRepository.updateReservationStatusById(id, reservationStatus);
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
@@ -121,7 +110,7 @@ public class ReservationService {
      * @param reservationStatus new Reservation's status (after admins confirmation)
      * @param confirmationDate date of confirmation by Admin
      */
-    public void updateReservationStatusAndConfirmationDateById(int id, ReservationStatus reservationStatus, LocalDate confirmationDate){
+    public void updateStatusAndConfirmationDateById(long id, ReservationStatus reservationStatus, LocalDate confirmationDate){
         reservationRepository.updateReservationStatusAndConfirmationDateById(id, reservationStatus, confirmationDate);
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
@@ -137,7 +126,7 @@ public class ReservationService {
      * @param apartment apartment to associate with Reservation
      * @param confirmationDate date of confirmation by Admin
      */
-    public void updateReservationWithApartmentById(int id, Apartment apartment, LocalDate confirmationDate){
+    public void updateReservationApartmentDataAndConfirmationDateByIdWithApartment(long id, Apartment apartment, LocalDate confirmationDate){
         reservationRepository.updateApartmentIdAndPriceAndReservationStatusAndConfirmationDateById(
                 apartment.getId(),
                 apartment.getPrice(),
@@ -155,7 +144,7 @@ public class ReservationService {
      * @param reservationId id of Reservation
      * @param isPaid new payment status
      */
-    public void updateReservationPaymentStatusById(int reservationId, boolean isPaid){
+    public void updateIsPaidById(long reservationId, boolean isPaid){
         reservationRepository.updateIsPaidById(reservationId,isPaid);
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
@@ -177,12 +166,12 @@ public class ReservationService {
      * @return newly updated (or existing) Reservation
      * @throws IllegalStateException if Reservation with @reservationId was not found in a data source
      */
-    public Reservation updateCurrentReservation(int reservationId){
+    public Optional<Reservation> findById(long reservationId){
         if (!currentReservation.isPresent() || currentReservation.get().getId()!=reservationId){
-            currentReservation = getReservationById(reservationId);
+            currentReservation = reservationRepository.findById(reservationId);
         }
-        updateReservationDaysUntilExpiration(getCurrentReservation());
-        return getCurrentReservation();
+        currentReservation.ifPresent(this::updateReservationDaysUntilExpiration);
+        return currentReservation;
     }
 
     /**
@@ -202,37 +191,16 @@ public class ReservationService {
      * @return newly created, or existing List of Reservations,
      *   which are active and created by user with id @userId
      */
-    public List<Reservation> updateCurrentUserActiveReservationsById(int userId){
-        if (currentUserActiveReservations.isPresent() &&
-                !currentUserActiveReservations.get().isEmpty() &&
-                currentUserActiveReservations.get().get(0).getUserId()==userId){
-            return getCurrentUserActiveReservations();
+    public List<Reservation> findAllByUserIdAndActive(long userId, boolean isActive){
+        if (!currentUserActiveReservations.isEmpty() && currentUserActiveReservations.get(0).getUserId()==userId){
+            return currentUserActiveReservations;
         }
-
-        currentUserActiveReservations = Optional.of(getActiveReservationsByUserId(userId));
-        currentUserActiveReservations.get().forEach(this::updateReservationDaysUntilExpiration);
-
-        return getCurrentUserActiveReservations();
+        currentUserActiveReservations = reservationRepository.findByUserIdAndIsActive(userId,isActive);
+        currentUserActiveReservations.forEach(this::updateReservationDaysUntilExpiration);
+        return currentUserActiveReservations;
     }
 
-    /**
-     * Update list of all reservations, that are currently pending
-     * -If list of reservations, that are currently pending is not present, or
-     *   is empty,
-     *
-     *   -Request new List of Reservations from a data source
-     * -Otherwise
-     *
-     *   -Return list, that was saved in memory
-     *
-     * @return List of Reservations, that are currently pending
-     */
-    public List<Reservation> updateCurrentPendingReservations(){
-        if (!currentPendingReservations.isPresent() || currentPendingReservations.get().isEmpty()) {
-            currentPendingReservations = Optional.of(getPendingReservations());
-        }
-        return getCurrentPendingReservations();
-    }
+
 
     /**
      * Update reservation's days until expiration
@@ -243,38 +211,23 @@ public class ReservationService {
      *   -Calculate days between confirmation date and today
      *   -Update Reservation's days until expiration
      * @param reservation Reservation that will be updated
-     * @return Reservation with updated days until expiration,
-     *   if it was confirmed by admin. Otherwise, returns @reservation
      */
-    private Reservation updateReservationDaysUntilExpiration(Reservation reservation){
+    private void updateReservationDaysUntilExpiration(Reservation reservation){
         if (reservation.getAdminConfirmationDate()==null){
-            return reservation;
+            return;
         }
         LocalDate submitDate=reservation.getAdminConfirmationDate();
         long daysBetween = DAYS.between(LocalDate.now(),submitDate);
         reservation.setDaysUntilExpiration(daysToCancelPayment-daysBetween);
-        return reservation;
     }
 
-    public void clearCurrentUserActiveReservations(){currentUserActiveReservations=Optional.empty();}
+    private void clearCurrentUserActiveReservations(){currentUserActiveReservations=new ArrayList<>();}
 
-    public void clearCurrentReservation(){
+    private void clearCurrentReservation(){
         currentReservation=Optional.empty();
     }
 
-    public void clearCurrentPendingReservations(){
-        currentPendingReservations=Optional.empty();
-    }
-
-    public Reservation getCurrentReservation() {
-        return currentReservation.orElseThrow(IllegalStateException::new);
-    }
-
-    public List<Reservation> getCurrentUserActiveReservations() {
-        return currentUserActiveReservations.orElseThrow(IllegalStateException::new);
-    }
-
-    public List<Reservation> getCurrentPendingReservations() {
-        return currentPendingReservations.orElseThrow(IllegalStateException::new);
+    private void clearCurrentPendingReservations(){
+        currentPendingReservations=new ArrayList<>();
     }
 }
