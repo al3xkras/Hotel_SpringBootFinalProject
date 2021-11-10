@@ -79,7 +79,7 @@ public class ApartmentController {
     }
 
     @GetMapping("/apartment/{id}")
-    public String apartmentPage(@PathVariable("id") Integer id,
+    public String apartmentPage(@PathVariable("id") long id,
                                 Model model){
 
         Apartment currentApartment = apartmentService.findById(id)

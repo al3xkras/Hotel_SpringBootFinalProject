@@ -25,7 +25,7 @@ public interface ReservationRepository extends PagingAndSortingRepository<Reserv
     @Query("update Reservation reservation set reservation.isActive =:isActive where reservation.userId =:userId")
     void updateActiveByUserId(@Param("userId") long userId, @Param("isActive") boolean isActive);
 
-    Optional<Reservation> findById(int reservationId);
+    Optional<Reservation> findById(long reservationId);
 
     List<Reservation> findAllByIsActiveAndReservationStatus(boolean active,ReservationStatus reservationStatus);
 

@@ -60,7 +60,7 @@ public class AdminController {
 
     @GetMapping("/reservation/{id}/select/{apartmentId}")
     public String confirmReservationPage(@PathVariable("id") Integer reservationId,
-                                         @PathVariable("apartmentId") Integer apartmentId,
+                                         @PathVariable("apartmentId") Long apartmentId,
                                          Model model){
 
         Reservation reservation = reservationService.findById(reservationId)

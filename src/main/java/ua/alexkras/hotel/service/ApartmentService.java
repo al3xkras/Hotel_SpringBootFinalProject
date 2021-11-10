@@ -16,21 +16,19 @@ import java.util.Optional;
 @Service
 public class ApartmentService {
     private final ApartmentRepository apartmentRepository;
-    private final ReservationService reservationService;
 
     private Optional<Apartment> currentApartment=Optional.empty();
     public void flush(){
         clearCurrentApartment();
     }
 
-    private Optional<Integer> currentReservationId;
+    private Optional<Long> currentReservationId;
     private List<Apartment> apartmentsMatchingReservation = new ArrayList<>();
 
     @Autowired
     public ApartmentService(ApartmentRepository apartmentRepository,
                             ReservationService reservationService){
         this.apartmentRepository=apartmentRepository;
-        this.reservationService=reservationService;
     }
 
     public Page<Apartment> findAll(Pageable pageable){
@@ -39,7 +37,7 @@ public class ApartmentService {
 
     public Optional<Apartment> findById(long id){
         if (!currentApartment.isPresent() || currentApartment.get().getId()!=id){
-            currentApartment = apartmentRepository.findApartmentById(id);
+            currentApartment = apartmentRepository.findById(id);
         }
         return currentApartment;
     }
@@ -56,7 +54,7 @@ public class ApartmentService {
      * @param id Apartment's id
      * @param apartmentStatus New apartment status
      */
-    public void updateStatusById(int id, ApartmentStatus apartmentStatus) {
+    public void updateStatusById(long id, ApartmentStatus apartmentStatus) {
         apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
         clearCurrentApartment();
         clearApartmentsMatchingCurrentReservation();

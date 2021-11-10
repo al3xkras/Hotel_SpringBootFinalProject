@@ -20,10 +20,10 @@ public class Reservation {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false, length = 32)
-    private int id;
+    private long id;
 
     @Column(name = "USER_ID", nullable = false)
-    private int userId;
+    private long userId;
 
     @Column(name = "APARTMENT_CLASS", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -49,7 +49,7 @@ public class Reservation {
     private int places;
 
     @Column(name = "APARTMENT_ID")
-    private Integer apartmentId;
+    private Long apartmentId;
 
     @Column(name = "APARTMENT_PRICE")
     private Integer apartmentPrice;

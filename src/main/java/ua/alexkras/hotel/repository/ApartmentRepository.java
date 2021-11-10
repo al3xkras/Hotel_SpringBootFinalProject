@@ -16,13 +16,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ApartmentRepository extends PagingAndSortingRepository<Apartment,Long> {
-    Optional<Apartment> findApartmentById(long id);
+    Optional<Apartment> findById(long id);
 
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query("update Apartment apartment set apartment.status =:apartmentStatus where apartment.id =:id")
     void updateApartmentStatusById(@Param("id") long id, @Param("apartmentStatus") ApartmentStatus apartmentStatus);
-
 
     List<Apartment> findApartmentsByApartmentClassAndPlacesAndStatus(ApartmentClass apartmentClass,
                                                                      int places,

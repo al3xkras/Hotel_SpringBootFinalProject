@@ -19,7 +19,7 @@ public class Apartment {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false, length = 32)
-    private Integer id;
+    private Long id;
 
     @Column(name = "NAME", nullable = false)
     private String name;

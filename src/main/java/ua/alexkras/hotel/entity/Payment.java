@@ -18,13 +18,13 @@ public class Payment {
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false, length = 32)
-    private int id;
+    private long id;
 
     @Column(name = "USER_ID", nullable = false, length = 32)
-    private int userId;
+    private long userId;
 
     @Column(name = "RESERVATION_ID", nullable = false, length = 32)
-    private int reservationId;
+    private long reservationId;
 
     @Column(name = "VALUE", nullable = false)
     private int value;
