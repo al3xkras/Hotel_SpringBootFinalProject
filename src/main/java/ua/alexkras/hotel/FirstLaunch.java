@@ -1,73 +1,81 @@
 package ua.alexkras.hotel;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import ua.alexkras.hotel.entity.User;
-import ua.alexkras.hotel.model.HotelUserDetailsService;
+import ua.alexkras.hotel.model.mysql.ApartmentTableStrings;
 import ua.alexkras.hotel.model.mysql.MySqlStrings;
-import ua.alexkras.hotel.model.UserType;
-import java.sql.*;
-import java.time.LocalDate;
+import ua.alexkras.hotel.model.mysql.ReservationTableStrings;
+import ua.alexkras.hotel.model.mysql.UserTableStrings;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import static ua.alexkras.hotel.model.mysql.MySqlStrings.databaseName;
+import static ua.alexkras.hotel.model.mysql.PaymentTableStrings.*;
+import static ua.alexkras.hotel.model.mysql.PaymentTableStrings.colReservationId;
+import static ua.alexkras.hotel.model.mysql.PaymentTableStrings.colUserId;
+import static ua.alexkras.hotel.model.mysql.ReservationTableStrings.*;
+import static ua.alexkras.hotel.model.mysql.UserTableStrings.tableUser;
 
 public class FirstLaunch {
     public static void main(String[] args) {
-        //Create database if not exists before starting Spring Boot application
-        try (Connection conn = DriverManager.getConnection(MySqlStrings.root, MySqlStrings.user, MySqlStrings.password);
-             PreparedStatement createDB = conn.prepareStatement(MySqlStrings.sqlCreateDatabaseIfNotExists);
-        ) {
+
+        try (Connection connection = DriverManager.getConnection(MySqlStrings.root, MySqlStrings.user, MySqlStrings.password)){
+            createDatabase(connection);
+        } catch (SQLException e){
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    public static void createDatabase(Connection conn){
+        try (PreparedStatement createDB = conn.prepareStatement(MySqlStrings.sqlCreateDatabaseIfNotExists);
+             PreparedStatement createUserTable = conn.prepareStatement(UserTableStrings.sqlCreateUserTableIfNotExists);
+             PreparedStatement createApartmentTable = conn.prepareStatement(ApartmentTableStrings.sqlCreateApartmentTableIfNotExists);
+             PreparedStatement createReservationTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS "+
+                     databaseName+"."+tableReservation+" ("+
+                     ReservationTableStrings.colReservationId+" int unique primary key auto_increment, "+
+                     ReservationTableStrings.colUserId+" int not null, FOREIGN KEY ("+ReservationTableStrings.colUserId+")"+
+                     " REFERENCES "+databaseName+"."+tableUser+"("+UserTableStrings.colUserId+")" +
+                     " ON DELETE CASCADE,"+
+                     colApartmentId+" int, FOREIGN KEY ("+colApartmentId+")" +
+                     "REFERENCES "+databaseName+"."+ApartmentTableStrings.tableApartment+"("+ApartmentTableStrings.colApartmentId+") ON DELETE NO ACTION, "+
+                     colApartmentClass+" varchar(20) not null,"+
+                     colApartmentPlaces+" int not null,"+
+                     colApartmentPrice+" int,"+
+                     colReservationStatus+" varchar(20) not null,"+
+                     colFromDate+" DATE not null,"+
+                     colToDate+" DATE not null,"+
+                     colSubmitDate+" DATETIME not null,"+
+                     colAdminConfirmationDate+" DATE,"+
+                     colIsPaid+" boolean default 0,"+
+                     colIsActive+" boolean default 1,"+
+                     colIsExpired+" boolean default 0) ENGINE=INNODB;");
+             PreparedStatement createPaymentsTable = conn.prepareStatement("CREATE TABLE IF NOT EXISTS "+
+                     databaseName+"."+tablePayments+" ("+
+                     colPaymentId+" int unique primary key auto_increment, "+
+                     colUserId+" int not null," +
+                     "FOREIGN KEY ("+colUserId+") REFERENCES "+databaseName+"."+tableUser+"("+UserTableStrings.colUserId+") ON DELETE NO ACTION,"+
+                     colReservationId+" int not null," +
+                     "FOREIGN KEY ("+colReservationId+") REFERENCES  "+databaseName+"."+tableReservation+"("+ReservationTableStrings.colReservationId+") ON DELETE NO ACTION,"+
+                     colValue+" int not null,"+
+                     colPaymentDate+" DATETIME not null,"+
+                     colCardNumber+" varchar(40) not null,"+
+                     colCardExpirationDate+" DATE not null,"+
+                     colCardCvv+" varchar(3) not null) ENGINE=INNODB;")
+        ){
             createDB.execute();
+            createUserTable.execute();
+            createApartmentTable.execute();
+            createReservationTable.execute();
+            createPaymentsTable.execute();
+
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Unable to create database: "+MySqlStrings.databaseName);
-        }
-
-        SpringApplication.run(HotelApplication.class, args);
-
-        addUser(-1L,new User("Admin", "Adminovich",
-                "Admin1", "password1",
-                "+404-23-4567890",
-                LocalDate.parse("2002-03-07"),
-                "Male", UserType.ADMIN));
-
-        addUser(-2L,new User("AdminName", "AdminSurname",
-                "Admin2", "password2",
-                "+404-12-3456789",
-                LocalDate.parse("2002-03-07"),
-                "Male", UserType.ADMIN));
-    }
-
-
-    public static void addUser(long id, User user) {
-        PasswordEncoder encoder = HotelUserDetailsService.passwordEncoder();
-        String passwordNotEncoded=user.getPassword();
-
-        try(Connection conn = DriverManager.getConnection(MySqlStrings.connectionUrl, MySqlStrings.user, MySqlStrings.password);
-            PreparedStatement addUserIfNotExists = conn.prepareStatement("INSERT INTO hotel_db.user " +
-                    "(id, birthday, gender, name, password, phone_number, surname, user_type, username)" +
-                    " VALUES " +
-                    "(?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        ){
-
-            user.setPassword(encoder.encode(user.getPassword()));
-
-            addUserIfNotExists.setLong(1,id);
-            addUserIfNotExists.setDate(2, Date.valueOf(user.getBirthday()));
-            addUserIfNotExists.setString(3, user.getGender());
-            addUserIfNotExists.setString(4, user.getName());
-            addUserIfNotExists.setString(5, user.getPassword());
-            addUserIfNotExists.setString(6, user.getPhoneNumber());
-            addUserIfNotExists.setString(7, user.getSurname());
-            addUserIfNotExists.setString(8, user.getUserType().name());
-            addUserIfNotExists.setString(9, user.getUsername());
-
-            addUserIfNotExists.execute();
-
-        } catch (SQLIntegrityConstraintViolationException ignored){
-
-        }catch (SQLException e){
-            user.setPassword(passwordNotEncoded);
-            e.printStackTrace();
+            throw new RuntimeException("Unable to create database: "+ databaseName);
         }
     }
+
+
+
 }
