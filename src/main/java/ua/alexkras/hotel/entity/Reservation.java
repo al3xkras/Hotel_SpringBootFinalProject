@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
 @Table(name = "reservations")
 @Getter
 @Setter
+@Builder
 @ToString
+@NoArgsConstructor
 public class Reservation {
 
     @Id
@@ -43,13 +45,13 @@ public class Reservation {
     private ReservationStatus reservationStatus;
 
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "from_date", nullable = false)
-    private LocalDateTime fromDate;
+    private LocalDate fromDate;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "to_date", nullable = false)
-    private LocalDateTime toDate;
+    private LocalDate toDate;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "submit_date", nullable = false)

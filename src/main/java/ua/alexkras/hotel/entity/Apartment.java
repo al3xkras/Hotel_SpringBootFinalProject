@@ -1,9 +1,7 @@
 package ua.alexkras.hotel.entity;
 
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ua.alexkras.hotel.model.ApartmentClass;
 import ua.alexkras.hotel.model.ApartmentStatus;
 
@@ -14,6 +12,8 @@ import javax.validation.constraints.NotNull;
 @Table(name = "apartments")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
 @ToString
 public class Apartment {
     @Id
