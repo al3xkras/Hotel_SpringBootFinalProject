@@ -1,6 +1,5 @@
 package ua.alexkras.hotel.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -19,7 +18,7 @@ public interface ReservationRepository extends PagingAndSortingRepository<Reserv
 
     List<Reservation> findAllByUserId(long userId);
 
-    List<Reservation> findByUserIdAndIsActive(long userId, boolean isActive);
+    List<Reservation> findAllByUserIdAndIsActive(long userId, boolean isActive);
 
     @Transactional
     @Modifying(clearAutomatically = true)
@@ -28,7 +27,7 @@ public interface ReservationRepository extends PagingAndSortingRepository<Reserv
 
     Optional<Reservation> findById(int reservationId);
 
-    List<Reservation> findByActiveAndReservationStatus(boolean active,ReservationStatus reservationStatus);
+    List<Reservation> findAllByIsActiveAndReservationStatus(boolean active,ReservationStatus reservationStatus);
 
     @Transactional
     @Modifying(clearAutomatically = true)

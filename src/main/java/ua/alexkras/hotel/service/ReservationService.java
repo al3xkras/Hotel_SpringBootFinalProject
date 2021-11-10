@@ -71,7 +71,7 @@ public class ReservationService {
 
     public List<Reservation> findAllByActiveAndStatus(boolean isActive, ReservationStatus reservationStatus){
         if (currentPendingReservations.isEmpty()) {
-            currentPendingReservations = reservationRepository.findByActiveAndReservationStatus(isActive,reservationStatus);
+            currentPendingReservations = reservationRepository.findAllByIsActiveAndReservationStatus(isActive,reservationStatus);
         }
         return currentPendingReservations;
     }
@@ -195,7 +195,7 @@ public class ReservationService {
         if (!currentUserActiveReservations.isEmpty() && currentUserActiveReservations.get(0).getUserId()==userId){
             return currentUserActiveReservations;
         }
-        currentUserActiveReservations = reservationRepository.findByUserIdAndIsActive(userId,isActive);
+        currentUserActiveReservations = reservationRepository.findAllByUserIdAndIsActive(userId,isActive);
         currentUserActiveReservations.forEach(this::updateReservationDaysUntilExpiration);
         return currentUserActiveReservations;
     }
