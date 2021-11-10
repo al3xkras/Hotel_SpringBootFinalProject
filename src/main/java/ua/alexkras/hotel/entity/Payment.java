@@ -17,29 +17,29 @@ import java.time.LocalDateTime;
 public class Payment {
     @Id
     @GeneratedValue
-    @Column(name = "ID", nullable = false, length = 32)
+    @Column(name = "id", nullable = false, length = 32)
     private long id;
 
-    @Column(name = "USER_ID", nullable = false, length = 32)
+    @Column(name = "user_id", nullable = false, length = 32)
     private long userId;
 
-    @Column(name = "RESERVATION_ID", nullable = false, length = 32)
+    @Column(name = "reservation_id", nullable = false, length = 32)
     private long reservationId;
 
-    @Column(name = "VALUE", nullable = false)
+    @Column(name = "value", nullable = false)
     private int value;
 
-    @Column(name = "PAYMENT_DATE", nullable = false)
+    @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
 
-    @Column(name = "CARD_NUMBER", nullable = false)
+    @Column(name = "card_number", nullable = false)
     private String cardNumber;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "CARD_EXPIRATION_DATE", nullable = false)
+    @Column(name = "card_expiration_date", nullable = false)
     private LocalDate cardExpirationDate;
 
-    @Column(name = "CARD_CVV", nullable = false, length = 3)
+    @Column(name = "card_cvv", nullable = false, length = 3)
     private String cardCvv;
 
 }

@@ -16,31 +16,31 @@ import java.time.LocalDate;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "NAME", nullable = false, length = 25)
+    @Column(name = "name", nullable = false, length = 25)
     private String name;
 
-    @Column(name = "SURNAME", nullable = false, length = 30)
+    @Column(name = "surname", nullable = false, length = 30)
     private String surname;
 
-    @Column(name = "USERNAME", nullable = false, length = 15)
+    @Column(name = "username", nullable = false, length = 15)
     private String username;
 
-    @Column(name = "PASSWORD", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "BIRTHDAY", nullable = false)
-    private LocalDate birthday;
-
-    @Column(name = "GENDER", length = 10, nullable = false)
-    private String gender;
-
-    @Column(name = "PHONE_NUMBER", length = 30, nullable = false)
+    @Column(name = "phone_number", length = 30, nullable = false)
     private String phoneNumber;
 
-    @Column(name = "USER_TYPE", nullable = false)
+    @Column(name = "birthday", nullable = false)
+    private LocalDate birthday;
+
+    @Column(name = "gender", length = 10, nullable = false)
+    private String gender;
+
+    @Column(name = "user_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserType userType;
 

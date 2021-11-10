@@ -18,24 +18,24 @@ import javax.validation.constraints.NotNull;
 public class Apartment {
     @Id
     @GeneratedValue
-    @Column(name = "ID", nullable = false, length = 32)
+    @Column(name = "id", nullable = false, length = 32)
     private Long id;
 
-    @Column(name = "NAME", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "PLACES", nullable = false)
+    @Column(name = "places", nullable = false)
     private int places;
 
-    @Column(name = "APARTMENT_CLASS", nullable = false)
+    @Column(name = "apartment_class", nullable = false)
     @Enumerated(EnumType.STRING)
     private ApartmentClass apartmentClass;
 
-    @Column(name = "APARTMENT_STATUS", nullable = false)
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ApartmentStatus status;
 
-    @Column(name = "PRICE", nullable = false)
+    @Column(name = "price", nullable = false)
     private Integer price;
 
     public boolean matchesReservation(@NotNull Reservation reservation){

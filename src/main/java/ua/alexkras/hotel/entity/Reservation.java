@@ -19,52 +19,52 @@ public class Reservation {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID", nullable = false, length = 32)
+    @Column(name = "id", nullable = false, length = 32)
     private long id;
 
-    @Column(name = "USER_ID", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private long userId;
 
-    @Column(name = "APARTMENT_CLASS", nullable = false)
+    @Column(name = "apartment_id")
+    private Long apartmentId;
+
+    @Column(name = "apartment_class", nullable = false)
     @Enumerated(EnumType.STRING)
     private ApartmentClass apartmentClass;
 
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    @Column(name = "FROM_DATE", nullable = false)
-    private LocalDateTime fromDate;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    @Column(name = "TO_DATE", nullable = false)
-    private LocalDateTime toDate;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    @Column(name = "SUBMIT_DATE", nullable = false)
-    private LocalDateTime submitDate;
-
-    @Column(name = "ADMIN_CONFIRMATION_DATE")
-    private LocalDate adminConfirmationDate;
-
-    @Column(name = "PLACES",nullable = false)
+    @Column(name = "places",nullable = false)
     private int places;
 
-    @Column(name = "APARTMENT_ID")
-    private Long apartmentId;
-
-    @Column(name = "APARTMENT_PRICE")
+    @Column(name = "price")
     private Integer apartmentPrice;
 
-    @Column(name = "IS_PAID", nullable = false)
-    private boolean isPaid = false;
-
-    @Column(name="STATUS", nullable = false)
+    @Column(name="reservation_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
 
-    @Column(name = "IS_ACTIVE", nullable = false, columnDefinition = "boolean default 1")
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @Column(name = "from_date", nullable = false)
+    private LocalDateTime fromDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @Column(name = "to_date", nullable = false)
+    private LocalDateTime toDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @Column(name = "submit_date", nullable = false)
+    private LocalDateTime submitDate;
+
+    @Column(name = "confirmation_date")
+    private LocalDate adminConfirmationDate;
+
+    @Column(name = "id_paid", nullable = false)
+    private boolean isPaid = false;
+
+    @Column(name = "is_active", nullable = false, columnDefinition = "boolean default 1")
     private boolean isActive = true;
 
-    @Column(name = "EXPIRED", nullable = false, columnDefinition = "boolean default 0")
+    @Column(name = "is_expired", nullable = false, columnDefinition = "boolean default 0")
     private boolean expired = false;
 
     @Transient
