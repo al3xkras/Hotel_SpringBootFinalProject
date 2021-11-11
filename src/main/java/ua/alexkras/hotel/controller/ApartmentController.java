@@ -99,14 +99,14 @@ public class ApartmentController {
                                                      @ModelAttribute("reservation") Reservation reservationDate,
                                                      Model model){
 
+        User currentUser = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
+        Apartment apartment = apartmentService.findById(id).orElseThrow(IllegalStateException::new);
+
         if (reservationDate.getFromDate().compareTo(reservationDate.getToDate())>=0){
-            model.addAttribute("apartment",apartmentService.findById(id));
+            model.addAttribute("apartment",apartment);
             model.addAttribute("fromDateIsGreaterThanToDate",true);
             return "/apartment/apartment";
         }
-
-        User currentUser = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
-        Apartment apartment = apartmentService.findById(id).orElseThrow(IllegalStateException::new);
 
         if (!apartment.getStatus().equals(ApartmentStatus.AVAILABLE) ||
                 !currentUser.getUserType().equals(UserType.USER)){
