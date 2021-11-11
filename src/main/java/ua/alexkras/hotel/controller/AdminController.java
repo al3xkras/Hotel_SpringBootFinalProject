@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
+import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.model.ApartmentStatus;
 import ua.alexkras.hotel.model.ReservationStatus;
 import ua.alexkras.hotel.service.ApartmentService;
@@ -25,12 +26,14 @@ public class AdminController {
 
     private final ReservationService reservationService;
     private final ApartmentService apartmentService;
+    private final AuthController authController;
 
     @Autowired
     public AdminController(ReservationService reservationService,
-                           ApartmentService apartmentService){
+                           ApartmentService apartmentService, AuthController authController){
         this.reservationService=reservationService;
         this.apartmentService=apartmentService;
+        this.authController = authController;
     }
 
     @GetMapping
@@ -107,7 +110,7 @@ public class AdminController {
         }
 
         reservationService.transactionalUpdateReservationApartmentDataAndConfirmationDateByIdWithApartment(
-                reservationId, apartment, LocalDate.now());
+                reservationId, apartment,ReservationStatus.CONFIRMED, LocalDate.now());
         apartmentService.transactionalUpdateStatusById(apartmentId, ApartmentStatus.RESERVED);
 
         return "redirect:/";
@@ -125,9 +128,16 @@ public class AdminController {
                     ApartmentStatus.AVAILABLE);
         }
 
-        reservationService.transactionalUpdateStatusById(reservationId, ReservationStatus.CANCELLED);
+        reservationService.transactionalUpdateStatusById(reservationId, ReservationStatus.CANCELLED_BY_ADMIN);
 
         return "redirect:/";
+    }
+
+    @RequestMapping("/profile")
+    public String profile(Model model){
+        User user = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
+        model.addAttribute("user",user);
+        return "personal_area/profile";
     }
 
 }

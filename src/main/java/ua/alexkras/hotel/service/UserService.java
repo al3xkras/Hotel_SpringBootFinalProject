@@ -1,15 +1,9 @@
 package ua.alexkras.hotel.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Service;
 import ua.alexkras.hotel.entity.User;
-import ua.alexkras.hotel.model.HotelUserDetailsService;
 import ua.alexkras.hotel.repository.UserRepository;
-
-import java.sql.SQLDataException;
-import java.sql.SQLException;
 import java.util.Optional;
 
 @Service
@@ -20,6 +14,18 @@ public class UserService {
     @Autowired
     public UserService(UserRepository userRepository){
         this.userRepository=userRepository;
+    }
+
+    /**
+     * Add new user to a data source
+     * -Encode user's password, using HotelUserDetailsService.passwordEncoder(),
+     *   before saving it to the data source
+     *
+     * @param user User to add
+     * @throws RuntimeException if User was not added to the data source
+     */
+    public void create(User user){
+        userRepository.save(user);
     }
 
     public Optional<User> findById(long id){
@@ -34,17 +40,5 @@ public class UserService {
      */
     public Optional<User> findByUsername(String username){
         return userRepository.findByUsername(username);
-    }
-
-    /**
-     * Add new user to a data source
-     * -Encode user's password, using HotelUserDetailsService.passwordEncoder(),
-     *   before saving it to the data source
-     *
-     * @param user User to add
-     * @throws RuntimeException if User was not added to the data source
-     */
-    public void create(User user){
-        userRepository.save(user);
     }
 }

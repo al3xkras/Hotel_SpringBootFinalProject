@@ -129,6 +129,7 @@ public class UserController {
         payment.setReservationId(reservationId);
         payment.setUserId(user.getId());
         payment.setValue(currentPaymentReservation.getApartmentPrice());
+        payment.setTotalValue(reservationService.getReservationFullCost(currentPaymentReservation));
 
         model.addAttribute("payment",payment);
 
@@ -172,5 +173,11 @@ public class UserController {
         return "redirect:/";
     }
 
+    @RequestMapping("/profile")
+    public String profile(Model model){
+        User user = authController.getCurrentUser().orElseThrow(IllegalStateException::new);
+        model.addAttribute("user",user);
+        return "personal_area/profile";
+    }
 
 }

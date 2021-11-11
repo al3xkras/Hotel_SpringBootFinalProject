@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My profile</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/style_navbar.css}">
+
+</head>
+<body>
+    <div class="custom-navbar">
+        <a class="active" href="/" th:text="#{navbar.hotel}"></a>
+
+        <div class="custom-navbar-dropdown" style="float: left">
+            <button class="dropdown-btn" th:text="#{navbar.language}">
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="custom-dropdown-content">
+                <a href="?lang=ua" th:text="#{navbar.language.ua}"></a>
+                <a href="?lang=en" th:text="#{navbar.language.en}"></a>
+            </div>
+        </div>
+
+        <div class="custom-navbar-dropdown" style="float: right">
+            <button class="dropdown-btn" th:text="#{${user.userType.equals(user.userType.ADMIN)?'navbar.admin':'navbar.user'}}">
+                <i class="fa fa-caret-down"></i>
+            </button>
+        </div>
+
+    </div>
+    <div style="margin-top: 20px; margin-left: 24px;">
+        <div class="d-flex flex-column align-items-left">
+
+            <div class="row">
+                <div class="col">
+                    <h2 th:text="#{form.name}+':'"></h2>
+                </div>
+                <div class="col-sm-4">
+                    <h2 th:text="${user.name}"></h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <h2 th:text="#{form.surname}+':'"></h2>
+                </div>
+                <div class="col-sm-4">
+                    <h2 th:text="${user.surname}"></h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <h2 th:text="#{form.birthday_date}"></h2>
+                </div>
+                <div class="col-sm-4">
+                    <h2 th:text="${user.birthday.toString()}"></h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <h2 th:text="#{form.phone_number}+':'"></h2>
+                </div>
+                <div class="col-sm-4">
+                    <h2 th:text="${user.phoneNumber}" style="float:left"></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

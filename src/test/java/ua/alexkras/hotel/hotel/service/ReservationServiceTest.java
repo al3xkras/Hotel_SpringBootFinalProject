@@ -161,7 +161,7 @@ public class ReservationServiceTest {
         LocalDate confirmationDate = LocalDate.now();
 
         reservationService.updateReservationApartmentDataAndConfirmationDateByIdWithApartment(
-                toUpdate.getId(),updateWithApartment1,confirmationDate);
+                toUpdate.getId(),updateWithApartment1,ReservationStatus.CONFIRMED,confirmationDate);
 
         Reservation afterUpdate = reservationService.findById(toUpdate.getId())
                 .orElseThrow(IllegalStateException::new);
@@ -178,7 +178,7 @@ public class ReservationServiceTest {
         LocalDate confirmationDate = LocalDate.now();
 
         reservationService.updateReservationApartmentDataAndConfirmationDateByIdWithApartment(
-                toUpdate.getId(),updateWithApartment2,confirmationDate);
+                toUpdate.getId(),updateWithApartment2,ReservationStatus.CONFIRMED,confirmationDate);
 
         Reservation afterUpdate = reservationService.findById(toUpdate.getId())
                 .orElseThrow(IllegalStateException::new);

@@ -19,17 +19,19 @@ public class ApartmentService {
     private final ApartmentRepository apartmentRepository;
 
     private Optional<Apartment> currentApartment=Optional.empty();
-    public void flush(){
-        clearCurrentApartment();
-    }
-
-    private Optional<Long> currentReservationId;
+    private Optional<Long> currentReservationId=Optional.empty();
     private List<Apartment> apartmentsMatchingReservation = new ArrayList<>();
 
     @Autowired
     public ApartmentService(ApartmentRepository apartmentRepository,
                             ReservationService reservationService){
         this.apartmentRepository=apartmentRepository;
+    }
+
+    public void create(Apartment apartment) {
+        apartmentRepository.save(apartment);
+        clearCurrentApartment();
+        clearApartmentsMatchingCurrentReservation();
     }
 
     public Page<Apartment> findAll(Pageable pageable){
@@ -41,31 +43,6 @@ public class ApartmentService {
             currentApartment = apartmentRepository.findById(id);
         }
         return currentApartment;
-    }
-
-    public void create(Apartment apartment) {
-        apartmentRepository.save(apartment);
-        clearCurrentApartment();
-        clearApartmentsMatchingCurrentReservation();
-    }
-
-    /**
-     * Update Apartment's status by apartment id
-     *
-     * @param id Apartment's id
-     * @param apartmentStatus New apartment status
-     */
-    public void updateStatusById(long id, ApartmentStatus apartmentStatus) {
-        apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
-        clearCurrentApartment();
-        clearApartmentsMatchingCurrentReservation();
-    }
-
-    @Transactional
-    public void transactionalUpdateStatusById(long id, ApartmentStatus apartmentStatus) {
-        apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
-        clearCurrentApartment();
-        clearApartmentsMatchingCurrentReservation();
     }
 
     /**
@@ -85,13 +62,32 @@ public class ApartmentService {
 
             apartmentsMatchingReservation = apartmentRepository
                     .findApartmentsByApartmentClassAndPlacesAndStatus(
-                        reservation.getApartmentClass(),
-                        reservation.getPlaces(),
-                        ApartmentStatus.AVAILABLE);
+                            reservation.getApartmentClass(),
+                            reservation.getPlaces(),
+                            ApartmentStatus.AVAILABLE);
 
             currentReservationId=Optional.of(reservation.getId());
         }
         return apartmentsMatchingReservation;
+    }
+
+    /**
+     * Update Apartment's status by apartment id
+     *
+     * @param id Apartment id
+     * @param apartmentStatus New apartment status
+     */
+    public void updateStatusById(long id, ApartmentStatus apartmentStatus) {
+        apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
+        clearCurrentApartment();
+        clearApartmentsMatchingCurrentReservation();
+    }
+
+    @Transactional
+    public void transactionalUpdateStatusById(long id, ApartmentStatus apartmentStatus) {
+        apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
+        clearCurrentApartment();
+        clearApartmentsMatchingCurrentReservation();
     }
 
     private void clearCurrentApartment(){
@@ -100,5 +96,9 @@ public class ApartmentService {
 
     private void clearApartmentsMatchingCurrentReservation(){
         apartmentsMatchingReservation = new ArrayList<>();
+    }
+
+    public void flush(){
+        clearCurrentApartment();
     }
 }

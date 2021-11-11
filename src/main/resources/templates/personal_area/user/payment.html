@@ -43,9 +43,6 @@
 
                                             <div class="input-group-append">
                                                 <span class="input-group-text text-muted">
-                                                    <i class="fab fa-cc-visa mx-1"></i>
-                                                    <i class="fab fa-cc-mastercard mx-1"></i>
-                                                    <i class="fab fa-cc-amex mx-1"></i>
                                                 </span>
                                             </div>
                                         </div>
@@ -74,7 +71,6 @@
                                                            style="width: 30%; min-width: 50px"
                                                            th:field="*{cardCvv}" placeholder="CVV" required><br/>
                                                 </div>
-
                                         </div>
                                     </div>
 
@@ -88,17 +84,44 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
-                                        <label th:text="#{table.user.id}+': '+${payment.userId}"></label>
+                                    <div style="margin-top: 24px; margin-bottom: 16px">
+                                        <div class="row">
+                                            <div class="col">
+                                                <label th:text="#{table.user.id}"></label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label th:text="${payment.userId}"></label>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col">
+                                                <label th:text="#{reservation.id}"></label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label th:text="${payment.reservationId}"></label>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col">
+                                                <label th:text="#{new_apartment.price}"></label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label th:text="${payment.value}"></label>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col">
+                                                <label th:text="#{payment.total_value}"></label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label th:text="${payment.totalValue}"></label>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div class="row">
-                                        <label th:text="#{reservation.id}+': '+${payment.reservationId}"></label>
-                                    </div>
-
-                                    <div class="row">
-                                        <label th:text="#{new_apartment.price}+': '+${payment.value}"></label>
-                                    </div>
 
                                     <div class="card-footer">
                                         <button type="submit" class="subscribe btn btn-primary btn-block shadow-sm" th:text="#{payment.confirm}"></button>

@@ -47,6 +47,9 @@ public class Payment {
     @Column(name = "card_cvv", nullable = false, length = 3)
     private String cardCvv;
 
+    @Transient
+    private int totalValue;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
