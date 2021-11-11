@@ -1,13 +1,17 @@
 package ua.alexkras.hotel.model.mysql;
 
 import ua.alexkras.hotel.model.ApartmentStatus;
+import java.util.ResourceBundle;
 
 import static ua.alexkras.hotel.model.mysql.ReservationTableStrings.*;
 import static ua.alexkras.hotel.model.mysql.ApartmentTableStrings.*;
 
 public interface MySqlStrings {
     String root = "jdbc:mysql://localhost:3306/";
-    String databaseName="hotel_db_test";
+
+    String springDataUrl = ResourceBundle.getBundle("application").getString("spring.datasource.url");
+
+    String databaseName= springDataUrl.substring(springDataUrl.lastIndexOf('/')+1);
     String tableUser = "user";
 
     String colUserId = "ID";

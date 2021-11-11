@@ -91,31 +91,54 @@
 
     <div class="d-flex flex-row justify-content-center" th:if="${!allApartments.isEmpty()}">
         <span class="border" th:if="${allApartments.hasPrevious()}">
-            <a th:href="@{/apartments(page=${allApartments.number-1})}">Previous</a>
+            <a th:href="@{/apartments(page=${allApartments.number-1},sort=${param.sort})}">Previous</a>
         </span>
         <th:block th:each="i: ${#numbers.sequence(0, allApartments.totalPages - 1)}">
             <span class="border selected" th:if="${allApartments.number == i && allApartments.totalPages!=1}">[[${i}+1]]</span>
             <span class="border"  th:unless="${allApartments.number == i}">
-                <a class="page-number" th:href="@{/apartments(page=${i})}">[[${i}+1]]</a>
+                <a class="page-number" th:href="@{/apartments(page=${i},sort=${param.sort})}">[[${i}+1]]</a>
             </span>
         </th:block>
 
         <span class="border" th:if="${allApartments.hasNext()}">
-            <a th:href="@{/apartments(page=${allApartments.number+1})}">Next</a>
+            <a th:href="@{/apartments(page=${allApartments.number+1},sort=${param.sort})}">Next</a>
         </span>
     </div>
 
     <script>
         const url = new URL(window.location);
-        const sort = url.searchParams.get("sort");
+        let sort = url.searchParams.get("sort");
+        sort = sort==null?sessionStorage.sort:sort;
 
         if (sort!=null){
             document.getElementById('sort_by').value = sort;
         }
 
-        function onSortChange(event) {
-            const newLocation="/apartments?sort=";
-            window.location=newLocation+event.target.value;
+        function insertParam(key, value) {
+            key = encodeURIComponent(key);
+            value = encodeURIComponent(value);
+
+            const kvp = document.location.search.substr(1).split('&');
+            let i=0;
+
+            for(; i<kvp.length; i++){
+                if (kvp[i].startsWith(key + '=')) {
+                    let pair = kvp[i].split('=');
+                    pair[1] = value;
+                    kvp[i] = pair.join('=');
+                    break;
+                }
+            }
+
+            if(i >= kvp.length){
+                kvp[kvp.length] = [key,value].join('=');
+            }
+            document.location.search = kvp.join('&');
+        }
+
+        function onSortChange(event){
+            sessionStorage.sort=event.target.value;
+            insertParam("sort",sessionStorage.sort)
         }
     </script>
 </body>
