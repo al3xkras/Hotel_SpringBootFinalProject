@@ -106,10 +106,9 @@ public class AdminController {
             return "redirect:/error";
         }
 
-        //TODO execute in transaction
-        reservationService.updateReservationApartmentDataAndConfirmationDateByIdWithApartment(
+        reservationService.transactionalUpdateReservationApartmentDataAndConfirmationDateByIdWithApartment(
                 reservationId, apartment, LocalDate.now());
-        apartmentService.updateStatusById(apartmentId, ApartmentStatus.RESERVED);
+        apartmentService.transactionalUpdateStatusById(apartmentId, ApartmentStatus.RESERVED);
 
         return "redirect:/";
     }
@@ -120,14 +119,13 @@ public class AdminController {
         Reservation reservation = reservationService.findById(reservationId)
                 .orElseThrow(IllegalStateException::new);
 
-        //TODO execute in transaction
         if (reservation.getApartmentId()!=null) {
-            apartmentService.updateStatusById(
+            apartmentService.transactionalUpdateStatusById(
                     reservation.getApartmentId(),
                     ApartmentStatus.AVAILABLE);
         }
 
-        reservationService.updateStatusById(reservationId, ReservationStatus.CANCELLED);
+        reservationService.transactionalUpdateStatusById(reservationId, ReservationStatus.CANCELLED);
 
         return "redirect:/";
     }

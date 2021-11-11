@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ApartmentStatus;
@@ -55,6 +56,13 @@ public class ApartmentService {
      * @param apartmentStatus New apartment status
      */
     public void updateStatusById(long id, ApartmentStatus apartmentStatus) {
+        apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
+        clearCurrentApartment();
+        clearApartmentsMatchingCurrentReservation();
+    }
+
+    @Transactional
+    public void transactionalUpdateStatusById(long id, ApartmentStatus apartmentStatus) {
         apartmentRepository.updateApartmentStatusById(id,apartmentStatus);
         clearCurrentApartment();
         clearApartmentsMatchingCurrentReservation();

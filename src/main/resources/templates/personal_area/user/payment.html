@@ -37,6 +37,8 @@
                                                    name="cardNumber"
                                                    th:placeholder="#{payment.card.number.placeholder}"
                                                    th:field="*{cardNumber}"
+                                                   th:title="#{card_number.regexp}"
+                                                   th:pattern="#{card_number.regexp}"
                                                    class="form-control " required>
 
                                             <div class="input-group-append">

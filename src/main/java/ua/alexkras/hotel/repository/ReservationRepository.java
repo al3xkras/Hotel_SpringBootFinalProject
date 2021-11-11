@@ -56,7 +56,7 @@ public interface ReservationRepository extends PagingAndSortingRepository<Reserv
             @Param("reservationId") long reservationId);
 
     @Transactional
-    @Modifying(clearAutomatically = true)
+    @Modifying()
     @Query("update Reservation reservation set reservation.isPaid =:isPaid where reservation.id =:id")
     void updateIsPaidById(@Param("id") long id, @Param("isPaid") boolean isPaid);
 }

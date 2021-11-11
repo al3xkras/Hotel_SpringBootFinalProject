@@ -106,11 +106,11 @@ public class UserController {
             return "redirect:/";
         }
 
-        apartmentService.updateStatusById(
+        apartmentService.transactionalUpdateStatusById(
                 currentReservation.getApartmentId(),
                 ApartmentStatus.AVAILABLE);
 
-        reservationService.updateStatusById(
+        reservationService.transactionalUpdateStatusById(
                 reservationId,
                 ReservationStatus.CANCELLED);
 
@@ -166,9 +166,8 @@ public class UserController {
         payment.setValue(reservation.getApartmentPrice());
         payment.setPaymentDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
 
-        //TODO execute in transaction
+        reservationService.transactionalUpdateIsPaidById(reservationId,true);
         paymentService.create(payment);
-        reservationService.updateIsPaidById(reservationId,true);
 
         return "redirect:/";
     }

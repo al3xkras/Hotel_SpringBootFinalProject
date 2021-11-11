@@ -3,6 +3,7 @@ package ua.alexkras.hotel.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.model.ApartmentStatus;
@@ -105,6 +106,14 @@ public class ReservationService {
         clearCurrentPendingReservations();
     }
 
+    @Transactional
+    public void transactionalUpdateStatusById(long id, ReservationStatus reservationStatus){
+        reservationRepository.updateReservationStatusById(id, reservationStatus);
+        clearCurrentReservation();
+        clearCurrentUserActiveReservations();
+        clearCurrentPendingReservations();
+    }
+
     /**
      * Update Reservation status and date of confirmation by admin by Reservation's id
      *
@@ -141,12 +150,34 @@ public class ReservationService {
         clearCurrentPendingReservations();
     }
 
+    @Transactional
+    public void transactionalUpdateReservationApartmentDataAndConfirmationDateByIdWithApartment(long id, Apartment apartment, LocalDate confirmationDate){
+        reservationRepository.updateApartmentIdAndPriceAndReservationStatusAndConfirmationDateById(
+                apartment.getId(),
+                apartment.getPrice(),
+                ReservationStatus.CONFIRMED,
+                confirmationDate,
+                id);
+
+        clearCurrentReservation();
+        clearCurrentUserActiveReservations();
+        clearCurrentPendingReservations();
+    }
+
     /**
      * Update Reservation's payment status by id
      * @param reservationId id of Reservation
      * @param isPaid new payment status
      */
     public void updateIsPaidById(long reservationId, boolean isPaid){
+        reservationRepository.updateIsPaidById(reservationId,isPaid);
+        clearCurrentReservation();
+        clearCurrentUserActiveReservations();
+        clearCurrentPendingReservations();
+    }
+
+    @Transactional
+    public void transactionalUpdateIsPaidById(long reservationId, boolean isPaid){
         reservationRepository.updateIsPaidById(reservationId,isPaid);
         clearCurrentReservation();
         clearCurrentUserActiveReservations();
