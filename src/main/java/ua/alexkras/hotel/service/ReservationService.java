@@ -70,7 +70,9 @@ public class ReservationService {
     }
 
     public List<Reservation> findAllByActiveAndStatus(boolean isActive, ReservationStatus reservationStatus){
-        if (currentPendingReservations.isEmpty()) {
+        if (currentPendingReservations.isEmpty() ||
+                currentPendingReservations.get(0).isActive()!=isActive ||
+                !currentPendingReservations.get(0).getReservationStatus().equals(reservationStatus)) {
             currentPendingReservations = reservationRepository.findAllByIsActiveAndReservationStatus(isActive,reservationStatus);
         }
         return currentPendingReservations;
@@ -86,8 +88,8 @@ public class ReservationService {
      */
     public int getReservationFullCost(Reservation reservation){
         return reservation.getApartmentPrice() *
-                (int) Duration.between(reservation.getFromDate(),
-                        reservation.getToDate()).toDays();
+                (int) Duration.between(reservation.getFromDate().atStartOfDay(),
+                        reservation.getToDate().atStartOfDay()).toDays();
     }
 
     /**

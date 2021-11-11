@@ -1,9 +1,9 @@
 package ua.alexkras.hotel.hotel.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.hotel.test_db_connection.TestDatabase;
@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class ReservationServiceTest {
@@ -45,7 +46,8 @@ public class ReservationServiceTest {
         this.testDatabase = testDatabase;
     }
 
-    @BeforeEach
+
+    @BeforeTestExecution
     public void beforeTest() {
         testDatabase.createTestDatabase();
     }
@@ -55,15 +57,11 @@ public class ReservationServiceTest {
         reservationService.create(testReservation);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testCreate2(){
-        reservationService.create(testReservation);
-        reservationService.create(testReservation);
-    }
-
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testCreate3(){
-        reservationService.create(Reservation.builder().build());
+        assertThrows(RuntimeException.class,()->{
+            reservationService.create(Reservation.builder().build());
+        });
     }
 
     @Test
@@ -81,10 +79,12 @@ public class ReservationServiceTest {
         assertEquals(testReservation,actual);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testFindById2(){
-        reservationService.findById(-1000)
-                .orElseThrow(IllegalStateException::new);
+        assertThrows(IllegalStateException.class,()->{
+            reservationService.findById(-1000)
+                    .orElseThrow(IllegalStateException::new);
+        });
     }
 
     @Test
@@ -93,9 +93,10 @@ public class ReservationServiceTest {
         List<Reservation> actual2 = reservationService.findAllByActiveAndStatus(false,ReservationStatus.CANCELLED);
         List<Reservation> actual3 = reservationService.findAllByActiveAndStatus(false,ReservationStatus.PENDING);
 
-        assertEquals(2,actual1.size());
+        assertEquals(3,actual1.size());
+        assertEquals(1,actual2.size());
         assertEquals(actual2.get(0), TestDatabase.testReservation4);
-        assertEquals(1,actual3.size());
+        assertEquals(0,actual3.size());
     }
 
     @Test
@@ -112,6 +113,7 @@ public class ReservationServiceTest {
         Reservation beforeUpdate = testReservation;
 
         reservationService.create(beforeUpdate);
+
         reservationService.updateStatusById(beforeUpdate.getId(),ReservationStatus.CANCELLED_BY_ADMIN);
 
         Reservation afterUpdate = reservationService.findById(beforeUpdate.getId())
@@ -127,6 +129,7 @@ public class ReservationServiceTest {
         LocalDate confirmationDate = LocalDate.now();
 
         reservationService.create(beforeUpdate);
+
         reservationService.updateStatusAndConfirmationDateById(
                 beforeUpdate.getId(),ReservationStatus.CONFIRMED,confirmationDate);
 

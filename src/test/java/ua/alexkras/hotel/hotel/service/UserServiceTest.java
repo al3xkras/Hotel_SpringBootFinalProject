@@ -1,11 +1,11 @@
 package ua.alexkras.hotel.hotel.service;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.event.annotation.BeforeTestClass;
+import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import ua.alexkras.hotel.entity.User;
 import ua.alexkras.hotel.hotel.test_db_connection.TestDatabase;
 import ua.alexkras.hotel.model.UserType;
@@ -35,12 +35,7 @@ public class UserServiceTest {
         this.testDatabase = testDatabase;
     }
 
-    @BeforeTestClass
-    public void beforeClass() {
-        testDatabase.createTestDatabase();
-    }
-
-    @BeforeEach
+    @BeforeTestExecution
     public void beforeTest(){
         testDatabase.createTestDatabase();
     }
@@ -55,10 +50,12 @@ public class UserServiceTest {
         assertEquals(testUser,actual);
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test
     public void testFindByUsername2(){
-        userService.findByUsername("someUnknownUsername")
-                .orElseThrow(IllegalStateException::new);
+        assertThrows(IllegalStateException.class,()->{
+            userService.findByUsername("someUnknownUsername")
+                    .orElseThrow(IllegalStateException::new);
+        });
     }
 
     @Test
@@ -69,12 +66,6 @@ public class UserServiceTest {
                         .orElseThrow(IllegalStateException::new);
 
         assertEquals(testUser3,actual);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testCreate2(){
-        userService.create(testUser3);
-        userService.create(testUser3);
     }
 
 

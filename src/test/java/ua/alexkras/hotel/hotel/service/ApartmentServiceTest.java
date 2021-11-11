@@ -1,10 +1,10 @@
 package ua.alexkras.hotel.hotel.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import ua.alexkras.hotel.entity.Apartment;
 import ua.alexkras.hotel.entity.Reservation;
 import ua.alexkras.hotel.hotel.test_db_connection.TestDatabase;
@@ -39,9 +39,8 @@ public class ApartmentServiceTest {
     }
 
     Reservation matchReservation1 = TestDatabase.matchReservation1;
-    Reservation matchReservation2 = TestDatabase.matchReservation2;
 
-    @BeforeEach
+    @BeforeTestExecution
     public void beforeTest(){
         testDatabase.createTestDatabase();
     }
@@ -70,16 +69,10 @@ public class ApartmentServiceTest {
     @Test
     public void testFindAllApartments() {
 
-        Apartment testApartment1 = TestDatabase.testApartment1;
-        Apartment testApartment3 = TestDatabase.testApartment3;
-
         Pageable pageable1 = Pageable.ofSize(2);
         List<Apartment> found1 = apartmentService.findAll(pageable1).toList();
 
         assertEquals(2,found1.size());
-
-        assertTrue(found1.contains(testApartment1));
-        assertFalse(found1.contains(testApartment3));
 
         Pageable pageable2 = Pageable.ofSize(1);
         List<Apartment> found2 = apartmentService.findAll(pageable2).toList();

@@ -3,11 +3,15 @@ package ua.alexkras.hotel.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
+
+
 
 @Entity
 @Table(name = "payments")
@@ -16,7 +20,8 @@ import java.time.LocalDateTime;
 @ToString
 public class Payment {
     @Id
-    @GeneratedValue
+    @GenericGenerator(name="IdOrGenerated", strategy="ua.alexkras.hotel.model.UseIdOrGenerate")
+    @GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
     @Column(name = "id", nullable = false, length = 32)
     private long id;
 
@@ -42,4 +47,16 @@ public class Payment {
     @Column(name = "card_cvv", nullable = false, length = 3)
     private String cardCvv;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Payment payment = (Payment) o;
+        return id == payment.id && userId == payment.userId && reservationId == payment.reservationId && value == payment.value && paymentDate.equals(payment.paymentDate) && cardNumber.equals(payment.cardNumber) && cardExpirationDate.equals(payment.cardExpirationDate) && cardCvv.equals(payment.cardCvv);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userId, reservationId, value, paymentDate, cardNumber, cardExpirationDate, cardCvv);
+    }
 }

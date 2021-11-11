@@ -2,11 +2,13 @@ package ua.alexkras.hotel.entity;
 
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 import ua.alexkras.hotel.model.ApartmentClass;
 import ua.alexkras.hotel.model.ApartmentStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "apartments")
@@ -14,10 +16,12 @@ import javax.validation.constraints.NotNull;
 @Setter
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class Apartment {
     @Id
-    @GeneratedValue
+    @GenericGenerator(name="IdOrGenerated", strategy="ua.alexkras.hotel.model.UseIdOrGenerate")
+    @GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
     @Column(name = "id", nullable = false, length = 32)
     private Long id;
 
@@ -40,5 +44,18 @@ public class Apartment {
 
     public boolean matchesReservation(@NotNull Reservation reservation){
         return places == reservation.getPlaces() & apartmentClass.equals(reservation.getApartmentClass()) & status.equals(ApartmentStatus.AVAILABLE);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Apartment apartment = (Apartment) o;
+        return places == apartment.places && Objects.equals(id, apartment.id) && name.equals(apartment.name) && apartmentClass == apartment.apartmentClass && status == apartment.status && price.equals(apartment.price);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, places, apartmentClass, status, price);
     }
 }

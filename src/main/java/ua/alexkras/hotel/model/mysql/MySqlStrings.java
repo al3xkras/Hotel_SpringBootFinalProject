@@ -7,7 +7,7 @@ import static ua.alexkras.hotel.model.mysql.ApartmentTableStrings.*;
 
 public interface MySqlStrings {
     String root = "jdbc:mysql://localhost:3306/";
-    String databaseName="hotel_db";
+    String databaseName="hotel_db_test";
     String tableUser = "user";
 
     String colUserId = "ID";

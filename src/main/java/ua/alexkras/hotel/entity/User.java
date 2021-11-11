@@ -1,21 +1,25 @@
 package ua.alexkras.hotel.entity;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 import ua.alexkras.hotel.dto.RegistrationRequest;
 import ua.alexkras.hotel.model.UserType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "user")
 @Getter
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GenericGenerator(name="IdOrGenerated", strategy="ua.alexkras.hotel.model.UseIdOrGenerate")
+    @GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
     @Column(name = "id")
     private Long id;
 
@@ -69,5 +73,18 @@ public class User {
         this.birthday=birthday;
         this.gender=gender;
         this.userType=userType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) && name.equals(user.name) && surname.equals(user.surname) && username.equals(user.username) && password.equals(user.password) && phoneNumber.equals(user.phoneNumber) && birthday.equals(user.birthday) && gender.equals(user.gender) && userType == user.userType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, surname, username, password, phoneNumber, birthday, gender, userType);
     }
 }
